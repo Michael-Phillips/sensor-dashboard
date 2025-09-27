@@ -40,7 +40,8 @@ function renderCards(data) {
 
     const imageUrl = reading.image_url || 'images/default-plant.jpg';
     const timestamp = new Date(reading.timestamp).toLocaleString();
-    const sensorLabel = reading.metadata?.description || 'Unnamed Sensor';
+    const metadata = reading.metadata || {}; // ✅ define here
+    const sensorLabel = metadata.description || 'Unnamed Sensor';
 
     card.innerHTML = `
       <img src="${imageUrl}" alt="Sensor image">
@@ -48,23 +49,24 @@ function renderCards(data) {
       <h3>${sensorLabel}</h3>
       <p>Time: ${timestamp}</p>
     `;
-    
-    // 👇 Add these two lines here
+
+    // ✅ Optional metadata fields
     if (metadata.location) {
-     card.innerHTML += `<p><strong>Location:</strong> ${metadata.location}</p>`;
+      card.innerHTML += `<p><strong>Location:</strong> ${metadata.location}</p>`;
     }
     if (metadata.status) {
       card.innerHTML += `<p><strong>Status:</strong> ${metadata.status}</p>`;
     }
 
-    // Render sensor values
+    // ✅ Render sensor values
     const count = reading.numsens || 0;
-    const labels = reading.metadata || [];
 
     for (let i = 1; i <= count; i++) {
       const value = reading[`sensor_${i}`];
-      const label = labels[i - 1] || `Sensor ${i}`;
-      card.innerHTML += `<p>${label}: ${value ?? 'N/A'}</p>`;
+      const meta = metadata[`sensor_${i}`] || {};
+      const label = meta.type || `Sensor ${i}`;
+      const unit = meta.unit || '';
+      card.innerHTML += `<p>${label}: ${value ?? 'N/A'} ${unit}</p>`;
     }
 
     container.appendChild(card);
