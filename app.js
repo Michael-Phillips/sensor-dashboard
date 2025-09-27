@@ -52,7 +52,8 @@ function renderCards(data) {
     card.className = 'card';
 
     const imageUrl = row.image_url || 'images/default-plant.jpg';
-    const sensorLabel = row.label || row.device_id;
+    const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
+    const sensorLabel = metadata.description || row.label || row.device_id;
 
     // Parse metadata
     const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
