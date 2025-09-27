@@ -44,53 +44,51 @@ function getLatestPerDevice(data) {
 }
 
 function renderCards(data) {
-  container.innerHTML = ''; // Clear existing cards
+  const container = document.getElementById('cardContainer');
+  container.innerHTML = '';
 
-  const filteredData = getLatestPerDevice(data); // ✅ Only latest per device
-
-  if (!filteredData || filteredData.length === 0) {
-    const msg = document.createElement('div');
-    msg.className = 'card';
-    msg.innerHTML = `<h3>No data found</h3><p>Check Supabase table or API key</p>`;
-    container.appendChild(msg);
-    return;
-  }
-
-  filteredData.forEach(reading => {
+  data.forEach(row => {
     const card = document.createElement('div');
     card.className = 'card';
 
-    const imageUrl = reading.image_url || 'images/default-plant.jpg';
-    const timestamp = new Date(reading.timestamp).toLocaleString();
-    const metadata = reading.metadata || {};
-    const sensorLabel = metadata.description || 'Unnamed Sensor';
+    const imageUrl = row.image_url || 'images/default-plant.jpg';
+    const sensorLabel = row.label || row.device_id;
+
+    // Parse metadata
+    const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
 
     card.innerHTML = `
       <img src="${imageUrl}" alt="Sensor image">
       <div class="gear-icon"><i class="fas fa-cog"></i></div>
       <h3>${sensorLabel}</h3>
-      <p>Time: ${timestamp}</p>
+      <p>Time: ${new Date(row.timestamp).toLocaleString()}</p>
     `;
 
-    if (metadata.location) {
-      card.innerHTML += `<p><strong>Location:</strong> ${metadata.location}</p>`;
-    }
-    if (metadata.status) {
-      card.innerHTML += `<p><strong>Status:</strong> ${metadata.status}</p>`;
-    }
+    // Dynamically add sensor readings
+    Object.keys(row).forEach(key => {
+      if (key.startsWith('sensor_') && typeof row[key] === 'number') {
+        const meta = metadata[key] || {};
+        const label = meta.type || key;
+        const unit = meta.unit?.trim() || '';
+        card.innerHTML += `<p>${label}: ${row[key]} ${unit}</p>`;
+      }
+    });
 
-    const count = reading.numsens || 0;
+    // Optional metadata fields
+    if (metadata.location) card.innerHTML += `<p>Location: ${metadata.location}</p>`;
+    if (metadata.status) card.innerHTML += `<p>Status: ${metadata.status}</p>`;
 
-    for (let i = 1; i <= count; i++) {
-      const value = reading[`sensor_${i}`];
-      const meta = metadata[`sensor_${i}`] || {};
-      const label = meta.type || `Sensor ${i}`;
-      const unit = meta.unit || '';
-      card.innerHTML += `<p>${label}: ${value ?? 'N/A'} ${unit}</p>`;
-    }
+    // Gear icon click handler
+    card.querySelector('.gear-icon').addEventListener('click', () => {
+      document.getElementById('settings-modal').classList.remove('hidden');
+      document.getElementById('sensor-label').value = sensorLabel;
+      document.getElementById('sensor-location').value = metadata.location || '';
+      document.getElementById('sensor-status').value = metadata.status || '';
+    });
 
     container.appendChild(card);
   });
 }
+
 
 fetchReadings();
