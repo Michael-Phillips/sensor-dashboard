@@ -59,8 +59,8 @@ function renderCards(data) {
     //const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
 
     card.innerHTML = `
-      <img src="${imageUrl}" alt="Sensor image">
       <div class="gear-icon"><i class="fas fa-cog"></i></div>
+      <img src="${imageUrl}" alt="Sensor image">
       <h3>${sensorLabel}</h3>
       <p>Time: ${new Date(row.timestamp).toLocaleString()}</p>
     `;
