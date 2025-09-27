@@ -6,91 +6,80 @@ const container = document.getElementById('cardContainer');
 console.log("JS loaded");
 
 async function fetchReadings() {
-  console.log("Fetching from Supabase...");
-
-  const response = await fetch(`${supabaseUrl}/rest/v1/${table}?select=*&order=timestamp.desc`, {
+  console.log('Fetching from Supabase...');
+  const response = await fetch(`${supabaseUrl}/rest/v1/${tableName}?select=*&order=timestamp.desc`, {
     headers: {
       apikey: supabaseKey,
-      Authorization: `Bearer ${supabaseKey}`,
-    },
+      Authorization: `Bearer ${supabaseKey}`
+    }
   });
 
   const data = await response.json();
+  console.log('Data received:', data);
+
   if (!Array.isArray(data)) {
     console.error("Supabase error:", data);
-    container.innerHTML = `<div class="card"><h3>API Error</h3><p>${data.message}</p></div>`;
+    document.getElementById('cardContainer').innerHTML = `<div class="card"><h3>API Error</h3><p>${data.message}</p></div>`;
     return;
   }
 
-  console.log("Data received:", data);
-
-  const filteredData = getLatestPerDevice(data);
-  renderCards(filteredData);
+  const latestPerDevice = getLatestPerDevice(data);
+  renderCards(latestPerDevice);
 }
 
 function getLatestPerDevice(data) {
   const seen = new Set();
-  const latest = [];
-
-  data.forEach(row => {
-    const id = String(row.device_id).trim(); // normalize to string
-    if (!seen.has(id)) {
-      seen.add(id);
-      latest.push(row);
-    }
+  return data.filter(row => {
+    if (seen.has(row.device_id)) return false;
+    seen.add(row.device_id);
+    return true;
   });
-
-  return latest;
 }
 
 function renderCards(data) {
-  container.innerHTML = ''; // Clear existing cards
+  const container = document.getElementById('cardContainer');
+  container.innerHTML = '';
 
-  const filteredData = getLatestPerDevice(data); // ✅ Only latest per device
-
-  if (!filteredData || filteredData.length === 0) {
-    const msg = document.createElement('div');
-    msg.className = 'card';
-    msg.innerHTML = `<h3>No data found</h3><p>Check Supabase table or API key</p>`;
-    container.appendChild(msg);
-    return;
-  }
-
-  filteredData.forEach(reading => {
+  data.forEach(row => {
     const card = document.createElement('div');
     card.className = 'card';
 
-    const imageUrl = reading.image_url || 'images/default-plant.jpg';
-    const timestamp = new Date(reading.timestamp).toLocaleString();
-    const metadata = reading.metadata || {};
-    const sensorLabel = metadata.description || 'Unnamed Sensor';
+    const imageUrl = row.image_url || 'images/placeholder.png';
+    const sensorLabel = row.label || row.device_id;
+    const metadata = {
+      location: row.location || '',
+      status: row.status || ''
+    };
 
     card.innerHTML = `
       <img src="${imageUrl}" alt="Sensor image">
       <div class="gear-icon"><i class="fas fa-cog"></i></div>
       <h3>${sensorLabel}</h3>
-      <p>Time: ${timestamp}</p>
+      <p>Time: ${new Date(row.timestamp).toLocaleString()}</p>
+      ${row.moisture ? `<p>Moisture: ${row.moisture}</p>` : ''}
+      ${row.temperature ? `<p>Temperature: ${row.temperature} °F</p>` : ''}
+      ${row.humidity ? `<p>Humidity: ${row.humidity} %</p>` : ''}
+      ${row.pressure ? `<p>Pressure: ${row.pressure} hPa</p>` : ''}
+      ${metadata.location ? `<p>Location: ${metadata.location}</p>` : ''}
+      ${metadata.status ? `<p>Status: ${metadata.status}</p>` : ''}
     `;
 
-    if (metadata.location) {
-      card.innerHTML += `<p><strong>Location:</strong> ${metadata.location}</p>`;
-    }
-    if (metadata.status) {
-      card.innerHTML += `<p><strong>Status:</strong> ${metadata.status}</p>`;
-    }
-
-    const count = reading.numsens || 0;
-
-    for (let i = 1; i <= count; i++) {
-      const value = reading[`sensor_${i}`];
-      const meta = metadata[`sensor_${i}`] || {};
-      const label = meta.type || `Sensor ${i}`;
-      const unit = meta.unit || '';
-      card.innerHTML += `<p>${label}: ${value ?? 'N/A'} ${unit}</p>`;
-    }
+    // Gear icon click handler
+    card.querySelector('.gear-icon').addEventListener('click', () => {
+      document.getElementById('settings-modal').classList.remove('hidden');
+      document.getElementById('sensor-label').value = sensorLabel;
+      document.getElementById('sensor-location').value = metadata.location;
+      document.getElementById('sensor-status').value = metadata.status;
+    });
 
     container.appendChild(card);
   });
 }
 
+// Modal close button
+document.querySelector('.close-button').addEventListener('click', () => {
+  document.getElementById('settings-modal').classList.add('hidden');
+});
+
+// Kick off the fetch
 fetchReadings();
