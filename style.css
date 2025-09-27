@@ -14,26 +14,36 @@ body {
 
 .card {
   position: relative;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   width: 300px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   padding: 16px;
+  box-sizing: border-box;
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: scale(1.02);
 }
 
 .card img {
   width: 100%;
   height: auto;
-  border-radius: 8px;
+  border-radius: 6px;
+  margin-bottom: 12px;
 }
 
 .card h3 {
-  margin-top: 12px;
-  margin-bottom: 4px;
+  margin: 0 0 8px;
+  font-size: 1.2em;
+  padding-top: 20px; /* Optional: avoids overlap with gear icon */
 }
 
 .card p {
   margin: 4px 0;
+  font-size: 0.95em;
+  color: #333;
 }
 
 .gear-icon {
@@ -44,4 +54,10 @@ body {
   font-size: 1.2em;
   color: #666;
   cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .card {
+    width: 90%;
+  }
 }
