@@ -43,7 +43,7 @@ function renderCards(data) {
     const card = document.createElement('div');
     card.className = 'card';
 
-    const imageUrl = row.image_url || 'images/placeholder.png';
+    const imageUrl = row.image_url || 'images/default-plant.jpg';
     const sensorLabel = row.label || row.device_id;
     const metadata = {
       location: row.location || '',
