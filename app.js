@@ -10,7 +10,8 @@ const container = document.getElementById('cardContainer');
 // ✅ Fetch data from Supabase
 async function fetchReadings() {
   console.log("Fetching from Supabase...");
-  const response = await fetch(`${supabaseUrl}/rest/v1/${table}?select=*`, {
+  const response = await fetch(`${supabaseUrl}/rest/v1/${table}?select=*&order=timestamp.desc`, {
+  //const response = await fetch(`${supabaseUrl}/rest/v1/${table}?select=*`, {
     headers: {
       apikey: supabaseKey,
       Authorization: `Bearer ${supabaseKey}`,
@@ -22,9 +23,25 @@ async function fetchReadings() {
   renderCards(data);
 }
 
+function getLatestPerDevice(data) {
+  const seen = new Set();
+  const latest = [];
+
+  data.forEach(row => {
+    if (!seen.has(row.device_id)) {
+      seen.add(row.device_id);
+      latest.push(row);
+    }
+  });
+
+  return latest;
+}
+
 // ✅ Render cards from data
 function renderCards(data) {
   container.innerHTML = ''; // Clear existing cards
+
+  const filteredData = getLatestPerDevice(data); // ✅ Filter here
 
   if (!data || data.length === 0) {
     const msg = document.createElement('div');
