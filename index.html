@@ -2,12 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Sensible Living Dashboard</title>
+  <title>Sensible Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="favicon.ico">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
-  <div id="cardContainer"></div>
+
+  <h1>🌱 Sensible Dashboard</h1>
+  <div id="card-container"></div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-button">&times;</span>
+      <h2>Sensor Settings</h2>
+      <form id="settings-form">
+        <label for="sensor-label">Label:</label>
+        <input type="text" id="sensor-label" name="label">
+
+        <label for="sensor-location">Location:</label>
+        <input type="text" id="sensor-location" name="location">
+
+        <label for="sensor-status">Status:</label>
+        <input type="text" id="sensor-status" name="status">
+
+        <button type="submit">Save</button>
+      </form>
+    </div>
+  </div>
+
   <script src="app.js"></script>
 </body>
 </html>
