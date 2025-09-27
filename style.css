@@ -16,7 +16,7 @@ body {
   line-height: 1.2;
   display: inline-block;
   vertical-align: top;
-  text-align: center;
+  text-align: left;
 }
 
 .card:hover {
@@ -33,14 +33,16 @@ body {
 .card h3 {
   font-size: 1rem;
   margin: 4px 0;
+  text-align: left;
 }
 
 .card p {
   margin: 2px 0;
+  text-align: left;
 }
 
 .gear-icon {
-  position: absolute;
+  position: relative;
   top: 6px;
   right: 6px;
   font-size: 0.9rem;
