@@ -27,8 +27,9 @@ function getLatestPerDevice(data) {
   const latest = [];
 
   data.forEach(row => {
-    if (!seen.has(row.device_id)) {
-      seen.add(row.device_id);
+    const id = String(row.device_id).trim(); // normalize to string
+    if (!seen.has(id)) {
+      seen.add(id);
       latest.push(row);
     }
   });
@@ -39,7 +40,9 @@ function getLatestPerDevice(data) {
 function renderCards(data) {
   container.innerHTML = ''; // Clear existing cards
 
-  if (!data || data.length === 0) {
+  const filteredData = getLatestPerDevice(data); // ✅ Only latest per device
+
+  if (!filteredData || filteredData.length === 0) {
     const msg = document.createElement('div');
     msg.className = 'card';
     msg.innerHTML = `<h3>No data found</h3><p>Check Supabase table or API key</p>`;
@@ -47,7 +50,7 @@ function renderCards(data) {
     return;
   }
 
-  data.forEach(reading => {
+  filteredData.forEach(reading => {
     const card = document.createElement('div');
     card.className = 'card';
 
