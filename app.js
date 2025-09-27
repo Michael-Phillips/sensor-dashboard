@@ -1,5 +1,5 @@
 const supabaseUrl = 'https://qvlluhoxehdpssdebzyi.supabase.co';
-const supabaseKey = 'your-anon-key'; // Replace with your actual anon key
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2bGx1aG94ZWhkcHNzZGVienlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NDMwOTQsImV4cCI6MjA3NDQxOTA5NH0.4sJas3fvz_2z5iPY6yqL8W2X0NgZYjKUxxGNJX-JAMc'; // Replace with your actual anon key
 const table = 'readings';
 const container = document.getElementById('card-container');
 
@@ -16,6 +16,12 @@ async function fetchReadings() {
   });
 
   const data = await response.json();
+  if (!Array.isArray(data)) {
+    console.error("Supabase error:", data);
+    container.innerHTML = `<div class="card"><h3>API Error</h3><p>${data.message}</p></div>`;
+    return;
+  }
+
   console.log("Data received:", data);
 
   const filteredData = getLatestPerDevice(data);
