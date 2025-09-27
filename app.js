@@ -40,7 +40,7 @@ function renderCards(data) {
 
     const imageUrl = reading.image_url || 'images/default-plant.jpg';
     const timestamp = new Date(reading.timestamp).toLocaleString();
-    const sensorLabel = reading.description || 'Unnamed Sensor';
+    const sensorLabel = reading.metadata?.description || 'Unnamed Sensor';
 
     card.innerHTML = `
       <img src="${imageUrl}" alt="Sensor image">
@@ -48,6 +48,14 @@ function renderCards(data) {
       <h3>${sensorLabel}</h3>
       <p>Time: ${timestamp}</p>
     `;
+    
+    // 👇 Add these two lines here
+    if (metadata.location) {
+     card.innerHTML += `<p><strong>Location:</strong> ${metadata.location}</p>`;
+    }
+    if (metadata.status) {
+      card.innerHTML += `<p><strong>Status:</strong> ${metadata.status}</p>`;
+    }
 
     // Render sensor values
     const count = reading.numsens || 0;
