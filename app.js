@@ -40,14 +40,24 @@ function renderCards(data) {
 
     const imageUrl = reading.image_url || 'images/default-plant.jpg';
     const timestamp = new Date(reading.timestamp).toLocaleString();
+    const sensorLabel = reading.sensor_name || 'Unnamed Sensor';
 
     card.innerHTML = `
       <img src="${imageUrl}" alt="Sensor image">
       <div class="gear-icon"><i class="fas fa-cog"></i></div>
-      <h3>${reading.sensor_name || 'Unnamed Sensor'}</h3>
-      <p>Value: ${reading.value}</p>
+      <h3>${sensorLabel}</h3>
       <p>Time: ${timestamp}</p>
     `;
+
+    // Render sensor values
+    const count = reading.numsens || 0;
+    const labels = reading.metadata || [];
+
+    for (let i = 1; i <= count; i++) {
+      const value = reading[`sensor_${i}`];
+      const label = labels[i - 1] || `Sensor ${i}`;
+      card.innerHTML += `<p>${label}: ${value ?? 'N/A'}</p>`;
+    }
 
     container.appendChild(card);
   });
