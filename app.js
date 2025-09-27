@@ -40,7 +40,7 @@ function renderCards(data) {
 
     const imageUrl = reading.image_url || 'images/default-plant.jpg';
     const timestamp = new Date(reading.timestamp).toLocaleString();
-    const sensorLabel = reading.sensor_name || 'Unnamed Sensor';
+    const sensorLabel = reading.description || 'Unnamed Sensor';
 
     card.innerHTML = `
       <img src="${imageUrl}" alt="Sensor image">
