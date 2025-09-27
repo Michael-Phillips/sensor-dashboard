@@ -56,7 +56,7 @@ function renderCards(data) {
     const sensorLabel = metadata.description || row.label || row.device_id;
 
     // Parse metadata
-    const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
+    //const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
 
     card.innerHTML = `
       <img src="${imageUrl}" alt="Sensor image">
