@@ -1,17 +1,14 @@
-// Supabase config
 const supabaseUrl = 'https://qvlluhoxehdpssdebzyi.supabase.co';
-//const supabaseUrl = 'https://qvlluhoxehdpssdebzyi.supabase.co/rest/v1/readings';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2bGx1aG94ZWhkcHNzZGVienlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NDMwOTQsImV4cCI6MjA3NDQxOTA5NH0.4sJas3fvz_2z5iPY6yqL8W2X0NgZYjKUxxGNJX-JAMc';
+const supabaseKey = 'your-anon-key'; // Replace with your actual anon key
 const table = 'readings';
+const container = document.getElementById('card-container');
 
-// ✅ DOM container
-const container = document.getElementById('cardContainer');
+console.log("JS loaded");
 
-// ✅ Fetch data from Supabase
 async function fetchReadings() {
   console.log("Fetching from Supabase...");
+
   const response = await fetch(`${supabaseUrl}/rest/v1/${table}?select=*&order=timestamp.desc`, {
-  //const response = await fetch(`${supabaseUrl}/rest/v1/${table}?select=*`, {
     headers: {
       apikey: supabaseKey,
       Authorization: `Bearer ${supabaseKey}`,
@@ -20,7 +17,9 @@ async function fetchReadings() {
 
   const data = await response.json();
   console.log("Data received:", data);
-  renderCards(data);
+
+  const filteredData = getLatestPerDevice(data);
+  renderCards(filteredData);
 }
 
 function getLatestPerDevice(data) {
@@ -37,11 +36,8 @@ function getLatestPerDevice(data) {
   return latest;
 }
 
-// ✅ Render cards from data
 function renderCards(data) {
   container.innerHTML = ''; // Clear existing cards
-
-  const filteredData = getLatestPerDevice(data); // ✅ Filter here
 
   if (!data || data.length === 0) {
     const msg = document.createElement('div');
@@ -57,7 +53,7 @@ function renderCards(data) {
 
     const imageUrl = reading.image_url || 'images/default-plant.jpg';
     const timestamp = new Date(reading.timestamp).toLocaleString();
-    const metadata = reading.metadata || {}; // ✅ define here
+    const metadata = reading.metadata || {};
     const sensorLabel = metadata.description || 'Unnamed Sensor';
 
     card.innerHTML = `
@@ -67,7 +63,6 @@ function renderCards(data) {
       <p>Time: ${timestamp}</p>
     `;
 
-    // ✅ Optional metadata fields
     if (metadata.location) {
       card.innerHTML += `<p><strong>Location:</strong> ${metadata.location}</p>`;
     }
@@ -75,7 +70,6 @@ function renderCards(data) {
       card.innerHTML += `<p><strong>Status:</strong> ${metadata.status}</p>`;
     }
 
-    // ✅ Render sensor values
     const count = reading.numsens || 0;
 
     for (let i = 1; i <= count; i++) {
@@ -90,17 +84,4 @@ function renderCards(data) {
   });
 }
 
-// ✅ Confirm JS is loading
-console.log("JS loaded");
-
-// ✅ Add test card to confirm rendering
-const testCard = document.createElement('div');
-testCard.className = 'card';
-testCard.innerHTML = `
-  <h3>Test Card</h3>
-  <p>This confirms rendering works</p>
-`;
-container.appendChild(testCard);
-
-// ✅ Fetch live data
 fetchReadings();
