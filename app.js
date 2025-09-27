@@ -55,12 +55,10 @@ function renderCards(data) {
     const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
     const sensorLabel = metadata.description || row.label || row.device_id;
 
-    // Parse metadata
-    //const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
-
+    // Build card content
     card.innerHTML = `
       <div class="gear-icon"><i class="fas fa-cog"></i></div>
-      <img src="${imageUrl}" alt="Sensor image">
+      this <img src="${imageUrl}" alt="Sensor image">
       <h3>${sensorLabel}</h3>
       <p>Time: ${new Date(row.timestamp).toLocaleString()}</p>
     `;
@@ -91,5 +89,30 @@ function renderCards(data) {
   });
 }
 
+// Close modal
+document.querySelector('.close-button').addEventListener('click', () => {
+  document.getElementById('settings-modal').classList.add('hidden');
+});
+
+// Save modal edits (optional logic)
+document.getElementById('settings-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const deviceId = e.target.dataset.deviceId;
+  const label = document.getElementById('sensor-label').value;
+  const location = document.getElementById('sensor-location').value;
+  const status = document.getElementById('sensor-status').value;
+
+  // Update local data (replace with Firestore/Supabase logic if needed)
+  const row = sensorData.find(r => r.device_id === deviceId);
+  if (row) {
+    row.metadata.description = label;
+    row.metadata.location = location;
+    row.metadata.status = status;
+    renderCards(sensorData);
+  }
+
+  document.getElementById('settings-modal').classList.add('hidden');
+});
 
 fetchReadings();
