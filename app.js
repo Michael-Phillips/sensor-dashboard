@@ -62,6 +62,7 @@ function renderCards(data) {
     const imageUrl = row.image_url?.trim();
     const img = document.createElement('img');
     img.src = imageUrl && imageUrl.length > 0 ? imageUrl : 'images/default-plant.jpg';
+    img.alt = 'Sensor image';
     img.onerror = () => {
       console.warn('Image failed to load:', img.src);
       img.src = 'images/default-plant.jpg';
@@ -79,11 +80,10 @@ function renderCards(data) {
     timestamp.textContent = `Time: ${new Date(row.timestamp).toLocaleString()}`;
     card.appendChild(timestamp);
 
-    // Sensor keys
+    // Sensor keys and cycling logic
     const sensorKeys = Object.keys(row).filter(k => k.startsWith('sensor_') && typeof row[k] === 'number');
     let sensorIndex = 0;
 
-    // Sensor value display
     const sensorDisplay = document.createElement('p');
     const updateSensorDisplay = () => {
       const key = sensorKeys[sensorIndex];
@@ -95,7 +95,6 @@ function renderCards(data) {
     updateSensorDisplay();
     card.appendChild(sensorDisplay);
 
-    // Click to cycle sensor values
     card.addEventListener('click', () => {
       sensorIndex = (sensorIndex + 1) % sensorKeys.length;
       updateSensorDisplay();
