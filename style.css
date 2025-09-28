@@ -9,7 +9,6 @@ body {
   position: relative;
   width: 180px;
   height: 280px; /* Increased height */
-  padding: 8px;
   margin: 6px;
   border-radius: 8px;
   background-color: #f9f9f9;
@@ -20,6 +19,7 @@ body {
   vertical-align: top;
   text-align: left;
   overflow: hidden;
+  padding: 0;
 }
 
 .card:hover {
