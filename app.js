@@ -57,9 +57,9 @@ gear.className = 'gear-icon';
 gear.innerHTML = '<i class="fas fa-cog"></i>';
 card.appendChild(gear);
 
-    //const imageUrl = row.image_url?.trim() || metadata.image_url?.trim() || 'images/default-plant.jpg';
+    const imageUrl = row.image_url?.trim() || metadata.image_url?.trim() || 'images/default-plant.jpg';
 
-const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
+//const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
 
     // Image with fallback
     const imageUrl = row.image_url?.trim() || metadata.image_url?.trim() || '';
