@@ -32,7 +32,7 @@ body {
   height: 100px;
   object-fit: cover;
   margin: 0 0 6px;
-  border-radius: 6px;
+  border-radius: 8px 8px 0 0; /* top-left, top-right, bottom-right, bottom-left */
 }
 
 .card img:hover {
