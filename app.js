@@ -106,16 +106,6 @@ const timestamp = document.createElement('p');
 timestamp.textContent = `Time: ${new Date(row.timestamp).toLocaleString()}`;
 card.appendChild(timestamp);
 
-    /* Gear icon click handler
-    card.querySelector('.gear-icon').addEventListener('click', () => {
-      document.getElementById('settings-modal').classList.remove('hidden');
-      document.getElementById('sensor-label').value = sensorLabel;
-      document.getElementById('sensor-location').value = metadata.location || '';
-      document.getElementById('sensor-status').value = metadata.status || '';
-    });
-
-    container.appendChild(card);
-*/
   });
 }
 
