@@ -76,21 +76,19 @@ function renderCards(data) {
     label.textContent = sensorLabel;
     card.appendChild(label);
 
-    // Sensor value (large font)
-const sensorKeys = Object.keys(row).filter(k => k.startsWith('sensor_') && typeof row[k] === 'number');
-let sensorIndex = 0;
+    // Sensor value (number + unit only)
+    const sensorKeys = Object.keys(row).filter(k => k.startsWith('sensor_') && typeof row[k] === 'number');
+    let sensorIndex = 0;
 
-const sensorDisplay = document.createElement('p');
-sensorDisplay.className = 'sensor-reading'; // Styled for large font
+    const sensorDisplay = document.createElement('p');
+    sensorDisplay.className = 'sensor-reading'; // Styled for large font
 
-const updateSensorDisplay = () => {
-  const key = sensorKeys[sensorIndex];
-  const meta = metadata[key] || {};
-  const readingLabel = meta.type || key;
-  const unit = meta.unit?.trim() || '';
-  const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
-  sensorDisplay.textContent = `${row[key].toFixed(2)} ${unit}`;
-};
+    const updateSensorDisplay = () => {
+      const key = sensorKeys[sensorIndex];
+      const meta = (metadata && metadata[key]) || {};
+      const unit = typeof meta.unit === 'string' ? meta.unit.trim() : '';
+      sensorDisplay.textContent = `${row[key]} ${unit}`;
+    };
 
 updateSensorDisplay();
 card.appendChild(sensorDisplay);
