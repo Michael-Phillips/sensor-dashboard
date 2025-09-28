@@ -52,9 +52,10 @@ body {
 }
 
 .sensor-reading {
-  font-size: 0.75rem;
-  line-height: 1.2;
-  margin-top: 4px;
+  font-size: 1.25rem;      /* Larger font */
+  font-weight: bold;
+  margin: 4px 0;
+  text-align: left;
 }
 
 .gear-icon {
