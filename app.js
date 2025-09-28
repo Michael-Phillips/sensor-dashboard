@@ -93,6 +93,7 @@ function renderCards(data) {
       const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
       sensorDisplay.textContent = `${readingLabel}: ${row[key]} ${unit} ${indexText}`;
     };
+
     updateSensorDisplay();
     card.appendChild(sensorDisplay);
 
