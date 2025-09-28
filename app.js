@@ -61,16 +61,11 @@ function renderCards(data) {
     // Image with fallback
     const imageUrl = row.image_url?.trim();
     const img = document.createElement('img');
-    //img.src = imageUrl;
     img.src = imageUrl && imageUrl.length > 0 ? imageUrl : 'images/default-plant.jpg';
-    //img.alt = 'Sensor image';
-
-    // If image fails to load (e.g. 404), fallback to default
     img.onerror = () => {
       console.warn('Image failed to load:', img.src);
       img.src = 'images/default-plant.jpg';
     };
-
     card.appendChild(img);
 
     // Sensor label
@@ -84,16 +79,26 @@ function renderCards(data) {
     timestamp.textContent = `Time: ${new Date(row.timestamp).toLocaleString()}`;
     card.appendChild(timestamp);
 
-    // Sensor readings
-    Object.keys(row).forEach(key => {
-      if (key.startsWith('sensor_') && typeof row[key] === 'number') {
-        const meta = metadata[key] || {};
-        const readingLabel = meta.type || key;
-        const unit = meta.unit?.trim() || '';
-        const reading = document.createElement('p');
-        reading.textContent = `${readingLabel}: ${row[key]} ${unit}`;
-        card.appendChild(reading);
-      }
+    // Sensor keys
+    const sensorKeys = Object.keys(row).filter(k => k.startsWith('sensor_') && typeof row[k] === 'number');
+    let sensorIndex = 0;
+
+    // Sensor value display
+    const sensorDisplay = document.createElement('p');
+    const updateSensorDisplay = () => {
+      const key = sensorKeys[sensorIndex];
+      const meta = metadata[key] || {};
+      const readingLabel = meta.type || key;
+      const unit = meta.unit?.trim() || '';
+      sensorDisplay.textContent = `${readingLabel}: ${row[key]} ${unit}`;
+    };
+    updateSensorDisplay();
+    card.appendChild(sensorDisplay);
+
+    // Click to cycle sensor values
+    card.addEventListener('click', () => {
+      sensorIndex = (sensorIndex + 1) % sensorKeys.length;
+      updateSensorDisplay();
     });
 
     // Optional metadata
