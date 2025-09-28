@@ -9,7 +9,7 @@ body {
   position: relative;
   width: 180px;
   height: 280px; /* Increased height */
-  padding: 0;  /* was 8px */
+  padding: 8px;
   margin: 6px;
   border-radius: 8px;
   background-color: #f9f9f9;
@@ -22,10 +22,6 @@ body {
   overflow: hidden;
 }
 
-.card-content {
-  padding: 8px;
-}
-
 .card:hover {
   transform: scale(1.05);
 }
@@ -36,7 +32,7 @@ body {
   height: 100px;
   object-fit: cover;
   margin: 0 0 6px;
-  border-radius: 0px;  /* was 3px */
+  border-radius: 6px;
 }
 
 .card img:hover {
