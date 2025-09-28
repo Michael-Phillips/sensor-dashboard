@@ -89,7 +89,7 @@ const updateSensorDisplay = () => {
   const readingLabel = meta.type || key;
   const unit = meta.unit?.trim() || '';
   const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
-  sensorDisplay.textContent = `${readingLabel}: ${row[key]} ${unit} ${indexText}`;
+  sensorDisplay.textContent = `${row[key].toFixed(2)} ${unit}`;
 };
 
 updateSensorDisplay();
