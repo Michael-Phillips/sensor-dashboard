@@ -25,9 +25,8 @@ async function fetchReadings() {
 
   console.log("Data received:", data);
 
-  sensorData = getLatestPerDevice(data); // ✅ Store for modal access
+  sensorData = getLatestPerDevice(data);
   renderCards(sensorData);
-
 }
 
 function getLatestPerDevice(data) {
@@ -60,7 +59,7 @@ function renderCards(data) {
     gear.innerHTML = '<i class="fas fa-cog"></i>';
     card.appendChild(gear);
 
-    // Image with fallback
+    // Image
     const imageUrl = row.image_url?.trim();
     const img = document.createElement('img');
     img.src = imageUrl && imageUrl.length > 0 ? imageUrl : 'images/default-plant.jpg';
@@ -76,22 +75,14 @@ function renderCards(data) {
     const label = document.createElement('h3');
     label.textContent = sensorLabel;
     card.appendChild(label);
-    card.appendChild(sensorDisplay);
 
-    // Timestamp
-    const timestamp = document.createElement('p');
-    timestamp.textContent = `Time: ${new Date(row.timestamp).toLocaleString()}`;
-    card.appendChild(timestamp);
-
-    // Sensor keys and cycling logic
+    // Sensor value (large font)
     const sensorKeys = Object.keys(row).filter(k => k.startsWith('sensor_') && typeof row[k] === 'number');
     let sensorIndex = 0;
 
-    
     const sensorDisplay = document.createElement('p');
-    sensorDisplay.className = 'sensor-reading'; // ✅ Smaller font
+    sensorDisplay.className = 'sensor-reading'; // Styled for large font
 
-    sensorDisplay.className = 'sensor-reading';
     const updateSensorDisplay = () => {
       const key = sensorKeys[sensorIndex];
       const meta = metadata[key] || {};
@@ -109,6 +100,11 @@ function renderCards(data) {
       updateSensorDisplay();
     });
 
+    // Timestamp
+    const timestamp = document.createElement('p');
+    timestamp.textContent = `Time: ${new Date(row.timestamp).toLocaleString()}`;
+    card.appendChild(timestamp);
+
     // Optional metadata
     if (metadata.location) {
       const loc = document.createElement('p');
@@ -116,18 +112,12 @@ function renderCards(data) {
       card.appendChild(loc);
     }
 
-    //if (metadata.status) {
-    //  const stat = document.createElement('p');
-    //  stat.textContent = `Status: ${metadata.status}`;
-    //  card.appendChild(stat);
-    //}
-
     container.appendChild(card);
   });
 }
 
 // Modal close
-  document.querySelector('.close-button').addEventListener('click', () => {
+document.querySelector('.close-button').addEventListener('click', () => {
   document.getElementById('settings-modal').classList.add('hidden');
 });
 
