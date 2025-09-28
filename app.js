@@ -33,7 +33,7 @@ function getLatestPerDevice(data) {
   const latest = [];
 
   data.forEach(row => {
-    const id = String(row.device_id).trim(); // normalize to string
+    const id = String(row.device_id).trim();
     if (!seen.has(id)) {
       seen.add(id);
       latest.push(row);
@@ -44,56 +44,54 @@ function getLatestPerDevice(data) {
 }
 
 function renderCards(data) {
-  const container = document.getElementById('cardContainer');
   container.innerHTML = '';
 
   data.forEach(row => {
     const card = document.createElement('div');
     card.className = 'card';
 
-const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
+    const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
 
-// Gear icon
-const gear = document.createElement('div');
-gear.className = 'gear-icon';
-gear.innerHTML = '<i class="fas fa-cog"></i>';
-card.appendChild(gear);
+    // Gear icon
+    const gear = document.createElement('div');
+    gear.className = 'gear-icon';
+    gear.innerHTML = '<i class="fas fa-cog"></i>';
+    card.appendChild(gear);
 
     // Image with fallback
-    const imageUrl = row.image_url?.trim() || metadata.image_url?.trim() || '';
+    const imageUrl = row.image_url?.trim() || 'images/default-plant.jpg';
     const img = document.createElement('img');
-    img.src = imageUrl || 'images/default-plant.jpg';
+    img.src = imageUrl;
     img.alt = 'Sensor image';
     img.onerror = () => {
       img.src = 'images/default-plant.jpg';
     };
     card.appendChild(img);
 
-    //const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
-    //const sensorLabel = metadata.description || row.label || row.device_id;
+    // Sensor label
+    const sensorLabel = metadata.description || row.label || row.device_id;
+    const label = document.createElement('h3');
+    label.textContent = sensorLabel;
+    card.appendChild(label);
 
-// Sensor label
-const sensorLabel = metadata.description || row.label || row.device_id;
-const label = document.createElement('h3');
-label.textContent = sensorLabel;
-card.appendChild(label);
+    // Timestamp
+    const timestamp = document.createElement('p');
+    timestamp.textContent = `Time: ${new Date(row.timestamp).toLocaleString()}`;
+    card.appendChild(timestamp);
 
-    // Dynamically add sensor readings
+    // Sensor readings
     Object.keys(row).forEach(key => {
       if (key.startsWith('sensor_') && typeof row[key] === 'number') {
         const meta = metadata[key] || {};
-        const label = meta.type || key;
+        const readingLabel = meta.type || key;
         const unit = meta.unit?.trim() || '';
-        card.innerHTML += `<p>${label}: ${row[key]} ${unit}</p>`;
+        const reading = document.createElement('p');
+        reading.textContent = `${readingLabel}: ${row[key]} ${unit}`;
+        card.appendChild(reading);
       }
     });
 
-    /* Optional metadata fields
-    if (metadata.location) card.innerHTML += `<p>Location: ${metadata.location}</p>`;
-    if (metadata.status) card.innerHTML += `<p>Status: ${metadata.status}</p>`;
-*/
-
-// Optional metadata
+    // Optional metadata
     if (metadata.location) {
       const loc = document.createElement('p');
       loc.textContent = `Location: ${metadata.location}`;
@@ -106,22 +104,16 @@ card.appendChild(label);
       card.appendChild(stat);
     }
 
-    // Timestamp
-const timestamp = document.createElement('p');
-timestamp.textContent = `Time: ${new Date(row.timestamp).toLocaleString()}`;
-card.appendChild(timestamp);
-
-container.appendChild(card);
-
+    container.appendChild(card);
   });
 }
 
-// Close modal
+// Modal close
 document.querySelector('.close-button').addEventListener('click', () => {
   document.getElementById('settings-modal').classList.add('hidden');
 });
 
-// Save modal edits (optional logic)
+// Modal save
 document.getElementById('settings-form').addEventListener('submit', (e) => {
   e.preventDefault();
 
@@ -130,7 +122,6 @@ document.getElementById('settings-form').addEventListener('submit', (e) => {
   const location = document.getElementById('sensor-location').value;
   const status = document.getElementById('sensor-status').value;
 
-  // Update local data (replace with Firestore/Supabase logic if needed)
   const row = sensorData.find(r => r.device_id === deviceId);
   if (row) {
     row.metadata.description = label;
