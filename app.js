@@ -51,15 +51,13 @@ function renderCards(data) {
     const card = document.createElement('div');
     card.className = 'card';
 
+const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
+
 // Gear icon
 const gear = document.createElement('div');
 gear.className = 'gear-icon';
 gear.innerHTML = '<i class="fas fa-cog"></i>';
 card.appendChild(gear);
-
-    const imageUrl = row.image_url?.trim() || metadata.image_url?.trim() || 'images/default-plant.jpg';
-
-//const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
 
     // Image with fallback
     const imageUrl = row.image_url?.trim() || metadata.image_url?.trim() || '';
@@ -80,15 +78,6 @@ const label = document.createElement('h3');
 label.textContent = sensorLabel;
 card.appendChild(label);
 
-    /* Build card content
-    card.innerHTML = `
-      <div class="gear-icon"><i class="fas fa-cog"></i></div>
-      <img src="${imageUrl}" alt="Sensor image" onerror="this.onerror=null; this.src='images/default-plant.jpg';">
-      <h3>${sensorLabel}</h3>
-      <p>Time: ${new Date(row.timestamp).toLocaleString()}</p>
-    `;
-*/
-
     // Dynamically add sensor readings
     Object.keys(row).forEach(key => {
       if (key.startsWith('sensor_') && typeof row[key] === 'number') {
@@ -99,14 +88,30 @@ card.appendChild(label);
       }
     });
 
-    // Optional metadata fields
+    /* Optional metadata fields
     if (metadata.location) card.innerHTML += `<p>Location: ${metadata.location}</p>`;
     if (metadata.status) card.innerHTML += `<p>Status: ${metadata.status}</p>`;
+*/
+
+// Optional metadata
+    if (metadata.location) {
+      const loc = document.createElement('p');
+      loc.textContent = `Location: ${metadata.location}`;
+      card.appendChild(loc);
+    }
+
+    if (metadata.status) {
+      const stat = document.createElement('p');
+      stat.textContent = `Status: ${metadata.status}`;
+      card.appendChild(stat);
+    }
 
     // Timestamp
 const timestamp = document.createElement('p');
 timestamp.textContent = `Time: ${new Date(row.timestamp).toLocaleString()}`;
 card.appendChild(timestamp);
+
+container.appendChild(card);
 
   });
 }
