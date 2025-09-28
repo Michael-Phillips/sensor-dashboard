@@ -84,9 +84,8 @@ function renderCards(data) {
     const sensorKeys = Object.keys(row).filter(k => k.startsWith('sensor_') && typeof row[k] === 'number');
     let sensorIndex = 0;
 
-   
-    const sensorDisplay = document.createElement('p');
     sensorDisplay.className = 'sensor-reading';
+    const sensorDisplay = document.createElement('p');
     const updateSensorDisplay = () => {
       const key = sensorKeys[sensorIndex];
       const meta = metadata[key] || {};
