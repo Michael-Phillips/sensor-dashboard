@@ -59,13 +59,18 @@ function renderCards(data) {
     card.appendChild(gear);
 
     // Image with fallback
-    const imageUrl = row.image_url?.trim() || 'images/default-plant.jpg';
+    const imageUrl = row.image_url?.trim();
     const img = document.createElement('img');
-    img.src = imageUrl;
-    img.alt = 'Sensor image';
+    //img.src = imageUrl;
+    img.src = imageUrl && imageUrl.length > 0 ? imageUrl : 'images/default-plant.jpg';
+    //img.alt = 'Sensor image';
+
+    // If image fails to load (e.g. 404), fallback to default
     img.onerror = () => {
+      console.warn('Image failed to load:', img.src);
       img.src = 'images/default-plant.jpg';
     };
+
     card.appendChild(img);
 
     // Sensor label
