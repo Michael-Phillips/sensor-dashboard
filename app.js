@@ -77,23 +77,24 @@ function renderCards(data) {
     card.appendChild(label);
 
     // Sensor value (large font)
-    const sensorKeys = Object.keys(row).filter(k => k.startsWith('sensor_') && typeof row[k] === 'number');
-    let sensorIndex = 0;
+const sensorKeys = Object.keys(row).filter(k => k.startsWith('sensor_') && typeof row[k] === 'number');
+let sensorIndex = 0;
 
-    const sensorDisplay = document.createElement('p');
-    sensorDisplay.className = 'sensor-reading'; // Styled for large font
+const sensorDisplay = document.createElement('p');
+sensorDisplay.className = 'sensor-reading'; // Styled for large font
 
-    const updateSensorDisplay = () => {
-      const key = sensorKeys[sensorIndex];
-      const meta = metadata[key] || {};
-      const readingLabel = meta.type || key;
-      const unit = meta.unit?.trim() || '';
-      const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
-      sensorDisplay.textContent = `${readingLabel}: ${row[key]} ${unit} ${indexText}`;
-    };
+const updateSensorDisplay = () => {
+  const key = sensorKeys[sensorIndex];
+  const meta = metadata[key] || {};
+  const readingLabel = meta.type || key;
+  const unit = meta.unit?.trim() || '';
+  const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
+  sensorDisplay.textContent = `${readingLabel}: ${row[key]} ${unit} ${indexText}`;
+};
 
-    updateSensorDisplay();
-    card.appendChild(sensorDisplay);
+updateSensorDisplay();
+card.appendChild(sensorDisplay);
+
 
     card.addEventListener('click', () => {
       sensorIndex = (sensorIndex + 1) % sensorKeys.length;
