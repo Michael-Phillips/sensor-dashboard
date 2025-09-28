@@ -51,17 +51,41 @@ function renderCards(data) {
     const card = document.createElement('div');
     card.className = 'card';
 
-    const imageUrl = row.image_url || 'images/default-plant.jpg';
-    const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
-    const sensorLabel = metadata.description || row.label || row.device_id;
+// Gear icon
+const gear = document.createElement('div');
+gear.className = 'gear-icon';
+gear.innerHTML = '<i class="fas fa-cog"></i>';
+card.appendChild(gear);
 
-    // Build card content
+    //const imageUrl = row.image_url?.trim() || metadata.image_url?.trim() || 'images/default-plant.jpg';
+
+    // Image with fallback
+    const imageUrl = row.image_url?.trim() || metadata.image_url?.trim() || '';
+    const img = document.createElement('img');
+    img.src = imageUrl || 'images/default-plant.jpg';
+    img.alt = 'Sensor image';
+    img.onerror = () => {
+      img.src = 'images/default-plant.jpg';
+    };
+    card.appendChild(img);
+
+    //const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
+    //const sensorLabel = metadata.description || row.label || row.device_id;
+
+// Sensor label
+const sensorLabel = metadata.description || row.label || row.device_id;
+const label = document.createElement('h3');
+label.textContent = sensorLabel;
+card.appendChild(label);
+
+    /* Build card content
     card.innerHTML = `
       <div class="gear-icon"><i class="fas fa-cog"></i></div>
       <img src="${imageUrl}" alt="Sensor image" onerror="this.onerror=null; this.src='images/default-plant.jpg';">
       <h3>${sensorLabel}</h3>
       <p>Time: ${new Date(row.timestamp).toLocaleString()}</p>
     `;
+*/
 
     // Dynamically add sensor readings
     Object.keys(row).forEach(key => {
@@ -77,7 +101,12 @@ function renderCards(data) {
     if (metadata.location) card.innerHTML += `<p>Location: ${metadata.location}</p>`;
     if (metadata.status) card.innerHTML += `<p>Status: ${metadata.status}</p>`;
 
-    // Gear icon click handler
+    // Timestamp
+const timestamp = document.createElement('p');
+timestamp.textContent = `Time: ${new Date(row.timestamp).toLocaleString()}`;
+card.appendChild(timestamp);
+
+    /* Gear icon click handler
     card.querySelector('.gear-icon').addEventListener('click', () => {
       document.getElementById('settings-modal').classList.remove('hidden');
       document.getElementById('sensor-label').value = sensorLabel;
@@ -86,6 +115,7 @@ function renderCards(data) {
     });
 
     container.appendChild(card);
+*/
   });
 }
 
