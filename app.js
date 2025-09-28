@@ -58,7 +58,7 @@ function renderCards(data) {
     // Build card content
     card.innerHTML = `
       <div class="gear-icon"><i class="fas fa-cog"></i></div>
-      this <img src="${imageUrl}" alt="Sensor image">
+      <img src="${imageUrl}" alt="Sensor image">
       <h3>${sensorLabel}</h3>
       <p>Time: ${new Date(row.timestamp).toLocaleString()}</p>
     `;
