@@ -102,7 +102,7 @@ function renderCards(data) {
     };
 
     updateSensorDisplay();
-    //card.appendChild(sensorDisplay);
+    card.appendChild(sensorDisplay);
 
     card.addEventListener('click', () => {
       sensorIndex = (sensorIndex + 1) % sensorKeys.length;
