@@ -8,6 +8,7 @@ body {
 .card {
   position: relative;
   width: 180px;
+  height: 280px; /* Increased height */
   padding: 8px;
   margin: 6px;
   border-radius: 8px;
@@ -18,6 +19,7 @@ body {
   display: inline-block;
   vertical-align: top;
   text-align: left;
+  overflow: hidden;
 }
 
 .card:hover {
@@ -25,10 +27,16 @@ body {
 }
 
 .card img {
-  width: 40px;
-  height: 40px;
+  width: 100%;
+  height: 100px;
   object-fit: contain;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+}
+
+.card img:hover {
+  transform: scale(1.03);
+  transition: transform 0.2s ease;
 }
 
 .card h3 {
