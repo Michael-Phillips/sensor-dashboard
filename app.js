@@ -114,13 +114,13 @@ function renderCards(data) {
       loc.textContent = `Location: ${metadata.location}`;
       card.appendChild(loc);
     }
-/*
-    if (metadata.status) {
-      const stat = document.createElement('p');
-      stat.textContent = `Status: ${metadata.status}`;
-      card.appendChild(stat);
-    }
-*/
+
+    //if (metadata.status) {
+    //  const stat = document.createElement('p');
+    //  stat.textContent = `Status: ${metadata.status}`;
+    //  card.appendChild(stat);
+    //}
+
     container.appendChild(card);
   });
 }
