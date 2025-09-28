@@ -2,6 +2,7 @@ const supabaseUrl = 'https://qvlluhoxehdpssdebzyi.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2bGx1aG94ZWhkcHNzZGVienlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NDMwOTQsImV4cCI6MjA3NDQxOTA5NH0.4sJas3fvz_2z5iPY6yqL8W2X0NgZYjKUxxGNJX-JAMc'; // Replace with your actual anon key
 const table = 'readings';
 const container = document.getElementById('cardContainer');
+let sensorData = []; // ✅ Declare globally
 
 console.log("JS loaded");
 
@@ -24,8 +25,9 @@ async function fetchReadings() {
 
   console.log("Data received:", data);
 
-  const filteredData = getLatestPerDevice(data);
-  renderCards(filteredData);
+  sensorData = getLatestPerDevice(data); // ✅ Store for modal access
+  renderCards(sensorData);
+
 }
 
 function getLatestPerDevice(data) {
@@ -86,6 +88,8 @@ function renderCards(data) {
 
     
     const sensorDisplay = document.createElement('p');
+    sensorDisplay.className = 'sensor-reading'; // ✅ Smaller font
+
     sensorDisplay.className = 'sensor-reading';
     const updateSensorDisplay = () => {
       const key = sensorKeys[sensorIndex];
@@ -122,7 +126,7 @@ function renderCards(data) {
 }
 
 // Modal close
-document.querySelector('.close-button').addEventListener('click', () => {
+  document.querySelector('.close-button').addEventListener('click', () => {
   document.getElementById('settings-modal').classList.add('hidden');
 });
 
