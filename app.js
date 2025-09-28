@@ -90,7 +90,8 @@ function renderCards(data) {
       const meta = metadata[key] || {};
       const readingLabel = meta.type || key;
       const unit = meta.unit?.trim() || '';
-      sensorDisplay.textContent = `${readingLabel}: ${row[key]} ${unit}`;
+      const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
+      sensorDisplay.textContent = `${readingLabel}: ${row[key]} ${unit} ${indexText}`;
     };
     updateSensorDisplay();
     card.appendChild(sensorDisplay);
