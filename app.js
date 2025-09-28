@@ -76,19 +76,6 @@ function renderCards(data) {
     const label = document.createElement('h3');
     label.textContent = sensorLabel;
     card.appendChild(label);
-sensorDisplay.className = 'sensor-reading'; // ✅ Smaller font
-
-    sensorDisplay.className = 'sensor-reading';
-    const updateSensorDisplay = () => {
-      const key = sensorKeys[sensorIndex];
-      const meta = metadata[key] || {};
-      const readingLabel = meta.type || key;
-      const unit = meta.unit?.trim() || '';
-      const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
-      sensorDisplay.textContent = `${readingLabel}: ${row[key]} ${unit} ${indexText}`;
-    };
-
-    updateSensorDisplay();
     card.appendChild(sensorDisplay);
 
     // Timestamp
@@ -102,7 +89,19 @@ sensorDisplay.className = 'sensor-reading'; // ✅ Smaller font
 
     
     const sensorDisplay = document.createElement('p');
-    
+    sensorDisplay.className = 'sensor-reading'; // ✅ Smaller font
+
+    sensorDisplay.className = 'sensor-reading';
+    const updateSensorDisplay = () => {
+      const key = sensorKeys[sensorIndex];
+      const meta = metadata[key] || {};
+      const readingLabel = meta.type || key;
+      const unit = meta.unit?.trim() || '';
+      const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
+      sensorDisplay.textContent = `${readingLabel}: ${row[key]} ${unit} ${indexText}`;
+    };
+
+    updateSensorDisplay();
     //card.appendChild(sensorDisplay);
 
     card.addEventListener('click', () => {
