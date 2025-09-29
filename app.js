@@ -140,7 +140,7 @@ const updateSensorDisplay = () => {
       sensorIndex = (sensorIndex + 1) % sensorKeys.length;
       updateSensorDisplay();
     });
-console.log(`Sensor ${sensorIndex + 1}: type = ${meta.type}`);
+//console.log(`Sensor ${sensorIndex + 1}: type = ${meta.type}`);
     container.appendChild(card);
   });
 }
