@@ -40,8 +40,7 @@ body {
 }
 
 .card h3 {
-  font-size: .5rem;
-border: 1px solid red;
+  font-size: .75rem;
   margin: 4px 0;
   text-align: left;
 }
