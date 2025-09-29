@@ -41,6 +41,7 @@ body {
 
 .card h3 {
   font-size: .5rem;
+border: 1px solid red;
   margin: 4px 0;
   text-align: left;
 }
