@@ -90,19 +90,39 @@ function renderCards(data) {
       sensorDisplay.textContent = `${row[key]} ${unit}`;
     };
 
-updateSensorDisplay();
-card.appendChild(sensorDisplay);
+    updateSensorDisplay();
+    card.appendChild(sensorDisplay);
 
+    function getRelativeTime(isoString) {
+      const now = new Date();
+      const then = new Date(isoString);
+      const diffMs = now - then;
+      const diffSec = Math.floor(diffMs / 1000);
+      const diffMin = Math.floor(diffSec / 60);
+      const diffHr = Math.floor(diffMin / 60);
+      const diffDay = Math.floor(diffHr / 24);
+
+      if (diffSec < 60) return `${diffSec} seconds ago`;
+      if (diffMin < 60) return `${diffMin} minutes ago`;
+      if (diffHr < 24) return `${diffHr} hours ago`;
+      if (diffDay < 7) return `${diffDay} days ago`;
+
+      return then.toLocaleDateString(); // fallback to full date
+    }
+
+
+    
+
+    // Timestamp
+    const timestamp = document.createElement('p');
+    timestamp.className = 'timestamp';
+    timestamp.textContent = getRelativeTime(row.timestamp);
+    card.appendChild(timestamp);
 
     card.addEventListener('click', () => {
       sensorIndex = (sensorIndex + 1) % sensorKeys.length;
       updateSensorDisplay();
     });
-
-    // Timestamp
-    const timestamp = document.createElement('p');
-    timestamp.textContent = `Time: ${new Date(row.timestamp).toLocaleString()}`;
-    card.appendChild(timestamp);
 
     // Optional metadata
     if (metadata.location) {
