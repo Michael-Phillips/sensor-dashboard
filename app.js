@@ -98,21 +98,25 @@ function renderCards(data) {
     let sensorIndex = 0;
 
     const sensorDisplay = document.createElement('p');
-sensorDisplay.className = 'sensor-reading';
+    sensorDisplay.className = 'sensor-reading';
 
-const sensorIndexDisplay = document.createElement('span');
-sensorIndexDisplay.className = 'sensor-index';
-sensorDisplay.appendChild(sensorIndexDisplay);
+    const sensorIndexDisplay = document.createElement('span');
+    sensorIndexDisplay.className = 'sensor-index';
+    sensorDisplay.appendChild(sensorIndexDisplay);
+
+    const typeDisplay = document.createElement('p');
+    typeDisplay.className = 'sensor-type';
+    card.appendChild(typeDisplay);
 
     const updateSensorDisplay = () => {
       const key = sensorKeys[sensorIndex];
-const meta = (metadata && metadata[key]) || {};
-const unit = typeof meta.unit === 'string' ? meta.unit.trim() : '';
-const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
+      const meta = (metadata && metadata[key]) || {};
+      const unit = typeof meta.unit === 'string' ? meta.unit.trim() : '';
+      const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
 
-sensorDisplay.textContent = `${row[key]} ${unit} `;
-sensorDisplay.appendChild(sensorIndexDisplay);
-sensorIndexDisplay.textContent = indexText;
+      sensorDisplay.textContent = `${row[key]} ${unit} `;
+      sensorDisplay.appendChild(sensorIndexDisplay);
+      sensorIndexDisplay.textContent = indexText;
     };
 
     updateSensorDisplay();
