@@ -141,17 +141,6 @@ const updateSensorDisplay = () => {
       updateSensorDisplay();
     });
 
-    // Show sensor type from metadata
-    const key = sensorKeys[sensorIndex];
-    const meta = (metadata && metadata[key]) || {};
-    const typeLabel = meta.type || '';
-
-    if (typeLabel) {
-      const type = document.createElement('p');
-      type.textContent = ` ${typeLabel}`;
-      card.appendChild(type);
-    }
-
     container.appendChild(card);
   });
 }
