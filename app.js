@@ -105,6 +105,7 @@ function renderCards(data) {
 
     const sensorIndexDisplay = document.createElement('span');
     sensorIndexDisplay.className = 'sensor-index';
+sensorDisplay.appendChild(sensorValue); // ← This was missing
     sensorDisplay.appendChild(sensorIndexDisplay);
     card.appendChild(sensorDisplay);
 
