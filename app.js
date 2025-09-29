@@ -106,12 +106,12 @@ function renderCards(data) {
     const sensorIndexDisplay = document.createElement('span');
     sensorIndexDisplay.className = 'sensor-index';
 
-sensorDisplay.appendChild(sensorValue); // ← This was missing
+    sensorDisplay.appendChild(sensorValue); // ← This was missing
     sensorDisplay.appendChild(sensorIndexDisplay);
     card.appendChild(sensorDisplay);
 
     const typeDisplay = document.createElement('p');
-typeDisplay.className = 'sensor-type';
+    typeDisplay.className = 'sensor-type';
 //card.appendChild(typeDisplay);
 
 const updateSensorDisplay = () => {
@@ -131,7 +131,7 @@ const updateSensorDisplay = () => {
 
     updateSensorDisplay();
     card.appendChild(sensorDisplay);
-card.appendChild(typeDisplay);
+//card.appendChild(typeDisplay);
 
     // Timestamp
     const timestamp = document.createElement('div');
