@@ -129,11 +129,15 @@ sensorIndexDisplay.textContent = indexText;
       updateSensorDisplay();
     });
 
-    // Optional metadata
-    if (metadata.location) {
-      const loc = document.createElement('p');
-      loc.textContent = `Location: ${metadata.location}`;
-      card.appendChild(loc);
+    // Show sensor type from metadata
+    const key = sensorKeys[sensorIndex];
+    const meta = (metadata && metadata[key]) || {};
+    const typeLabel = meta.type || '';
+
+    if (typeLabel) {
+      const type = document.createElement('p');
+      type.textContent = `Type: ${typeLabel}`;
+      card.appendChild(type);
     }
 
     container.appendChild(card);
