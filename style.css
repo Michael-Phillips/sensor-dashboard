@@ -37,7 +37,7 @@ body {
 .card .timestamp {
   position: absolute;
   bottom: 6px;
-  left: 28px; /* Leaves space for gear icon */
+  left: 35px; /* Leaves space for gear icon */
   font-size: 0.7rem;
   color: #555;
 }
