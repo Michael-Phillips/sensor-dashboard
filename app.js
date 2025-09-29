@@ -114,24 +114,17 @@ card.appendChild(typeDisplay);
 
 const updateSensorDisplay = () => {
   const key = sensorKeys[sensorIndex];
-  const meta = (metadata && metadata[key]) || {};
+
+  // Re-parse metadata for this row to ensure fresh access
+  const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
+  const meta = metadata[key] || {};
+
   const unit = typeof meta.unit === 'string' ? meta.unit.trim() : '';
   const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
 
-  // Update value and unit
   sensorValue.textContent = `${row[key]} ${unit}`;
-
-  // Update index
   sensorIndexDisplay.textContent = indexText;
-
-  // Update type
   typeDisplay.textContent = meta.type ? `Type: ${meta.type}` : '';
-
-  //sensorDisplay.textContent = `${row[key]} ${unit} `;
-  //sensorDisplay.appendChild(sensorIndexDisplay);
-  //sensorIndexDisplay.textContent = indexText;
-
-  //typeDisplay.textContent = meta.type ? `Type: ${meta.type}` : '';
 };
 
     updateSensorDisplay();
