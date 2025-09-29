@@ -105,19 +105,21 @@ function renderCards(data) {
     sensorDisplay.appendChild(sensorIndexDisplay);
 
     const typeDisplay = document.createElement('p');
-    typeDisplay.className = 'sensor-type';
-    card.appendChild(typeDisplay);
+typeDisplay.className = 'sensor-type';
+card.appendChild(typeDisplay);
 
-    const updateSensorDisplay = () => {
-      const key = sensorKeys[sensorIndex];
-      const meta = (metadata && metadata[key]) || {};
-      const unit = typeof meta.unit === 'string' ? meta.unit.trim() : '';
-      const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
+const updateSensorDisplay = () => {
+  const key = sensorKeys[sensorIndex];
+  const meta = (metadata && metadata[key]) || {};
+  const unit = typeof meta.unit === 'string' ? meta.unit.trim() : '';
+  const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
 
-      sensorDisplay.textContent = `${row[key]} ${unit} `;
-      sensorDisplay.appendChild(sensorIndexDisplay);
-      sensorIndexDisplay.textContent = indexText;
-    };
+  sensorDisplay.textContent = `${row[key]} ${unit} `;
+  sensorDisplay.appendChild(sensorIndexDisplay);
+  sensorIndexDisplay.textContent = indexText;
+
+  typeDisplay.textContent = meta.type ? `Type: ${meta.type}` : '';
+};
 
     updateSensorDisplay();
     card.appendChild(sensorDisplay);
