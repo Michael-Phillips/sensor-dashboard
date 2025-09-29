@@ -110,11 +110,8 @@ function renderCards(data) {
       return then.toLocaleDateString(); // fallback to full date
     }
 
-
-    
-
     // Timestamp
-    const timestamp = document.createElement('p');
+    const timestamp = document.createElement('div');
     timestamp.className = 'timestamp';
     timestamp.textContent = getRelativeTime(row.timestamp);
     card.appendChild(timestamp);
