@@ -64,6 +64,15 @@ body {
   font-weight: bold;
   margin: 4px 0;
   text-align: left;
+  position: relative;
+}
+
+.sensor-index {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 0.625rem; /* Half of 1.25rem */
+  color: #666;
 }
 
 .gear-icon {
