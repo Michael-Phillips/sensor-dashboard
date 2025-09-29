@@ -136,7 +136,7 @@ sensorIndexDisplay.textContent = indexText;
 
     if (typeLabel) {
       const type = document.createElement('p');
-      type.textContent = `Type: ${typeLabel}`;
+      type.textContent = ` ${typeLabel}`;
       card.appendChild(type);
     }
 
