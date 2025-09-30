@@ -18,8 +18,8 @@ document.getElementById('modalColorSelect').value = existingData?.color || 'gree
 
   // Populate modal fields
   document.getElementById('modalDeviceId').textContent = cardId;
-  document.getElementById('modalNameInput').value = existingData?.name || '';
-  document.getElementById('modalNotesInput').value = existingData?.notes || '';
+  document.getElementById('modalDescriptionInput').value = existingData?.name || '';
+  document.getElementById('modalLocationInput').value = existingData?.notes || '';
 
   // Show modal
   modal.style.display = 'block';
