@@ -1,8 +1,8 @@
 const supabaseUrl = 'https://qvlluhoxehdpssdebzyi.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2bGx1aG94ZWhkcHNzZGVienlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NDMwOTQsImV4cCI6MjA3NDQxOTA5NH0.4sJas3fvz_2z5iPY6yqL8W2X0NgZYjKUxxGNJX-JAMc'; // Replace with your actual anon key
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2bGx1aG94ZWhkcHNzZGVienlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NDMwOTQsImV4cCI6MjA3NDQxOTA5NH0.4sJas3fvz_2z5iPY6yqL8W2X0NgZYjKUxxGNJX-JAMc';
 const table = 'readings';
 const container = document.getElementById('cardContainer');
-let sensorData = []; // ✅ Declare globally
+let sensorData = [];
 
 console.log("JS loaded");
 
@@ -45,20 +45,20 @@ function getLatestPerDevice(data) {
 }
 
 function getRelativeTime(isoString) {
-      const now = new Date();
-      const then = new Date(isoString);
-      const diffMs = now - then;
-      const diffSec = Math.floor(diffMs / 1000);
-      const diffMin = Math.floor(diffSec / 60);
-      const diffHr = Math.floor(diffMin / 60);
-      const diffDay = Math.floor(diffHr / 24);
+  const now = new Date();
+  const then = new Date(isoString);
+  const diffMs = now - then;
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHr = Math.floor(diffMin / 60);
+  const diffDay = Math.floor(diffHr / 24);
 
-      if (diffSec < 60) return `${diffSec} seconds ago`;
-      if (diffMin < 60) return `${diffMin} minutes ago`;
-      if (diffHr < 24) return `${diffHr} hours ago`;
-      if (diffDay < 7) return `${diffDay} days ago`;
+  if (diffSec < 60) return `${diffSec} seconds ago`;
+  if (diffMin < 60) return `${diffMin} minutes ago`;
+  if (diffHr < 24) return `${diffHr} hours ago`;
+  if (diffDay < 7) return `${diffDay} days ago`;
 
-      return then.toLocaleDateString(); // fallback to full date
+  return then.toLocaleDateString();
 }
 
 function renderCards(data) {
@@ -67,7 +67,7 @@ function renderCards(data) {
   data.forEach(row => {
     const card = document.createElement('div');
     card.className = 'card';
-    card.dataset.cardId = row.device_id; // ✅ Needed for modal logic
+    card.dataset.cardId = row.device_id;
 
     const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
 
@@ -78,7 +78,7 @@ function renderCards(data) {
     card.appendChild(gear);
 
     // Image
-    const imageUrl = row.image_url?.trim();
+    const imageUrl = metadata.image?.trim() || row.image_url?.trim();
     const img = document.createElement('img');
     img.src = imageUrl && imageUrl.length > 0 ? imageUrl : 'images/default-plant.jpg';
     img.alt = 'Sensor image';
@@ -94,7 +94,7 @@ function renderCards(data) {
     label.textContent = sensorLabel;
     card.appendChild(label);
 
-    // Sensor value (number + unit only)
+    // Sensor value
     const sensorKeys = Object.keys(row).filter(k => k.startsWith('sensor_') && typeof row[k] === 'number');
     let sensorIndex = 0;
 
@@ -107,30 +107,26 @@ function renderCards(data) {
     const sensorIndexDisplay = document.createElement('span');
     sensorIndexDisplay.className = 'sensor-index';
 
-    sensorDisplay.appendChild(sensorValue); // ← This was missing
+    sensorDisplay.appendChild(sensorValue);
     sensorDisplay.appendChild(sensorIndexDisplay);
     card.appendChild(sensorDisplay);
 
     const typeDisplay = document.createElement('p');
     typeDisplay.className = 'sensor-type';
 
-  const updateSensorDisplay = () => {
-  const key = sensorKeys[sensorIndex];
+    const updateSensorDisplay = () => {
+      const key = sensorKeys[sensorIndex];
+      const meta = metadata[key] || {};
+      const unit = typeof meta.unit === 'string' ? meta.unit.trim() : '';
+      const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
 
-  // Re-parse metadata for this row to ensure fresh access
-  const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
-  const meta = metadata[key] || {};
-
-  const unit = typeof meta.unit === 'string' ? meta.unit.trim() : '';
-  const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
-
-  sensorValue.textContent = `${row[key]} ${unit}`;
-  sensorIndexDisplay.textContent = indexText;
-  typeDisplay.textContent = meta.type ? ` ${meta.type}` : '';
-};
+      sensorValue.textContent = `${row[key]} ${unit}`;
+      sensorIndexDisplay.textContent = indexText;
+      typeDisplay.textContent = meta.type ? ` ${meta.type}` : '';
+    };
 
     updateSensorDisplay();
-    card.appendChild(sensorDisplay);
+    card.appendChild(typeDisplay);
 
     // Timestamp
     const timestamp = document.createElement('div');
@@ -142,10 +138,11 @@ function renderCards(data) {
       sensorIndex = (sensorIndex + 1) % sensorKeys.length;
       updateSensorDisplay();
     });
+
     container.appendChild(card);
   });
 
-  // ✅ Rebind gear icon clicks after cards are rendered
+  // Rebind gear icon clicks
   document.querySelectorAll('.gear-icon').forEach(icon => {
     icon.onclick = () => {
       const cardId = icon.closest('.card').dataset.cardId;
@@ -153,6 +150,27 @@ function renderCards(data) {
       createGearModal(cardId, existingData);
     };
   });
+}
+
+function getCardSettings(cardId) {
+  const row = sensorData.find(r => r.device_id === cardId);
+  return row ? (typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {}) : {};
+}
+
+function saveCardSettings(cardId, updated) {
+  const row = sensorData.find(r => r.device_id === cardId);
+  if (row) {
+    row.metadata = { ...row.metadata, ...updated };
+    renderCards(sensorData);
+  }
+}
+
+function deleteCard(cardId) {
+  const index = sensorData.findIndex(r => r.device_id === cardId);
+  if (index !== -1) {
+    sensorData.splice(index, 1);
+    renderCards(sensorData);
+  }
 }
 
 function createGearModal(cardId, existingData = {}) {
@@ -164,11 +182,11 @@ function createGearModal(cardId, existingData = {}) {
 
       <label>Description:
         <input type="text" id="desc-input" value="${existingData.description || ''}">
-      </label>
+      </label><br>
 
       <label>Location:
         <input type="text" id="loc-input" value="${existingData.location || ''}">
-      </label>
+      </label><br>
 
       <label>Color Tag:
         <select id="color-select">
@@ -176,7 +194,7 @@ function createGearModal(cardId, existingData = {}) {
             .map(color => `<option value="${color}" ${existingData.color === color ? 'selected' : ''}>${color}</option>`)
             .join('')}
         </select>
-      </label>
+      </label><br>
 
       <label>Image:
         <div id="image-panel" class="image-panel"></div>
@@ -193,7 +211,6 @@ function createGearModal(cardId, existingData = {}) {
       </div>
     </div>
   `;
-
   document.body.appendChild(modal);
   setupModalLogic(modal, cardId);
 }
@@ -206,7 +223,7 @@ function setupModalLogic(modal, cardId) {
   const imageUpload = modal.querySelector('#image-upload');
 
   // Load thumbnails from GitHub Pages
-  const imageNames = ['temp.png', 'humidity.png', 'light.png']; // Add more as needed
+  const imageNames = ['temp.png', 'humidity.png', 'light.png'];
   imageNames.forEach(name => {
     const img = document.createElement('img');
     img.src = `https://Michael-Phillips.github.io/sensor-dashboard/images/${name}`;
@@ -220,32 +237,42 @@ function setupModalLogic(modal, cardId) {
     imagePanel.appendChild(img);
   });
 
-  // Drag-and-drop logic
+  // Handle image upload
   imageUpload.onchange = (e) => {
     const file = e.target.files[0];
     if (file && file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = () => {
         modal.dataset.selectedImage = reader.result;
-        // Optionally show preview
+
+        // Optional: show preview
+        const preview = document.createElement('img');
+        preview.src = reader.result;
+        preview.alt = 'Uploaded image';
+        preview.className = 'thumbnail selected';
+        imagePanel.querySelectorAll('img').forEach(i => i.classList.remove('selected'));
+        imagePanel.appendChild(preview);
       };
       reader.readAsDataURL(file);
     }
   };
 
+  // Save changes
   doneBtn.onclick = () => {
     const updated = {
       description: modal.querySelector('#desc-input').value,
       location: modal.querySelector('#loc-input').value,
       color: modal.querySelector('#color-select').value,
-      image: modal.dataset.selectedImage || null
+      image: modal.dataset.selectedImage || ''
     };
     saveCardSettings(cardId, updated);
     modal.remove();
   };
 
+  // Cancel
   cancelBtn.onclick = () => modal.remove();
 
+  // Delete card
   deleteBtn.onclick = () => {
     if (confirm('Are you sure you want to delete this card and its associated data?')) {
       deleteCard(cardId);
@@ -254,12 +281,3 @@ function setupModalLogic(modal, cardId) {
   };
 }
 
-document.querySelectorAll('.gear-icon').forEach(icon => {
-  icon.onclick = () => {
-    const cardId = icon.closest('.card').dataset.cardId;
-    const existingData = getCardSettings(cardId); // Your own function
-    createGearModal(cardId, existingData);
-  };
-});
-
-fetchReadings();
