@@ -26,6 +26,8 @@ async function fetchReadings() {
   console.log("Data received:", data);
 
   sensorData = getLatestPerDevice(data);
+console.log("Parsed sensorData:", sensorData);
+
   renderCards(sensorData);
 }
 
