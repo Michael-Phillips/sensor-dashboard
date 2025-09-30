@@ -127,6 +127,15 @@ function renderCards(data) {
   sensorValue.textContent = `${row[key]} ${unit}`;
   sensorIndexDisplay.textContent = indexText;
   typeDisplay.textContent = meta.type ? ` ${meta.type}` : '';
+  
+  // ✅ Rebind gear icon clicks after cards are rendered
+  document.querySelectorAll('.gear-icon').forEach(icon => {
+    icon.onclick = () => {
+      const cardId = icon.closest('.card').dataset.cardId;
+      const existingData = getCardSettings(cardId);
+      createGearModal(cardId, existingData);
+    };
+  });
 };
 
     updateSensorDisplay();
@@ -246,12 +255,5 @@ function setupModalLogic(modal, cardId) {
   };
 }
 
-document.querySelectorAll('.gear-icon').forEach(icon => {
-  icon.onclick = () => {
-    const cardId = icon.closest('.card').dataset.cardId;
-    const existingData = getCardSettings(cardId); // Your own function
-    createGearModal(cardId, existingData);
-  };
-});
 
 fetchReadings();
