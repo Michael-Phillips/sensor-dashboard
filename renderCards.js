@@ -77,9 +77,10 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
 
     // ⚙️ Modal trigger
     gear.addEventListener('click', (event) => {
-      console.log('Gear clicked for', cardId);
+      
       event.stopPropagation(); // prevent sensor cycling
       const cardId = gear.dataset.id;
+console.log('Gear clicked for', cardId);
       const existingData = getCardSettings(cardId, data);
       createGearModal(cardId, existingData, saveCardSettings, deleteCard);
     });
