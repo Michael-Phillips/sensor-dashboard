@@ -1,17 +1,26 @@
 import { getLatestPerDevice } from './utils.js';
 import { renderCards } from './renderCards.js';
+import { getCardSettings, createGearModal, closeModal } from './modal.js';
 
 const supabaseUrl = 'https://qvlluhoxehdpssdebzyi.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2bGx1aG94ZWhkcHNzZGVienlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NDMwOTQsImV4cCI6MjA3NDQxOTA5NH0.4sJas3fvz_2z5iPY6yqL8W2X0NgZYjKUxxGNJX-JAMc';
 const table = 'readings';
-const container = document.getElementById('cardContainer');
+
 let sensorData = [];
 
 function saveCardSettings(cardId, updated) {
   const row = sensorData.find(r => r.device_id === cardId);
   if (row) {
     row.metadata = { ...row.metadata, ...updated };
-    renderCards(sensorData);
+    renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, deleteCard);
+  }
+}
+
+function deleteCard(cardId) {
+  const index = sensorData.findIndex(r => r.device_id === cardId);
+  if (index !== -1) {
+    sensorData.splice(index, 1);
+    renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, deleteCard);
   }
 }
 
@@ -25,16 +34,15 @@ async function fetchReadings() {
 
   const data = await response.json();
   if (!Array.isArray(data)) {
-    container.innerHTML = `<div class="card"><h3>API Error</h3><p>${data.message}</p></div>`;
+    document.getElementById('cardContainer').innerHTML = `<div class="card"><h3>API Error</h3><p>${data.message}</p></div>`;
     return;
   }
 
   sensorData = getLatestPerDevice(data);
- 
-
-  //renderCards(sensorData, container, saveCardSettings, deleteCard);
-  renderCards(sensorData, container, saveCardSettings);
-
+  renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, deleteCard);
 }
 
-fetchReadings();
+document.addEventListener('DOMContentLoaded', () => {
+  fetchReadings();
+});
+
