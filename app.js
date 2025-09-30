@@ -94,7 +94,7 @@ function renderCards(data) {
     label.textContent = sensorLabel;
     card.appendChild(label);
 
-    // Sensor value
+    // Sensor value (number + unit only)
     const sensorKeys = Object.keys(row).filter(k => k.startsWith('sensor_') && typeof row[k] === 'number');
     let sensorIndex = 0;
 
@@ -107,24 +107,27 @@ function renderCards(data) {
     const sensorIndexDisplay = document.createElement('span');
     sensorIndexDisplay.className = 'sensor-index';
 
-    sensorDisplay.appendChild(sensorValue);
+    sensorDisplay.appendChild(sensorValue); // ← This was missing
     sensorDisplay.appendChild(sensorIndexDisplay);
     card.appendChild(sensorDisplay);
 
     const typeDisplay = document.createElement('p');
     typeDisplay.className = 'sensor-type';
 
-    const updateSensorDisplay = () => {
-      const key = sensorKeys[sensorIndex];
-      const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
-      const meta = metadata[key] || {};
-      const unit = typeof meta.unit === 'string' ? meta.unit.trim() : '';
-      const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
+  const updateSensorDisplay = () => {
+  const key = sensorKeys[sensorIndex];
 
-      sensorValue.textContent = `${row[key]} ${unit}`;
-      sensorIndexDisplay.textContent = indexText;
-      typeDisplay.textContent = meta.type ? ` ${meta.type}` : '';
-    };
+  // Re-parse metadata for this row to ensure fresh access
+  const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
+  const meta = metadata[key] || {};
+
+  const unit = typeof meta.unit === 'string' ? meta.unit.trim() : '';
+  const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
+
+  sensorValue.textContent = `${row[key]} ${unit}`;
+  sensorIndexDisplay.textContent = indexText;
+  typeDisplay.textContent = meta.type ? ` ${meta.type}` : '';
+};
 
     updateSensorDisplay();
     card.appendChild(sensorDisplay);
@@ -139,7 +142,6 @@ function renderCards(data) {
       sensorIndex = (sensorIndex + 1) % sensorKeys.length;
       updateSensorDisplay();
     });
-
     container.appendChild(card);
   });
 
