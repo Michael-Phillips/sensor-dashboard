@@ -30,7 +30,9 @@ async function fetchReadings() {
   }
 
   sensorData = getLatestPerDevice(data);
-  renderCards(sensorData, container, saveCardSettings, deleteCard);
+  //renderCards(sensorData, container, saveCardSettings, deleteCard);
+  renderCards(sensorData, container, saveCardSettings);
+
 }
 
 
