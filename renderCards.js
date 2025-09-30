@@ -11,9 +11,10 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
 
     const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
 
-    const gear = document.createElement('div');
-    gear.className = 'gear-icon';
-    gear.innerHTML = '<i class="fas fa-cog"></i>';
+    const gear = document.createElement('button');
+    gear.className = 'settings-btn';
+    gear.dataset.id = row.device_id;
+    gear.innerHTML = '⚙️';
     card.appendChild(gear);
 
     const imageUrl = metadata.image?.trim() || row.image_url?.trim();
@@ -74,14 +75,14 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
       updateSensorDisplay();
     });
 
-    container.appendChild(card);
-  });
-
-  document.querySelectorAll('.gear-icon').forEach(icon => {
-    icon.onclick = () => {
-      const cardId = icon.closest('.card').dataset.cardId;
+    // ⚙️ Modal trigger
+    gear.addEventListener('click', (event) => {
+      event.stopPropagation(); // prevent sensor cycling
+      const cardId = gear.dataset.id;
       const existingData = getCardSettings(cardId, data);
       createGearModal(cardId, existingData, saveCardSettings, deleteCard);
-    };
+    });
+
+    container.appendChild(card);
   });
 }
