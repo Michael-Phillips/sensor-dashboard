@@ -17,7 +17,35 @@
   <!-- Dynamic card container -->
   <div id="cardContainer"></div>
 
+  <!-- Modal for gear settings -->
+  <div id="settingsModal" class="modal">
+    <div class="modal-content">
+      <h3>Settings for <span id="modalDeviceId"></span></h3>
+      <label>
+        Name:
+        <input id="modalNameInput" type="text" />
+      </label>
+      <label>
+        Notes:
+        <input id="modalNotesInput" type="text" />
+      </label>
+      <div class="modal-buttons">
+        <button id="saveModalBtn">Save</button>
+        <button id="deleteModalBtn">Delete</button>
+        <button onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Load dashboard logic -->
   <script type="module" src="main.js"></script>
+
+  <!-- Optional: Global closeModal function -->
+  <script>
+    function closeModal() {
+      document.getElementById('settingsModal').style.display = 'none';
+    }
+  </script>
 </body>
 </html>
+
