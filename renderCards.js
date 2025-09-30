@@ -11,7 +11,7 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
 
     const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
 
-    const gear = document.createElement('button');
+    const gear = document.createElement('div');
     gear.className = 'gear-icon';
     gear.dataset.id = row.device_id;
     gear.innerHTML = '<i class="fas fa-cog"></i>';
