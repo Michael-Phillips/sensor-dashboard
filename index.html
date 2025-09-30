@@ -19,23 +19,41 @@
 
   <!-- Modal for gear settings -->
   <div id="settingsModal" class="modal">
-    <div class="modal-content">
-      <h3>Settings for <span id="modalDeviceId"></span></h3>
-      <label>
-        Name:
-        <input id="modalNameInput" type="text" />
-      </label>
-      <label>
-        Notes:
-        <input id="modalNotesInput" type="text" />
-      </label>
-      <div class="modal-buttons">
-        <button id="saveModalBtn">Save</button>
-        <button id="deleteModalBtn">Delete</button>
-        <button onclick="closeModal()">Close</button>
-      </div>
+  <div class="modal-content">
+    <h3>Settings for <span id="modalDeviceId"></span></h3>
+
+    <label>
+      Description:
+      <input id="modalDescriptionInput" type="text" />
+    </label>
+
+    <label>
+      Location:
+      <input id="modalLocationInput" type="text" />
+    </label>
+
+    <label>
+      Color:
+      <select id="modalColorSelect">
+        <option value="green">Green</option>
+        <option value="yellow">Yellow</option>
+        <option value="aqua">Aqua</option>
+        <option value="blue">Blue</option>
+        <option value="red">Red</option>
+        <option value="orange">Orange</option>
+        <option value="purple">Purple</option>
+        <option value="gray">Gray</option>
+      </select>
+    </label>
+
+    <div class="modal-buttons">
+      <button id="saveModalBtn">Save</button>
+      <button onclick="closeModal()">Cancel</button>
+      <button id="deleteModalBtn">Delete</button>
     </div>
   </div>
+</div>
+
 
   <!-- Load dashboard logic -->
   <script type="module" src="main.js"></script>

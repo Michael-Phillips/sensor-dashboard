@@ -7,6 +7,10 @@ export function getCardSettings(cardId, data) {
 export function createGearModal(cardId, existingData, saveCardSettings, deleteCard) {
   const modal = document.getElementById('settingsModal');
 console.log('Modal found:', modal);
+document.getElementById('modalDescriptionInput').value = existingData?.description || '';
+document.getElementById('modalLocationInput').value = existingData?.location || '';
+document.getElementById('modalColorSelect').value = existingData?.color || 'green';
+
   if (!modal) {
     console.warn('Modal element not found');
     return;
@@ -24,8 +28,9 @@ console.log('Modal display set to:', modal.style.display);
   const saveBtn = document.getElementById('saveModalBtn');
   saveBtn.onclick = () => {
     const updated = {
-      name: document.getElementById('modalNameInput').value,
-      notes: document.getElementById('modalNotesInput').value,
+      description: document.getElementById('modalDescriptionInput').value,
+      location: document.getElementById('modalLocationInput').value,
+      color: document.getElementById('modalColorSelect').value,
     };
     saveCardSettings(cardId, updated);
     closeModal();
