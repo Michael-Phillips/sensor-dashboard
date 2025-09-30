@@ -20,7 +20,7 @@ async function fetchReadings() {
     headers: {
       apikey: supabaseKey,
       Authorization: `Bearer ${supabaseKey}`,
-    },
+    }
    },
 });
 
