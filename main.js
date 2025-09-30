@@ -22,7 +22,7 @@ async function fetchReadings() {
       apikey: supabaseKey,
       Authorization: `Bearer ${supabaseKey}`,
     }
-});
+  });
 
   const data = await response.json();
   if (!Array.isArray(data)) {
@@ -37,6 +37,5 @@ async function fetchReadings() {
   renderCards(sensorData, container, saveCardSettings);
 
 }
-
 
 fetchReadings();
