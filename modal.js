@@ -6,6 +6,7 @@ export function getCardSettings(cardId, data) {
 
 export function createGearModal(cardId, existingData, saveCardSettings, deleteCard) {
   const modal = document.getElementById('settingsModal');
+console.log('Modal found:', modal);
   if (!modal) {
     console.warn('Modal element not found');
     return;
@@ -18,7 +19,7 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
 
   // Show modal
   modal.style.display = 'block';
-
+console.log('Modal display set to:', modal.style.display);
   // Save button handler
   const saveBtn = document.getElementById('saveModalBtn');
   saveBtn.onclick = () => {
