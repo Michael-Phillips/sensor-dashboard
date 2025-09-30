@@ -30,6 +30,8 @@ async function fetchReadings() {
   }
 
   sensorData = getLatestPerDevice(data);
+  import { deleteCard } from './modal.js';
+
   //renderCards(sensorData, container, saveCardSettings, deleteCard);
   renderCards(sensorData, container, saveCardSettings);
 

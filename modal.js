@@ -13,11 +13,11 @@ export function saveCardSettings(cardId, updated, sensorData, renderCards, conta
   }
 }
 
-export function deleteCard(cardId, sensorData, renderCards, container) {
+export function deleteCard(cardId, sensorData, renderCards, container, saveCardSettings, deleteCard) {
   const index = sensorData.findIndex(r => r.device_id === cardId);
   if (index !== -1) {
     sensorData.splice(index, 1);
-    renderCards(sensorData, container, saveCardSettingsWrapper, deleteCardWrapper);
+    renderCards(sensorData, container, saveCardSettings, deleteCard);
   }
 }
 
