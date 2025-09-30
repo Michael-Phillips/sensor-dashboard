@@ -7,6 +7,14 @@ const table = 'readings';
 const container = document.getElementById('cardContainer');
 let sensorData = [];
 
+function saveCardSettings(cardId, updated) {
+  const row = sensorData.find(r => r.device_id === cardId);
+  if (row) {
+    row.metadata = { ...row.metadata, ...updated };
+    renderCards(sensorData);
+  }
+}
+
 async function fetchReadings() {
   const response = await fetch(`${supabaseUrl}/rest/v1/${table}?select=*&order=timestamp.desc`, {
     headers: {
@@ -24,5 +32,6 @@ async function fetchReadings() {
   sensorData = getLatestPerDevice(data);
   renderCards(sensorData, container, saveCardSettings, deleteCard);
 }
+
 
 fetchReadings();
