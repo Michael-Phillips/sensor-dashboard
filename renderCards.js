@@ -77,13 +77,13 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
 
     // ⚙️ Modal trigger
     gear.addEventListener('click', (event) => {
-      
-      event.stopPropagation(); // prevent sensor cycling
-      const cardId = gear.dataset.id;
-console.log('Gear clicked for', cardId);
-      const existingData = getCardSettings(cardId, data);
-      createGearModal(cardId, existingData, saveCardSettings, deleteCard);
-    });
+  event.stopPropagation();
+  const cardId = gear.dataset.id;
+  console.log('Gear clicked for', cardId); // ✅ now it's defined
+  const existingData = getCardSettings(cardId, data);
+  createGearModal(cardId, existingData, saveCardSettings, deleteCard);
+});
+
 
     container.appendChild(card);
   });
