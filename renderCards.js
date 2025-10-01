@@ -1,6 +1,9 @@
 import { getRelativeTime } from './utils.js';
 import { getCardSettings, createGearModal } from './modal.js';
 
+const BASE_PATH = 'https://michael-phillips.github.io/sensor-dashboard/';
+
+
 export function renderCards(data, container, saveCardSettings, deleteCard) {
   container.innerHTML = '';
 
@@ -19,12 +22,15 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
 
     const imageUrl = metadata.image?.trim() || row.image_url?.trim();
     const img = document.createElement('img');
-    img.src = imageUrl && imageUrl.length > 0 ? imageUrl : 'images/default-plant.jpg';
-    img.alt = 'Sensor image';
+    img.src = imageUrl && imageUrl.length > 0
+      ? imageUrl
+      : `${BASE_PATH}images/default-plant.jpg`;
+
     img.onerror = () => {
       console.warn('Image failed to load:', img.src);
-      img.src = 'images/default-plant.jpg';
+      img.src = `${BASE_PATH}images/default-plant.jpg`;
     };
+
     card.appendChild(img);
 
     const sensorLabel = metadata.description || row.label || row.device_id;
