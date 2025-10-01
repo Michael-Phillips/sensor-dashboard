@@ -53,6 +53,11 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
   }
 }
 
+export function getCardSettings(cardId, data) {
+  const row = data.find(r => r.device_id === cardId);
+  return row?.metadata || {};
+}
+
 export function closeModal() {
   const modal = document.getElementById('settingsModal');
   if (modal) modal.style.display = 'none';
