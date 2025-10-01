@@ -20,20 +20,20 @@
   <!-- Modal for gear settings -->
 <div id="settingsModal" class="modal">
   <div class="modal-content">
-    <h3>Settings for <span id="modalDeviceId"></span></h3>
+    <h2>Sensor Settings</h2>
 
-    <label>
-      Description:
-      <input id="modalDescriptionInput" type="text" />
-    </label>
+    <div class="form-group">
+      <label for="modalDescriptionInput">Description</label>
+      <input id="modalDescriptionInput" type="text" placeholder="e.g. Outside Temp" />
+    </div>
 
-    <label>
-      Location:
-      <input id="modalLocationInput" type="text" />
-    </label>
+    <div class="form-group">
+      <label for="modalLocationInput">Location</label>
+      <input id="modalLocationInput" type="text" placeholder="e.g. Porch" />
+    </div>
 
-    <label>
-      Color:
+    <div class="form-group">
+      <label for="modalColorSelect">Color</label>
       <select id="modalColorSelect">
         <option value="green">Green</option>
         <option value="yellow">Yellow</option>
@@ -44,10 +44,10 @@
         <option value="purple">Purple</option>
         <option value="gray">Gray</option>
       </select>
-    </label>
+    </div>
 
     <div class="modal-buttons">
-      <button id="saveModalBtn">Save</button>
+      <button id="saveModalBtn">Done</button>
       <button type="button" onclick="closeModal()">Cancel</button>
       <button id="deleteModalBtn">Delete</button>
     </div>
