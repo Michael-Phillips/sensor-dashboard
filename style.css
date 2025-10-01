@@ -103,9 +103,15 @@ body {
   background: #fff;
   padding: 20px;
   border-radius: 8px;
-  width: 600px;
+  width: 500px;
   margin: auto;
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  position: relative;
+
+.image-header {
+  position: absolute;
+  top: 20px;
+  right: 20px;
 }
 
 .modal-body {
@@ -115,18 +121,17 @@ body {
 }
 
 .image-preview-container {
-  width: 140px;
   text-align: center;
 }
 
 .image-frame {
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   border: 1px solid #ccc;
   border-radius: 8px;
   overflow: hidden;
   background-color: #f9f9f9;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   display: flex;
   align-items: center;
   justify-content: center;

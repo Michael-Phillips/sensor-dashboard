@@ -22,37 +22,8 @@
   <div class="modal-content">
     <h2>Sensor Settings</h2>
 
-    <div class="modal-body">
-      <!-- Left column: form fields -->
-      <div class="form-section">
-        <p><strong>Device ID:</strong> <span id="modalDeviceId"></span></p>
-
-        <div class="form-group">
-          <label for="modalDescriptionInput">Description</label>
-          <input id="modalDescriptionInput" type="text" placeholder="e.g. Outside Temp" />
-        </div>
-
-        <div class="form-group">
-          <label for="modalLocationInput">Location</label>
-          <input id="modalLocationInput" type="text" placeholder="e.g. Porch" />
-        </div>
-
-        <div class="form-group">
-          <label for="modalColorSelect">Color</label>
-          <select id="modalColorSelect">
-            <option value="green">Green</option>
-            <option value="yellow">Yellow</option>
-            <option value="aqua">Aqua</option>
-            <option value="blue">Blue</option>
-            <option value="red">Red</option>
-            <option value="orange">Orange</option>
-            <option value="purple">Purple</option>
-            <option value="gray">Gray</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Right column: image preview -->
+    <!-- 🔼 Image preview in top-right corner -->
+    <div class="image-header">
       <div class="image-preview-container">
         <label><strong>Sensor Image</strong></label>
         <div class="image-frame">
@@ -60,6 +31,35 @@
         </div>
         <button id="changeImageBtn" type="button">Change Image</button>
       </div>
+    </div>
+
+    <!-- 🔽 Form fields below -->
+    <div class="form-group">
+      <p><strong>Device ID:</strong> <span id="modalDeviceId"></span></p>
+    </div>
+
+    <div class="form-group">
+      <label for="modalDescriptionInput">Description</label>
+      <input id="modalDescriptionInput" type="text" placeholder="e.g. CO2" />
+    </div>
+
+    <div class="form-group">
+      <label for="modalLocationInput">Location</label>
+      <input id="modalLocationInput" type="text" placeholder="e.g. Office" />
+    </div>
+
+    <div class="form-group">
+      <label for="modalColorSelect">Color</label>
+      <select id="modalColorSelect">
+        <option value="green">Green</option>
+        <option value="yellow">Yellow</option>
+        <option value="aqua">Aqua</option>
+        <option value="blue">Blue</option>
+        <option value="red">Red</option>
+        <option value="orange">Orange</option>
+        <option value="purple">Purple</option>
+        <option value="gray">Gray</option>
+      </select>
     </div>
 
     <div class="modal-buttons">
