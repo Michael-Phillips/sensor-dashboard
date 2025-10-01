@@ -25,9 +25,13 @@
 
     <!-- 🔼 Insert this block right below the heading -->
     <div class="image-preview-container">
-      <img id="modalImagePreview" src="" alt="Sensor Image" />
+      <label for="modalImagePreview"><strong>Sensor Image</strong></label>
+      <div class="image-frame">
+        <img id="modalImagePreview" src="" alt="Sensor Image" />
+      </div>
       <button id="changeImageBtn" type="button">Change Image</button>
     </div>
+
     <div class="form-group">
       <label for="modalDescriptionInput">Description</label>
       <input id="modalDescriptionInput" type="text" placeholder="e.g. Outside Temp" />
