@@ -70,6 +70,7 @@ function showImageSelector(cardId, previewElement) {
     'images/fuchsia.png',
     'images/garage_door.png',
     'images/default-plant.jpg'
+    'images/kleenex.jpg'
   ];
 
   const selector = document.createElement('div');
@@ -83,9 +84,9 @@ function showImageSelector(cardId, previewElement) {
   selector.style.border = '1px solid #ccc';
   selector.style.zIndex = '10000';
 
-  selector.innerHTML = imageOptions.map(src => `
-    <img src="${src}" data-src="${src}" style="width:60px; margin:4px; cursor:pointer; border:1px solid gray;">
-  `).join('');
+  selector.innerHTML = imageOptions.map(src => {
+    return `<img src="${src}" data-src="${src}" style="width:60px; margin:4px; cursor:pointer; border:1px solid gray;">`;
+  }).join('');
 
   document.body.appendChild(selector);
 
