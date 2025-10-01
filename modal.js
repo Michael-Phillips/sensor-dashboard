@@ -97,7 +97,7 @@ export function closeModal() {
 
 // Optional: inline image selector
   function showImageSelector(imageUrls, previewElement) {
-  const selector = document.createElement('div');
+  //const selector = document.createElement('div');
   selector.className = 'image-selector';
   selector.style.position = 'fixed';
   selector.style.top = '50%';
@@ -113,7 +113,7 @@ export function closeModal() {
   selector.innerHTML = imageUrls.map(url => {
     return `<img src="${url}" data-src="${url}" style="width:60px; margin:4px; cursor:pointer; border:1px solid gray;">`;
   }).join('');
-
+  
   document.body.appendChild(selector);
 
   selector.querySelectorAll('img').forEach(img => {
@@ -124,27 +124,4 @@ export function closeModal() {
   });
 }
 
-  const selector = document.createElement('div');
-  selector.className = 'image-selector';
-  selector.style.position = 'fixed';
-  selector.style.top = '50%';
-  selector.style.left = '50%';
-  selector.style.transform = 'translate(-50%, -50%)';
-  selector.style.background = '#fff';
-  selector.style.padding = '10px';
-  selector.style.border = '1px solid #ccc';
-  selector.style.zIndex = '10000';
-
-  selector.innerHTML = imageOptions.map(src => {
-    return `<img src="${src}" data-src="${src}" style="width:60px; margin:4px; cursor:pointer; border:1px solid gray;">`;
-  }).join('');
-
-  document.body.appendChild(selector);
-
-  selector.querySelectorAll('img').forEach(img => {
-    img.onclick = () => {
-      previewElement.src = img.dataset.src;
-      selector.remove();
-    };
-  });
 }
