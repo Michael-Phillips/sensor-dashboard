@@ -112,6 +112,7 @@ body {
   position: absolute;
   top: 20px;
   right: 20px;
+  text-align: center;
 }
 
 .modal-body {
@@ -120,18 +121,14 @@ body {
   gap: 20px;
 }
 
-.image-preview-container {
-  text-align: center;
-}
-
 .image-frame {
-  width: 100px;
-  height: 100px;
+  width: 160px;
+  height: 160px;
   border: 1px solid #ccc;
   border-radius: 8px;
   overflow: hidden;
   background-color: #f9f9f9;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
