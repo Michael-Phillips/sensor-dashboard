@@ -15,7 +15,7 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
   if (descInput) descInput.value = existingData?.description || '';
   if (locInput) locInput.value = existingData?.location || '';
   if (colorSelect) colorSelect.value = existingData?.color || 'green';
-  if (imagePreview) imagePreview.src = existingData?.image || 'images/default.jpg';
+  if (imagePreview) imagePreview.src = existingData?.image || 'images/default-plant.jpg';
 
   // Show modal
   modal.style.display = 'block';
@@ -70,7 +70,6 @@ function showImageSelector(cardId, previewElement) {
     'images/fuchsia.png',
     'images/garage_door.png',
     'images/default-plant.jpg'
-    'images/kleenex.jpg'
   ];
 
   const selector = document.createElement('div');
