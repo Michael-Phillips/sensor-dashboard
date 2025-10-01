@@ -104,6 +104,28 @@ body {
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
+.image-preview-container {
+  float: right;
+  text-align: center;
+  margin-left: 20px;
+}
+
+#modalImagePreview {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 6px;
+}
+
+#changeImageBtn {
+  display: block;
+  font-size: 12px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
 .form-group {
   margin-bottom: 15px;
 }

@@ -1,56 +1,93 @@
-export function getCardSettings(cardId, data) {
-  const row = data.find(r => r.device_id === cardId);
-  const metadata = typeof row?.metadata === 'string' ? JSON.parse(row.metadata) : row?.metadata || {};
-  return metadata;
-}
-
 export function createGearModal(cardId, existingData, saveCardSettings, deleteCard) {
+  console.log('Gear clicked for', cardId);
+
   const modal = document.getElementById('settingsModal');
-console.log('Modal found:', modal);
-document.getElementById('modalDescriptionInput').value = existingData?.description || '';
-document.getElementById('modalLocationInput').value = existingData?.location || '';
-document.getElementById('modalColorSelect').value = existingData?.color || 'green';
+  if (!modal) return console.warn('Modal not found');
 
-  if (!modal) {
-    console.warn('Modal element not found');
-    return;
-  }
-
-  // Populate modal fields
+  // Populate fields
   document.getElementById('modalDeviceId').textContent = cardId;
-  document.getElementById('modalDescriptionInput').value = existingData?.name || '';
-  document.getElementById('modalLocationInput').value = existingData?.notes || '';
+
+  const descInput = document.getElementById('modalDescriptionInput');
+  const locInput = document.getElementById('modalLocationInput');
+  const colorSelect = document.getElementById('modalColorSelect');
+  const imagePreview = document.getElementById('modalImagePreview');
+
+  if (descInput) descInput.value = existingData?.description || '';
+  if (locInput) locInput.value = existingData?.location || '';
+  if (colorSelect) colorSelect.value = existingData?.color || 'green';
+  if (imagePreview) imagePreview.src = existingData?.image || 'images/default.jpg';
 
   // Show modal
   modal.style.display = 'block';
-console.log('Modal display set to:', modal.style.display);
-  // Save button handler
+
+  // Save handler
   const saveBtn = document.getElementById('saveModalBtn');
-  saveBtn.onclick = () => {
-    const updated = {
-      description: document.getElementById('modalDescriptionInput').value,
-      location: document.getElementById('modalLocationInput').value,
-      color: document.getElementById('modalColorSelect').value,
+  if (saveBtn) {
+    saveBtn.onclick = () => {
+      const updated = {
+        description: descInput?.value || '',
+        location: locInput?.value || '',
+        color: colorSelect?.value || 'green',
+        image: imagePreview?.src || 'images/default.jpg'
+      };
+      saveCardSettings(cardId, updated);
+      closeModal();
     };
-    saveCardSettings(cardId, updated);
-    closeModal();
-  };
+  }
 
-  // Delete button handler
+  // Delete handler
   const deleteBtn = document.getElementById('deleteModalBtn');
-  deleteBtn.onclick = () => {
-    deleteCard(cardId);
-    closeModal();
-  };
-}
+  if (deleteBtn) {
+    deleteBtn.onclick = () => {
+      deleteCard(cardId);
+      closeModal();
+    };
+  }
 
-// Optional: global closeModal function
-export function closeModal() {
-  const modal = document.getElementById('settingsModal');
-  if (modal) {
-    modal.style.display = 'none';
+  // Image selector
+  const changeImageBtn = document.getElementById('changeImageBtn');
+  if (changeImageBtn) {
+    changeImageBtn.onclick = () => {
+      showImageSelector(cardId, imagePreview);
+    };
   }
 }
 
-// Make closeModal globally accessible if needed in HTML
-window.closeModal = closeModal;
+export function closeModal() {
+  const modal = document.getElementById('settingsModal');
+  if (modal) modal.style.display = 'none';
+}
+
+// Optional: inline image selector
+function showImageSelector(cardId, previewElement) {
+  const imageOptions = [
+    'images/tomato.jpg',
+    'images/orchid.jpg',
+    'images/snowflake.jpg',
+    'images/default.jpg'
+  ];
+
+  const selector = document.createElement('div');
+  selector.className = 'image-selector';
+  selector.style.position = 'fixed';
+  selector.style.top = '50%';
+  selector.style.left = '50%';
+  selector.style.transform = 'translate(-50%, -50%)';
+  selector.style.background = '#fff';
+  selector.style.padding = '10px';
+  selector.style.border = '1px solid #ccc';
+  selector.style.zIndex = '10000';
+
+  selector.innerHTML = imageOptions.map(src => `
+    <img src="${src}" data-src="${src}" style="width:60px; margin:4px; cursor:pointer; border:1px solid gray;">
+  `).join('');
+
+  document.body.appendChild(selector);
+
+  selector.querySelectorAll('img').forEach(img => {
+    img.onclick = () => {
+      previewElement.src = img.dataset.src;
+      selector.remove();
+    };
+  });
+}
