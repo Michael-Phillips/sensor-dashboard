@@ -44,35 +44,32 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
     };
   }
 
-  async function fetchImageList() {
-  const { data, error } = await supabase.storage
-    .from('your-bucket-name')
-    .list('images', { limit: 100 });
-
-  if (error) {
-    console.error('Error fetching image list:', error);
-    return [];
-  }
-
-  return data.map(file =>
-    supabase.storage
-      .from('your-bucket-name')
-      .getPublicUrl(`images/${file.name}`).data.publicUrl
-  );
-}
-
   // Image selector
   const changeImageBtn = document.getElementById('changeImageBtn');
-  changeImageBtn.onclick = async () => {
-    const imageUrls = await fetchImageList();
-    showImageSelector(imageUrls, imagePreview);
-  };
+  if (changeImageBtn) {
+    changeImageBtn.onclick = async () => {
+      const imageUrls = await fetchImageList();
+      showImageSelector(imageUrls, imagePreview);
+    };
+  }
 
-  //if (changeImageBtn) {
-  //  changeImageBtn.onclick = () => {
-  //    showImageSelector(cardId, imagePreview);
-  //  };
-  //}
+  // Supabase image fetcher
+  async function fetchImageList() {
+    const { data, error } = await supabase.storage
+      .from('your-bucket-name') // Replace with your actual bucket name
+      .list('images', { limit: 100 });
+
+    if (error) {
+      console.error('Error fetching image list:', error);
+      return [];
+    }
+
+    return data.map(file =>
+      supabase.storage
+        .from('your-bucket-name')
+        .getPublicUrl(`images/${file.name}`).data.publicUrl
+    );
+  }
 }
 
 export function getCardSettings(cardId, data) {
@@ -85,19 +82,8 @@ export function closeModal() {
   if (modal) modal.style.display = 'none';
 }
 
-// Optional: inline image selector
-//function showImageSelector(cardId, previewElement) {
-//  const imageOptions = [
-//    'images/blank.png',
-//    'images/fuchsia.png',
-//    'images/garage_door.png',
-//    'images/default-plant.jpg'
-//    'images/kleenex.jpg'
-//  ];
-
-// Optional: inline image selector
-  function showImageSelector(imageUrls, previewElement) {
-  //const selector = document.createElement('div');
+function showImageSelector(imageUrls, previewElement) {
+  const selector = document.createElement('div');
   selector.className = 'image-selector';
   selector.style.position = 'fixed';
   selector.style.top = '50%';
@@ -113,7 +99,7 @@ export function closeModal() {
   selector.innerHTML = imageUrls.map(url => {
     return `<img src="${url}" data-src="${url}" style="width:60px; margin:4px; cursor:pointer; border:1px solid gray;">`;
   }).join('');
-  
+
   document.body.appendChild(selector);
 
   selector.querySelectorAll('img').forEach(img => {
@@ -122,6 +108,4 @@ export function closeModal() {
       selector.remove();
     };
   });
-}
-
 }
