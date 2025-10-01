@@ -28,7 +28,7 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
         description: descInput?.value || '',
         location: locInput?.value || '',
         color: colorSelect?.value || 'green',
-        image: imagePreview?.src || 'images/default.jpg'
+        image: imagePreview?.src || 'images/default-plant.jpg'
       };
       saveCardSettings(cardId, updated);
       closeModal();
@@ -66,10 +66,11 @@ export function closeModal() {
 // Optional: inline image selector
 function showImageSelector(cardId, previewElement) {
   const imageOptions = [
-    'images/tomato.jpg',
-    'images/orchid.jpg',
-    'images/snowflake.jpg',
-    'images/default.jpg'
+    'images/blank.png',
+    'images/fuchsia.png',
+    'images/garage_door.png',
+    'images/default-plant.jpg'
+    'images/kleenex.jpg'
   ];
 
   const selector = document.createElement('div');
