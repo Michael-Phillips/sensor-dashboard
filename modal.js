@@ -72,7 +72,7 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
   //  changeImageBtn.onclick = () => {
   //    showImageSelector(cardId, imagePreview);
   //  };
-  }
+  //}
 }
 
 export function getCardSettings(cardId, data) {
