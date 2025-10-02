@@ -25,17 +25,29 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
   // Save handler
   const saveBtn = document.getElementById('saveModalBtn');
   if (saveBtn) {
-    saveBtn.onclick = () => {
-      const updated = {
-        description: descInput?.value || '',
-        location: locInput?.value || '',
-        color: colorSelect?.value || 'green',
-        image: imagePreview?.src || 'images/default-plant.jpg'
-      };
-      saveCardSettings(cardId, updated);
-      closeModal();
+  saveBtn.onclick = () => {
+    let rawSrc = imagePreview?.src?.trim() || '';
+    let imagePath = rawSrc;
+
+    // Normalize if it's a full GitHub URL or missing "images/"
+    if (rawSrc.includes('default-plant.jpg') && !rawSrc.includes('images/')) {
+      imagePath = 'images/default-plant.jpg';
+    } else if (rawSrc.startsWith('https://michael-phillips.github.io/sensor-dashboard/')) {
+      imagePath = rawSrc.replace('https://michael-phillips.github.io/sensor-dashboard/', '');
+    }
+
+    const updated = {
+      description: descInput?.value || '',
+      location: locInput?.value || '',
+      color: colorSelect?.value || 'green',
+      image: imagePath || 'images/default-plant.jpg'
     };
-  }
+
+    saveCardSettings(cardId, updated);
+    closeModal();
+  };
+}
+
 
   // Delete handler
   const deleteBtn = document.getElementById('deleteModalBtn');

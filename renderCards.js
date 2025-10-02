@@ -22,6 +22,8 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
 
     const imageUrl = metadata.image?.trim() || row.image_url?.trim();
     const img = document.createElement('img');
+console.log('metadata.image:', metadata.image);
+
     img.src = imageUrl && imageUrl.length > 0
       ? imageUrl
       : `${BASE_PATH}images/default-plant.jpg`;
