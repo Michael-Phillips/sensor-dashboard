@@ -20,13 +20,17 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
     gear.innerHTML = '<i class="fas fa-cog"></i>';
     card.appendChild(gear);
 
-    const imageUrl = metadata.image?.trim() || row.image_url?.trim();
-    const img = document.createElement('img');
-console.log('metadata.image:', metadata.image);
+    let imageUrl = metadata.image?.trim() || row.image_url?.trim();
 
-    img.src = imageUrl && imageUrl.length > 0
-      ? imageUrl
-      : `${BASE_PATH}images/default-plant.jpg`;
+// Normalize broken metadata like "default-plant.jpg"
+if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.includes('images/')) {
+  imageUrl = `images/${imageUrl}`;
+}
+
+img.src = imageUrl
+  ? imageUrl.startsWith('http') ? imageUrl : `${BASE_PATH}${imageUrl}`
+  : `${BASE_PATH}images/default-plant.jpg`;
+
 
     img.onerror = () => {
       console.warn('Image failed to load:', img.src);
