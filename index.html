@@ -13,69 +13,71 @@
 </head>
 <body>
   <h1>Sensor Dashboard</h1>
+
+  <!-- Supabase client setup -->
   <script type="module" src="supabase-init.js"></script>
+
   <!-- Dynamic card container -->
   <div id="cardContainer"></div>
 
   <!-- Modal for gear settings -->
-<div id="settingsModal" class="modal">
-  <div class="modal-content">
-    <h2>Sensor Settings</h2>
+  <div id="settingsModal" class="modal">
+    <div class="modal-content">
+      <h2>Sensor Settings</h2>
 
-    <!-- 🔼 Image preview in top-right corner -->
-    
+      <!-- 🔼 Image preview in top-right corner -->
+      <div class="image-header">
+        <div class="image-frame" id="changeImageTrigger">
+          <img id="modalImagePreview" src="" alt="Preview" />
+        </div>
+      </div>
 
-    <!-- 🔽 Form fields below -->
-    <div class="form-group">
-      <p><strong>Device ID:</strong> <span id="modalDeviceId"></span></p>
-    </div>
+      <!-- 🔽 Form fields below -->
+      <div class="form-group">
+        <p><strong>Device ID:</strong> <span id="modalDeviceId"></span></p>
+      </div>
 
-    <div class="form-group">
-      <label for="modalDescriptionInput">Description</label>
-      <input id="modalDescriptionInput" type="text" placeholder="e.g. CO2" />
-    </div>
+      <div class="form-group">
+        <label for="modalDescriptionInput">Description</label>
+        <input id="modalDescriptionInput" type="text" placeholder="e.g. CO2" />
+      </div>
 
-    <div class="form-group">
-      <label for="modalLocationInput">Location</label>
-      <input id="modalLocationInput" type="text" placeholder="e.g. Office" />
-    </div>
+      <div class="form-group">
+        <label for="modalLocationInput">Location</label>
+        <input id="modalLocationInput" type="text" placeholder="e.g. Office" />
+      </div>
 
-    <div class="form-group">
-      <label for="modalColorSelect">Color</label>
-      <select id="modalColorSelect">
-        <option value="green">Green</option>
-        <option value="yellow">Yellow</option>
-        <option value="aqua">Aqua</option>
-        <option value="blue">Blue</option>
-        <option value="red">Red</option>
-        <option value="orange">Orange</option>
-        <option value="purple">Purple</option>
-        <option value="gray">Gray</option>
-      </select>
-    </div>
+      <div class="form-group">
+        <label for="modalColorSelect">Color</label>
+        <select id="modalColorSelect">
+          <option value="green">Green</option>
+          <option value="yellow">Yellow</option>
+          <option value="aqua">Aqua</option>
+          <option value="blue">Blue</option>
+          <option value="red">Red</option>
+          <option value="orange">Orange</option>
+          <option value="purple">Purple</option>
+          <option value="gray">Gray</option>
+        </select>
+      </div>
 
-    <div class="modal-buttons">
-      <button id="saveModalBtn">Done</button>
-      <button type="button" onclick="closeModal()">Cancel</button>
-      <button id="deleteModalBtn">Delete</button>
+      <div class="modal-buttons">
+        <button id="saveModalBtn">Done</button>
+        <button type="button" onclick="closeModal()">Cancel</button>
+        <button id="deleteModalBtn">Delete</button>
+      </div>
     </div>
   </div>
-</div>
-
-
 
   <!-- Load dashboard logic -->
   <script type="module" src="main.js"></script>
   <script type="module" src="modal.js"></script>
 
-  <!-- Optional: Global closeModal function -->
+  <!-- Optional: Global closeModal fallback -->
   <script>
     function closeModal() {
       document.getElementById('settingsModal').style.display = 'none';
     }
   </script>
-  <script type="module" src="main.js"></script>
-  <script type="module" src="modal.js"></script>
 </body>
 </html>
-
