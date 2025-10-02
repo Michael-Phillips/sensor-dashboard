@@ -28,7 +28,9 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
 
     img.onerror = () => {
       console.warn('Image failed to load:', img.src);
-      img.src = `${BASE_PATH}images/default-plant.jpg`;
+      if (!img.src.includes('default-plant.jpg')) {
+        img.src = `${BASE_PATH}images/default-plant.jpg`;
+      }
     };
 
     card.appendChild(img);
