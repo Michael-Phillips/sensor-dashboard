@@ -5,6 +5,8 @@ const BASE_PATH = 'https://michael-phillips.github.io/sensor-dashboard/';
 
 // 🔍 GitHub API image listing
 async function listRepoImages() {
+console.log('📡 Starting GitHub API image fetch...');
+
   const user = 'michael-phillips';
   const repo = 'sensor-dashboard';
   const folder = 'images';
