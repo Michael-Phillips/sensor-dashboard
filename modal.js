@@ -1,3 +1,5 @@
+import { supabase } from './main.js';
+
 export function createGearModal(cardId, existingData, saveCardSettings, deleteCard) {
   console.log('Gear clicked for', cardId);
 
@@ -44,10 +46,10 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
     };
   }
 
-  // Image selector
-  const changeImageBtn = document.getElementById('changeImageBtn');
-  if (changeImageBtn) {
-    changeImageBtn.onclick = async () => {
+  // Image click handler
+  const imageFrame = document.getElementById('changeImageTrigger');
+  if (imageFrame) {
+    imageFrame.onclick = async () => {
       const imageUrls = await fetchImageList();
       showImageSelector(imageUrls, imagePreview);
     };

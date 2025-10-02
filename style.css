@@ -140,6 +140,31 @@ body {
   object-fit: cover;
 }
 
+.image-frame {
+  width: 160px;
+  height: 160px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f9f9f9;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+}
+
+.image-frame:hover {
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+#modalImagePreview {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+}
+
 #changeImageBtn {
   display: block;
   font-size: 12px;
