@@ -10,17 +10,10 @@
 
   <!-- Optional: External CSS -->
   <link rel="stylesheet" href="style.css" />
-<script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-    window.supabase = createClient(
-      'https://qvlluhoxehdpssdebzyi.supabase.co',
-'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2bGx1aG94ZWhkcHNzZGVienlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NDMwOTQsImV4cCI6MjA3NDQxOTA5NH0.4sJas3fvz_2z5iPY6yqL8W2X0NgZYjKUxxGNJX-JAMc'
-    );
-  </script>
 </head>
 <body>
   <h1>Sensor Dashboard</h1>
-
+  <script type="module" src="supabase-init.js"></script>
   <!-- Dynamic card container -->
   <div id="cardContainer"></div>
 
@@ -30,12 +23,7 @@
     <h2>Sensor Settings</h2>
 
     <!-- 🔼 Image preview in top-right corner -->
-    <div class="image-header">
-        <div class="image-frame" id="changeImageTrigger">
-          <img id="modalImagePreview" src="" alt="" />
-        </div>
-        <button id="changeImageBtn" type="button">Change Image</button>
-    </div>
+    
 
     <!-- 🔽 Form fields below -->
     <div class="form-group">
@@ -86,6 +74,8 @@
       document.getElementById('settingsModal').style.display = 'none';
     }
   </script>
+  <script type="module" src="main.js"></script>
+  <script type="module" src="modal.js"></script>
 </body>
 </html>
 
