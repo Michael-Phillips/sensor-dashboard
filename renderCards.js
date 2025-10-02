@@ -20,6 +20,7 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
     gear.innerHTML = '<i class="fas fa-cog"></i>';
     card.appendChild(gear);
 
+const img = document.createElement('img');
     let imageUrl = metadata.image?.trim() || row.image_url?.trim();
 
    // Normalize broken metadata like "default-plant.jpg"
