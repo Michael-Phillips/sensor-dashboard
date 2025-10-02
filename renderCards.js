@@ -33,9 +33,8 @@ img.src = imageUrl
 
 
     img.onerror = () => {
-      console.warn('Image failed to load load:', img.src);
+      console.warn('Image failed to load:', img.src);
       if (!img.src.includes('default-plant.jpg')) {
-console.log('Initial imageUrl:', imageUrl);
         img.src = `${BASE_PATH}images/default-plant.jpg`;
       }
     };
