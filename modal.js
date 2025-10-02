@@ -1,4 +1,5 @@
 import { supabase } from './main.js';
+const supabase = window.supabase;
 
 export function createGearModal(cardId, existingData, saveCardSettings, deleteCard) {
   console.log('Gear clicked for', cardId);
