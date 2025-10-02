@@ -1,13 +1,12 @@
 import { getRelativeTime } from './utils.js';
 
-const BASE_PATH = 'https://michael-phillips.github.io/sensor-dashboard/';
-
 export function getCardSettings(cardId, data) {
   const match = data.find(row => row.device_id === cardId);
   return match ? match.metadata || {} : {};
 }
 
 export function createGearModal(cardId, existingData, saveCardSettings, deleteCard, availableImages = []) {
+  const BASE_PATH = 'https://michael-phillips.github.io/sensor-dashboard/';
   const modal = document.createElement('div');
   modal.className = 'modal';
 
