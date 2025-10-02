@@ -2,11 +2,6 @@ import { getLatestPerDevice } from './utils.js';
 import { renderCards } from './renderCards.js';
 import { getCardSettings, createGearModal, closeModal } from './modal.js';
 
-export const supabase = createClient(
-  'https://qvlluhoxehdpssdebzyi.supabase.co',
-'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2bGx1aG94ZWhkcHNzZGVienlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NDMwOTQsImV4cCI6MjA3NDQxOTA5NH0.4sJas3fvz_2z5iPY6yqL8W2X0NgZYjKUxxGNJX-JAMc'
-);
-
 const supabase = window.supabase;
 
 const supabaseUrl = 'https://qvlluhoxehdpssdebzyi.supabase.co';
