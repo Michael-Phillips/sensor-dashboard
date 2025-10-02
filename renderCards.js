@@ -23,14 +23,18 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
 const img = document.createElement('img');
     let imageUrl = metadata.image?.trim() || row.image_url?.trim();
 
-   // Normalize broken metadata like "default-plant.jpg"
-   if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.includes('images/')) {
-    imageUrl = `images/${imageUrl}`;
-   }
+// If imageUrl is missing or empty, use fallback
+if (!imageUrl || imageUrl.length === 0) {
+  imageUrl = 'images/default-plant.jpg';
+}
 
-   img.src = imageUrl
-   ? imageUrl.startsWith('http') ? imageUrl : `${BASE_PATH}${imageUrl}`
-   : `${BASE_PATH}images/default-plant.jpg`;
+// Normalize relative paths
+if (!imageUrl.startsWith('http')) {
+  imageUrl = `${BASE_PATH}${imageUrl}`;
+}
+
+img.src = imageUrl;
+
 
 
     img.onerror = () => {
