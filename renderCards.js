@@ -22,14 +22,14 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
 
     let imageUrl = metadata.image?.trim() || row.image_url?.trim();
 
-// Normalize broken metadata like "default-plant.jpg"
-if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.includes('images/')) {
-  imageUrl = `images/${imageUrl}`;
-}
+   // Normalize broken metadata like "default-plant.jpg"
+   if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.includes('images/')) {
+    imageUrl = `images/${imageUrl}`;
+   }
 
-img.src = imageUrl
-  ? imageUrl.startsWith('http') ? imageUrl : `${BASE_PATH}${imageUrl}`
-  : `${BASE_PATH}images/default-plant.jpg`;
+   img.src = imageUrl
+   ? imageUrl.startsWith('http') ? imageUrl : `${BASE_PATH}${imageUrl}`
+   : `${BASE_PATH}images/default-plant.jpg`;
 
 
     img.onerror = () => {
@@ -91,12 +91,12 @@ img.src = imageUrl
 
     // ⚙️ Modal trigger
     gear.addEventListener('click', (event) => {
-  event.stopPropagation();
-  const cardId = gear.dataset.id;
-  console.log('Gear clicked for', cardId); // ✅ now it's defined
-  const existingData = getCardSettings(cardId, data);
-  createGearModal(cardId, existingData, saveCardSettings, deleteCard);
-});
+        event.stopPropagation();
+        const cardId = gear.dataset.id;
+        console.log('Gear clicked for', cardId); // ✅ now it's defined
+        const existingData = getCardSettings(cardId, data);
+        createGearModal(cardId, existingData, saveCardSettings, deleteCard);
+    });
 
 
     container.appendChild(card);
