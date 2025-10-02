@@ -3,9 +3,41 @@ import { getCardSettings, createGearModal } from './modal.js';
 
 const BASE_PATH = 'https://michael-phillips.github.io/sensor-dashboard/';
 
+// 🔍 GitHub API image listing
+async function listRepoImages() {
+  const user = 'michael-phillips';
+  const repo = 'sensor-dashboard';
+  const folder = 'images';
+  const branch = 'main'; // Change to 'master' if needed
+
+  const apiUrl = `https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`;
+
+  try {
+    const response = await fetch(apiUrl);
+    const data = await response.json();
+
+    if (!data.tree) {
+      console.warn('No tree data returned from GitHub API');
+      return [];
+    }
+
+    const imageFiles = data.tree
+      .filter(item => item.path.startsWith(`${folder}/`) && item.type === 'blob')
+      .map(item => item.path.replace(`${folder}/`, ''));
+
+    console.log('📁 Available images in repo:', imageFiles);
+    return imageFiles;
+  } catch (error) {
+    console.error('Error fetching image list:', error);
+    return [];
+  }
+}
 
 export function renderCards(data, container, saveCardSettings, deleteCard) {
   container.innerHTML = '';
+
+  // 🔍 Log available images once at render
+  listRepoImages();
 
   data.forEach(row => {
     const card = document.createElement('div');
@@ -20,22 +52,17 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
     gear.innerHTML = '<i class="fas fa-cog"></i>';
     card.appendChild(gear);
 
-const img = document.createElement('img');
+    const img = document.createElement('img');
     let imageUrl = metadata.image?.trim() || row.image_url?.trim();
 
-// If imageUrl is missing or empty, use fallback
-if (!imageUrl || imageUrl.length === 0) {
-  imageUrl = 'images/default-plant.jpg';
-}
+    // 🛠 Normalize broken metadata like "default-plant.jpg"
+    if (!imageUrl || imageUrl.length === 0) {
+      imageUrl = 'images/default-plant.jpg';
+    } else if (!imageUrl.startsWith('http') && !imageUrl.includes('images/')) {
+      imageUrl = `images/${imageUrl}`;
+    }
 
-// Normalize relative paths
-if (!imageUrl.startsWith('http')) {
-  imageUrl = `${BASE_PATH}${imageUrl}`;
-}
-
-img.src = imageUrl;
-
-
+    img.src = imageUrl.startsWith('http') ? imageUrl : `${BASE_PATH}${imageUrl}`;
 
     img.onerror = () => {
       console.warn('Image failed to load:', img.src);
@@ -96,14 +123,13 @@ img.src = imageUrl;
 
     // ⚙️ Modal trigger
     gear.addEventListener('click', (event) => {
-        event.stopPropagation();
-        const cardId = gear.dataset.id;
-        console.log('Gear clicked for', cardId); // ✅ now it's defined
-        const existingData = getCardSettings(cardId, data);
-        createGearModal(cardId, existingData, saveCardSettings, deleteCard);
+      event.stopPropagation();
+      const cardId = gear.dataset.id;
+      console.log('Gear clicked for', cardId);
+      const existingData = getCardSettings(cardId, data);
+      createGearModal(cardId, existingData, saveCardSettings, deleteCard);
     });
-
 
     container.appendChild(card);
   });
-}
+}}
