@@ -24,12 +24,12 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
     const img = document.createElement('img');
     img.src = imageUrl && imageUrl.length > 0
       ? imageUrl
-      : `https://michael-phillips.github.io/sensor-dashboard/images/default-plant.jpg`;
+      : `${BASE_PATH}images/default-plant.jpg`;
 
     img.onerror = () => {
       console.warn('Image failed to load:', img.src);
       if (!img.src.includes('default-plant.jpg')) {
-        img.src = `https://michael-phillips.github.io/sensor-dashboard/images/default-plant.jpg`;
+        img.src = `${BASE_PATH}images/default-plant.jpg`;
       }
     };
 
