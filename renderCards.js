@@ -5,19 +5,24 @@ const BASE_PATH = 'https://michael-phillips.github.io/sensor-dashboard/';
 
 // 🔍 GitHub API image listing
 async function listRepoImages() {
+  console.log('📡 Starting GitHub API image fetch...');
+
   const user = 'michael-phillips';
   const repo = 'sensor-dashboard';
   const folder = 'images';
-  const branch = 'main'; // Change to 'master' if needed
+  const branch = 'main'; // or 'master' if needed
 
   const apiUrl = `https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`;
+  console.log('🔗 Fetching:', apiUrl);
 
   try {
     const response = await fetch(apiUrl);
     const data = await response.json();
 
+    console.log('📦 Raw response:', data);
+
     if (!data.tree) {
-      console.warn('No tree data returned from GitHub API');
+      console.warn('⚠️ No tree data returned from GitHub API');
       return [];
     }
 
@@ -28,7 +33,7 @@ async function listRepoImages() {
     console.log('📁 Available images in repo:', imageFiles);
     return imageFiles;
   } catch (error) {
-    console.error('Error fetching image list:', error);
+    console.error('❌ Error fetching image list:', error);
     return [];
   }
 }
