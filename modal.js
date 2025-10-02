@@ -53,6 +53,8 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
       const imageUrls = await fetchImageList();
       showImageSelector(imageUrls, imagePreview);
     };
+  } else {
+    console.warn('Clickable image frame not found');
   }
 
   // Supabase image fetcher
