@@ -1,5 +1,6 @@
-import { BASE_PATH } from './constants.js'; // Optional: if you centralize BASE_PATH
 import { getRelativeTime } from './utils.js';
+
+const BASE_PATH = 'https://michael-phillips.github.io/sensor-dashboard/';
 
 export function getCardSettings(cardId, data) {
   const match = data.find(row => row.device_id === cardId);
