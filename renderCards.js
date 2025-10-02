@@ -39,7 +39,13 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
   container.innerHTML = '';
 
   // 🔍 Log available images once at render
-  listRepoImages();
+  //listRepoImages();
+  let availableImages = [];
+
+  listRepoImages().then(images => {
+    availableImages = images;
+  });
+
 
   data.forEach(row => {
     const card = document.createElement('div');
@@ -129,7 +135,7 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
       const cardId = gear.dataset.id;
       console.log('Gear clicked for', cardId);
       const existingData = getCardSettings(cardId, data);
-      createGearModal(cardId, existingData, saveCardSettings, deleteCard);
+      createGearModal(cardId, existingData, saveCardSettings, deleteCard, availableImages);
     });
 
     container.appendChild(card);

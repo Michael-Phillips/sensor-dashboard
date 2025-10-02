@@ -1,127 +1,99 @@
-const supabase = window.supabase;
-
-export function createGearModal(cardId, existingData, saveCardSettings, deleteCard) {
-  console.log('Gear clicked for', cardId);
-
-  const modal = document.getElementById('settingsModal');
-  if (!modal) return console.warn('Modal not found');
-
-  // Populate fields
-  document.getElementById('modalDeviceId').textContent = cardId;
-
-  const descInput = document.getElementById('modalDescriptionInput');
-  const locInput = document.getElementById('modalLocationInput');
-  const colorSelect = document.getElementById('modalColorSelect');
-  const imagePreview = document.getElementById('modalImagePreview');
-
-  if (descInput) descInput.value = existingData?.description || '';
-  if (locInput) locInput.value = existingData?.location || '';
-  if (colorSelect) colorSelect.value = existingData?.color || 'green';
-  if (imagePreview) imagePreview.src = existingData?.image || 'images/default-plant.jpg';
-
-  // Show modal
-  modal.style.display = 'block';
-
-  // Save handler
-  const saveBtn = document.getElementById('saveModalBtn');
-  if (saveBtn) {
-  saveBtn.onclick = () => {
-    let rawSrc = imagePreview?.src?.trim() || '';
-    let imagePath = rawSrc;
-
-    // Normalize if it's a full GitHub URL or missing "images/"
-    if (rawSrc.includes('default-plant.jpg') && !rawSrc.includes('images/')) {
-      imagePath = 'images/default-plant.jpg';
-    } else if (rawSrc.startsWith('https://michael-phillips.github.io/sensor-dashboard/')) {
-      imagePath = rawSrc.replace('https://michael-phillips.github.io/sensor-dashboard/', '');
-    }
-
-    const updated = {
-      description: descInput?.value || '',
-      location: locInput?.value || '',
-      color: colorSelect?.value || 'green',
-      image: imagePath || 'images/default-plant.jpg'
-    };
-
-    saveCardSettings(cardId, updated);
-    closeModal();
-  };
-}
-
-
-  // Delete handler
-  const deleteBtn = document.getElementById('deleteModalBtn');
-  if (deleteBtn) {
-    deleteBtn.onclick = () => {
-      deleteCard(cardId);
-      closeModal();
-    };
-  }
-
-  // Image click handler
-  const imageFrame = document.getElementById('changeImageTrigger');
-  if (imageFrame) {
-    imageFrame.onclick = async () => {
-      const imageUrls = await fetchImageList();
-      showImageSelector(imageUrls, imagePreview);
-    };
-  } else {
-    console.warn('Clickable image frame not found');
-  }
-
-  // Supabase image fetcher
-  async function fetchImageList() {
-    const { data, error } = await supabase.storage
-      .from('your-bucket-name') // Replace with your actual bucket name
-      .list('images', { limit: 100 });
-
-    if (error) {
-      console.error('Error fetching image list:', error);
-      return [];
-    }
-
-    return data.map(file =>
-      supabase.storage
-        .from('your-bucket-name')
-        .getPublicUrl(`images/${file.name}`).data.publicUrl
-    );
-  }
-}
+import { BASE_PATH } from './constants.js'; // Optional: if you centralize BASE_PATH
+import { getRelativeTime } from './utils.js';
 
 export function getCardSettings(cardId, data) {
-  const row = data.find(r => r.device_id === cardId);
-  return row?.metadata || {};
+  const match = data.find(row => row.device_id === cardId);
+  return match ? match.metadata || {} : {};
 }
 
-export function closeModal() {
-  const modal = document.getElementById('settingsModal');
-  if (modal) modal.style.display = 'none';
-}
+export function createGearModal(cardId, existingData, saveCardSettings, deleteCard, availableImages = []) {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
 
-function showImageSelector(imageUrls, previewElement) {
-  const selector = document.createElement('div');
-  selector.className = 'image-selector';
-  selector.style.position = 'fixed';
-  selector.style.top = '50%';
-  selector.style.left = '50%';
-  selector.style.transform = 'translate(-50%, -50%)';
-  selector.style.background = '#fff';
-  selector.style.padding = '10px';
-  selector.style.border = '1px solid #ccc';
-  selector.style.zIndex = '10000';
-  selector.style.maxHeight = '80vh';
-  selector.style.overflowY = 'auto';
+  const modalContent = document.createElement('div');
+  modalContent.className = 'modal-content';
 
-  selector.innerHTML = imageUrls.map(url => {
-    return `<img src="${url}" data-src="${url}" style="width:60px; margin:4px; cursor:pointer; border:1px solid gray;">`;
-  }).join('');
+  const descInput = document.createElement('input');
+  descInput.type = 'text';
+  descInput.placeholder = 'Description';
+  descInput.value = existingData.description || '';
 
-  document.body.appendChild(selector);
+  const locInput = document.createElement('input');
+  locInput.type = 'text';
+  locInput.placeholder = 'Location';
+  locInput.value = existingData.location || '';
 
-  selector.querySelectorAll('img').forEach(img => {
-    img.onclick = () => {
-      previewElement.src = img.dataset.src;
-      selector.remove();
-    };
+  const colorSelect = document.createElement('select');
+  ['green', 'blue', 'orange', 'red'].forEach(color => {
+    const option = document.createElement('option');
+    option.value = color;
+    option.textContent = color;
+    if (existingData.color === color) option.selected = true;
+    colorSelect.appendChild(option);
   });
+
+  const imagePreview = document.createElement('img');
+  imagePreview.id = 'modalImagePreview';
+  imagePreview.src = existingData.image
+    ? existingData.image.startsWith('http') ? existingData.image : `${BASE_PATH}${existingData.image}`
+    : `${BASE_PATH}images/default-plant.jpg`;
+  imagePreview.className = 'modal-image-preview';
+
+  // 🖼️ Thumbnail selector grid
+  const thumbnailGrid = document.createElement('div');
+  thumbnailGrid.className = 'thumbnail-grid';
+
+  availableImages.forEach(filename => {
+    const thumb = document.createElement('img');
+    thumb.src = `${BASE_PATH}images/${filename}`;
+    thumb.className = 'thumbnail';
+    thumb.alt = filename;
+
+    thumb.onclick = () => {
+      imagePreview.src = thumb.src;
+    };
+
+    thumbnailGrid.appendChild(thumb);
+  });
+
+  const saveBtn = document.createElement('button');
+  saveBtn.textContent = 'Save';
+  saveBtn.onclick = () => {
+    const updated = {
+      description: descInput.value.trim(),
+      location: locInput.value.trim(),
+      color: colorSelect.value,
+      image: imagePreview.src.includes(BASE_PATH)
+        ? imagePreview.src.replace(BASE_PATH, '')
+        : imagePreview.src
+    };
+    saveCardSettings(cardId, updated);
+    document.body.removeChild(modal);
+  };
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.textContent = 'Delete';
+  deleteBtn.onclick = () => {
+    deleteCard(cardId);
+    document.body.removeChild(modal);
+  };
+
+  const closeBtn = document.createElement('span');
+  closeBtn.className = 'close';
+  closeBtn.innerHTML = '&times;';
+  closeBtn.onclick = () => {
+    document.body.removeChild(modal);
+  };
+
+  modalContent.appendChild(closeBtn);
+  modalContent.appendChild(descInput);
+  modalContent.appendChild(locInput);
+  modalContent.appendChild(colorSelect);
+  modalContent.appendChild(imagePreview);
+  modalContent.appendChild(thumbnailGrid);
+  modalContent.appendChild(saveBtn);
+  modalContent.appendChild(deleteBtn);
+
+  modal.appendChild(modalContent);
+  document.body.appendChild(modal);
 }
