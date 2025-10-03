@@ -25,6 +25,7 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
 
   modal.appendChild(modalContent);
   document.body.appendChild(modal);
+  modal.style.display = 'flex'; // ✅ overrides the default 'none'
   console.log('✅ Modal appended to body');
 
   document.getElementById('closeModal').onclick = () => {
