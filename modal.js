@@ -5,7 +5,7 @@ export function getCardSettings(cardId, data) {
   const match = data.find(row => row.device_id === cardId);
   return match ? match.metadata || {} : {};
 }
-
+/*
 export function createGearModal(cardId, existingData, saveCardSettings, deleteCard, availableImages = []) {
   console.log('🧪 createGearModal called for', cardId);
 
@@ -45,13 +45,13 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
     document.body.removeChild(modal);
   };
 }
+*/
 
 
-/*
 export function createGearModal(cardId, existingData, saveCardSettings, deleteCard, availableImages = []) {
   const modal = document.createElement('div');
   modal.className = 'modal';
-  //modal.id = 'settingsModal'; // ✅ Add this here
+  modal.id = 'settingsModal'; // ✅ Add this here
 
   const modalContent = document.createElement('div');
   modalContent.className = 'modal-content';
@@ -141,7 +141,7 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
 
   document.body.appendChild(modal);
 }
-*/
+
 // Optional: global closeModal function
 export function closeModal() {
   const modal = document.getElementById('settingsModal');
