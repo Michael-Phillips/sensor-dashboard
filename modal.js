@@ -93,6 +93,7 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
   modalContent.appendChild(thumbnailGrid);
   modalContent.appendChild(saveBtn);
   modalContent.appendChild(deleteBtn);
+modalContent.appendChild(document.createTextNode('🧪 Modal loaded'));
 
   modal.appendChild(modalContent);
   document.body.appendChild(modal);
