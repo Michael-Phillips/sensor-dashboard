@@ -10,9 +10,26 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
 
   const modal = document.createElement('div');
   modal.className = 'modal';
+  modal.style.position = 'fixed';
+  modal.style.top = '0';
+  modal.style.left = '0';
+  modal.style.width = '100%';
+  modal.style.height = '100%';
+  modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+  modal.style.display = 'flex';
+  modal.style.justifyContent = 'center';
+  modal.style.alignItems = 'center';
+  modal.style.zIndex = '1000';
 
   const modalContent = document.createElement('div');
   modalContent.className = 'modal-content';
+  modalContent.style.background = 'white';
+  modalContent.style.padding = '20px';
+  modalContent.style.borderRadius = '8px';
+  modalContent.style.maxWidth = '600px';
+  modalContent.style.width = '90%';
+  modalContent.style.maxHeight = '90%';
+  modalContent.style.overflowY = 'auto';
 
   modalContent.innerHTML = `
     <h2>Modal for ${cardId}</h2>
@@ -27,6 +44,7 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
     document.body.removeChild(modal);
   };
 }
+
 
 /*
 export function createGearModal(cardId, existingData, saveCardSettings, deleteCard, availableImages = []) {
