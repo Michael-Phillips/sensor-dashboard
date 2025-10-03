@@ -1,8 +1,8 @@
-//import { BASE_PATH } from './constants.js'; // Optional: if you centralize BASE_PATH
+import { BASE_PATH } from './constants.js'; // Optional: if you centralize BASE_PATH
 import { getRelativeTime } from './utils.js';
 
 export function getCardSettings(cardId, data) {
-  const match = data.find(row => row.device_id === cardId);
+  //const match = data.find(row => row.device_id === cardId);
   return match ? match.metadata || {} : {};
 }
 
