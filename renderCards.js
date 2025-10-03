@@ -132,10 +132,12 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
 
     // ⚙️ Modal trigger
     gear.addEventListener('click', (event) => {
-      console.log('📎 Gear listener attached for', row.device_id);
-      const testDiv = document.createElement('div');
       event.stopPropagation();
-      const cardId = gear.dataset.id;
+      console.log('📎 Gear listener attached for', row.device_id);
+      const cardId = gear.dataset.id; // ✅ gear.dataset.id is also set correctly
+
+      const testDiv = document.createElement('div');
+      
       console.log('Gear clicked for', cardId);
       const existingData = getCardSettings(cardId, data);
       console.log('📦 Existing metadata:', existingData);
