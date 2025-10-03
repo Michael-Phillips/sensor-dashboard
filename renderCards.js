@@ -135,6 +135,8 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
       const cardId = gear.dataset.id;
       console.log('Gear clicked for', cardId);
       const existingData = getCardSettings(cardId, data);
+      console.log('📦 Existing metadata:', existingData);
+      console.log('🖼️ Available images at click:', availableImages);
       createGearModal(cardId, existingData, saveCardSettings, deleteCard, availableImages);
     });
 
