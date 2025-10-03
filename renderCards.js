@@ -48,7 +48,6 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
 
 
   data.forEach(row => {
-    console.log('🔧 Gear element created for', row.device_id, gear);
     const card = document.createElement('div');
     card.className = 'card';
     card.dataset.cardId = row.device_id;
@@ -59,6 +58,7 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
     gear.className = 'gear-icon';
     gear.dataset.id = row.device_id;
     gear.innerHTML = '<i class="fas fa-cog"></i>';
+    console.log('🔧 Gear element created for', row.device_id, gear);
     card.appendChild(gear);
 
     const img = document.createElement('img');
