@@ -5,6 +5,30 @@ export function getCardSettings(cardId, data) {
   const match = data.find(row => row.device_id === cardId);
   return match ? match.metadata || {} : {};
 }
+/*
+export function createGearModal(cardId, existingData, saveCardSettings, deleteCard, availableImages = []) {
+  console.log('🧪 createGearModal called for', cardId);
+
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+
+  const modalContent = document.createElement('div');
+  modalContent.className = 'modal-content';
+
+  modalContent.innerHTML = `
+    <h2>Modal for ${cardId}</h2>
+    <p>Description: ${existingData.description || 'N/A'}</p>
+    <button id="closeModal">Close</button>
+  `;
+
+  modal.appendChild(modalContent);
+  document.body.appendChild(modal);
+
+  document.getElementById('closeModal').onclick = () => {
+    document.body.removeChild(modal);
+  };
+}
+*/
 
 export function createGearModal(cardId, existingData, saveCardSettings, deleteCard, availableImages = []) {
   const modal = document.createElement('div');
