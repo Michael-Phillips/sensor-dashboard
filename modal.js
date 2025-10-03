@@ -2,12 +2,11 @@ import { BASE_PATH } from './constants.js'; // Optional: if you centralize BASE_
 import { getRelativeTime } from './utils.js';
 
 export function getCardSettings(cardId, data) {
-  //const match = data.find(row => row.device_id === cardId);
+  const match = data.find(row => row.device_id === cardId);
   return match ? match.metadata || {} : {};
 }
 
 export function createGearModal(cardId, existingData, saveCardSettings, deleteCard, availableImages = []) {
-  const BASE_PATH = 'https://michael-phillips.github.io/sensor-dashboard/';
   const modal = document.createElement('div');
   modal.className = 'modal';
 
@@ -98,3 +97,14 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
   modal.appendChild(modalContent);
   document.body.appendChild(modal);
 }
+
+// Optional: global closeModal function
+export function closeModal() {
+  const modal = document.getElementById('settingsModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+// Make closeModal globally accessible if needed in HTML
+window.closeModal = closeModal;
