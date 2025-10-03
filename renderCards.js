@@ -1,7 +1,7 @@
 import { getRelativeTime } from './utils.js';
 import { getCardSettings, createGearModal } from './modal.js';
 
-const BASE_PATH = 'https://michael-phillips.github.io/sensor-dashboard/';
+import { BASE_PATH } from './constants.js';
 
 // 🔍 GitHub API image listing
 async function listRepoImages() {

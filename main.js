@@ -1,6 +1,8 @@
 import { getLatestPerDevice } from './utils.js';
 import { renderCards } from './renderCards.js';
 import { getCardSettings, createGearModal, closeModal } from './modal.js';
+// constants.js
+export const BASE_PATH = 'https://michael-phillips.github.io/sensor-dashboard/';
 
 const supabase = window.supabase;
 
