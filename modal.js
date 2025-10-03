@@ -6,6 +6,16 @@ export function getCardSettings(cardId, data) {
   return match ? match.metadata || {} : {};
 }
 
+const closeModalBtn = document.createElement('button');
+closeModalBtn.id = 'closeModal';
+closeModalBtn.textContent = 'Close';
+modalContent.appendChild(closeModalBtn);
+
+closeModalBtn.onclick = () => {
+  console.log('❌ Modal closed');
+  document.body.removeChild(modal);
+};
+
 export function createGearModal(cardId, existingData, saveCardSettings, deleteCard, availableImages = []) {
   console.log('🧪 createGearModal called for', cardId);
 
