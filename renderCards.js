@@ -48,6 +48,7 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
 
 
   data.forEach(row => {
+    console.log('🔧 Gear element created for', row.device_id, gear);
     const card = document.createElement('div');
     card.className = 'card';
     card.dataset.cardId = row.device_id;
@@ -131,6 +132,7 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
 
     // ⚙️ Modal trigger
     gear.addEventListener('click', (event) => {
+      console.log('📎 Gear listener attached for', row.device_id);
       event.stopPropagation();
       const cardId = gear.dataset.id;
       console.log('Gear clicked for', cardId);
