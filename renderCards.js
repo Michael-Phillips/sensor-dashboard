@@ -133,6 +133,17 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
     // ⚙️ Modal trigger
     gear.addEventListener('click', (event) => {
       console.log('📎 Gear listener attached for', row.device_id);
+      const testDiv = document.createElement('div');
+  testDiv.style.position = 'fixed';
+  testDiv.style.top = '20px';
+  testDiv.style.left = '20px';
+  testDiv.style.background = 'lime';
+  testDiv.style.padding = '10px';
+  testDiv.style.zIndex = '9999';
+  testDiv.textContent = '✅ Gear click registered';
+
+  document.body.appendChild(testDiv);
+/*
       event.stopPropagation();
       const cardId = gear.dataset.id;
       console.log('Gear clicked for', cardId);
@@ -140,6 +151,7 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
       console.log('📦 Existing metadata:', existingData);
       console.log('🖼️ Available images at click:', availableImages);
       createGearModal(cardId, existingData, saveCardSettings, deleteCard, availableImages);
+      */
     });
 
     container.appendChild(card);
