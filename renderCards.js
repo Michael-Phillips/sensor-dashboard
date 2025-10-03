@@ -142,7 +142,12 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
       const existingData = getCardSettings(cardId, data);
       console.log('📦 Existing metadata:', existingData);
       console.log('🖼️ Available images at click:', availableImages);
-      createGearModal(cardId, existingData, saveCardSettings, deleteCard, availableImages);
+      try {
+        createGearModal(cardId, existingData, saveCardSettings, deleteCard, availableImages);
+      } catch (err) {
+        console.error('❌ Modal creation failed:', err);
+      }
+
       document.body.appendChild(testDiv);
     });
 
