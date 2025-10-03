@@ -41,6 +41,31 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
   modalContent.appendChild(locInput);
   modalContent.appendChild(colorSelect);
 
+  const imagePreview = document.createElement('img');
+
+  imagePreview.src = existingData.image
+    ? existingData.image.startsWith('http') ? existingData.image : `${BASE_PATH}${existingData.image}`
+    : `${BASE_PATH}images/default-plant.jpg`;
+  imagePreview.className = 'modal-image-preview';
+
+  const thumbnailGrid = document.createElement('div');
+  thumbnailGrid.className = 'thumbnail-grid';
+
+  availableImages.forEach(filename => {
+    const thumb = document.createElement('img');
+    thumb.src = `${BASE_PATH}images/${filename}`;
+    thumb.className = 'thumbnail';
+    thumb.alt = filename;
+
+    thumb.onclick = () => {
+      imagePreview.src = thumb.src;
+      document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('selected'));
+      thumb.classList.add('selected');
+    };
+
+    thumbnailGrid.appendChild(thumb);
+  });
+
   modal.appendChild(modalContent);
   document.body.appendChild(modal);
   modal.style.display = 'flex'; // ✅ overrides the default 'none'
