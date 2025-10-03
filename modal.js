@@ -18,10 +18,28 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
   modalContent.className = 'modal-content';
   console.log('📦 Modal content created');
 
-  modalContent.innerHTML = `
-    <h2>Modal for ${cardId}</h2>
-    <button id="closeModal">Close</button>
-  `;
+  modalContent.innerHTML = `<h2>Modal for ${cardId}</h2>`;
+  const descInput = document.createElement('input');
+  descInput.type = 'text';
+  descInput.placeholder = 'Description';
+  descInput.value = existingData.description || '';
+
+  const locInput = document.createElement('input');
+  locInput.type = 'text';
+  locInput.placeholder = 'Location';
+  locInput.value = existingData.location || '';
+
+  const colorSelect = document.createElement('select');
+  ['green', 'blue', 'orange', 'red'].forEach(color => {
+    const option = document.createElement('option');
+    option.value = color;
+    option.textContent = color;
+    if (existingData.color === color) option.selected = true;
+    colorSelect.appendChild(option);
+  });
+  modalContent.appendChild(descInput);
+  modalContent.appendChild(locInput);
+  modalContent.appendChild(colorSelect);
 
   modal.appendChild(modalContent);
   document.body.appendChild(modal);
