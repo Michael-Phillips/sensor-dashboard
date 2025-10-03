@@ -1,4 +1,4 @@
-import { BASE_PATH } from './constants.js'; // Optional: if you centralize BASE_PATH
+import { BASE_PATH } from './main.js'; // Optional: if you centralize BASE_PATH
 import { getRelativeTime } from './utils.js';
 
 export function getCardSettings(cardId, data) {
@@ -95,7 +95,7 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
   modalContent.appendChild(deleteBtn);
 
   modal.appendChild(modalContent);
-  
+
   document.body.appendChild(modal);
 }
 
