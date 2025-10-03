@@ -1,4 +1,4 @@
-import { BASE_PATH } from './constants.js';
+import { BASE_PATH } from './main.js';
 import { getRelativeTime } from './utils.js';
 
 export function getCardSettings(cardId, data) {

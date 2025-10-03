@@ -1,7 +1,7 @@
 import { getRelativeTime } from './utils.js';
 import { getCardSettings, createGearModal } from './modal.js';
 
-import { BASE_PATH } from './constants.js';
+import { BASE_PATH } from './main.js';
 
 // 🔍 GitHub API image listing
 async function listRepoImages() {
