@@ -29,7 +29,7 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
   console.log('📦 Modal content created');
 
   modalContent.innerHTML = `<h2>Modal for ${cardId}</h2>`;
-  <button id="closeModal">Close</button>
+  '<button id="closeModal">Close</button>';
   const descInput = document.createElement('input');
   descInput.type = 'text';
   descInput.placeholder = 'Description';
