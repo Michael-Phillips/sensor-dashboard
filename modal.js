@@ -68,12 +68,32 @@ locInput.style.marginBottom = '16px';
 colorLabel.style.display = 'block';
 colorLabel.style.marginBottom = '4px';
   const colorSelect = document.createElement('select');
-  ['Green', 'Yellow','Aqua','Blue','Red', 'orange','Orange','Purple','Gray'].forEach(color => {
-    const option = document.createElement('option');
-    option.value = color;
-    option.textContent = color;
-    if (existingData.color === color) option.selected = true;
-    colorSelect.appendChild(option);
+ // ['Green', 'Yellow','Aqua','Blue','Red', 'orange','Orange','Purple','Gray'].forEach(color => {
+ //   const option = document.createElement('option');
+ //   option.value = color;
+ //   option.textContent = color;
+ //   if (existingData.color === color) option.selected = true;
+ //   colorSelect.appendChild(option);
+const colorOptions = {
+  Green:  '#CBE66E',
+  Yellow: '#F2F187',
+  Aqua:   '#A1CBCD',
+  Blue:   '#97D1E6',
+  Red:    '#F3797A',
+  Orange: '#F8C274',
+  Purple: '#B185BA',
+  Gray:   '#B7B7B7'
+};
+
+Object.entries(colorOptions).forEach(([name, hex]) => {
+  const option = document.createElement('option');
+  option.value = hex;
+  option.textContent = name;
+  if (existingData.color === hex) option.selected = true;
+  colorSelect.appendChild(option);
+
+
+
   });
 colorSelect.style.marginBottom = '16px';
   formSection.appendChild(colorLabel);
