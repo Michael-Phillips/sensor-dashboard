@@ -57,7 +57,7 @@ const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : r
 
 // Apply background color from metadata
 const color = metadata.color || 'white';
-card.style.backgroundColor = color;
+card.style.backgroundColor = metadata.color || 'white';
 
 //    const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
 
