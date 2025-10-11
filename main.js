@@ -23,7 +23,22 @@ export async function saveCardSettings(cardId, updatedMetadata) {
   }
 }
 
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
+  const supabaseUrl = 'https://qvlluhoxehdpssdebzyi.supabase.co';
+  const supabaseKey = 'your-anon-key-here'; // use your actual key
+
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  // Example: test query
+  const { data, error } = await supabase
+    .from('devices')
+    .select('*')
+    .limit(1);
+
+  console.log('Test Supabase response:', data, error);
+</script>
 const table = 'readings';
 
 let sensorData = [];
