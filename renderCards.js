@@ -52,6 +52,10 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
     card.className = 'card';
     card.dataset.cardId = row.device_id;
 
+// Apply background color from metadata
+const color = metadata.color || 'white';
+card.style.backgroundColor = color;
+
     const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
 
     const gear = document.createElement('div');
