@@ -53,20 +53,20 @@ descInput.style.marginBottom = '16px';
 
   const locLabel = document.createElement('label');
   locLabel.textContent = 'Location';
-descLabel.style.display = 'block';
-descLabel.style.marginBottom = '4px';
+locLabel.style.display = 'block';
+locLabel.style.marginBottom = '4px';
   const locInput = document.createElement('input');
   locInput.type = 'text';
   locInput.value = existingData.location || '';
-descInput.style.marginBottom = '16px';
+locInput.style.marginBottom = '16px';
 
   formSection.appendChild(locLabel);
   formSection.appendChild(locInput);
 
   const colorLabel = document.createElement('label');
   colorLabel.textContent = 'Color';
-descLabel.style.display = 'block';
-descLabel.style.marginBottom = '4px';
+colorLabel.style.display = 'block';
+colorLabel.style.marginBottom = '4px';
   const colorSelect = document.createElement('select');
   ['Green', 'Yellow','Aqua','Blue','Red', 'orange','Orange','Purple','Gray'].forEach(color => {
     const option = document.createElement('option');
@@ -75,13 +75,16 @@ descLabel.style.marginBottom = '4px';
     if (existingData.color === color) option.selected = true;
     colorSelect.appendChild(option);
   });
-descInput.style.marginBottom = '16px';
+colorInput.style.marginBottom = '16px';
   formSection.appendChild(colorLabel);
   formSection.appendChild(colorSelect);
 
   // Failure to Report Time
   const failureLabel = document.createElement('label');
   failureLabel.textContent = 'Failure to Report Time';
+failureLabel.style.display = 'block';
+failureLabel.style.marginBottom = '4px';
+
   const failureContainer = document.createElement('div');
   ['Days', 'Hours', 'Minutes'].forEach(unit => {
     const input = document.createElement('input');
@@ -90,6 +93,7 @@ descInput.style.marginBottom = '16px';
     input.style.width = '60px';
     failureContainer.appendChild(input);
   });
+failureLabel.style.marginBottom = '16px';
   formSection.appendChild(failureLabel);
   formSection.appendChild(failureContainer);
 
