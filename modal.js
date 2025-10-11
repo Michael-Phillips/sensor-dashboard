@@ -7,28 +7,56 @@ export function getCardSettings(cardId, data) {
 }
 
 export function createGearModal(cardId, existingData, saveCardSettings, deleteCard, availableImages = []) {
-  console.log('🧪 createGearModal called for', cardId);
-
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.id = 'settingsModal';
-  console.log('📦 Modal element created');
+  modal.style.display = 'flex';
+  modal.style.justifyContent = 'center';
+  modal.style.alignItems = 'center';
+  modal.style.position = 'fixed';
+  modal.style.top = '0';
+  modal.style.left = '0';
+  modal.style.width = '100%';
+  modal.style.height = '100%';
+  modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+  modal.style.zIndex = '1000';
 
   const modalContent = document.createElement('div');
   modalContent.className = 'modal-content';
-  console.log('📦 Modal content created');
+  modalContent.style.background = '#fff';
+  modalContent.style.padding = '20px';
+  modalContent.style.borderRadius = '8px';
+  modalContent.style.display = 'flex';
+  modalContent.style.gap = '20px';
+  modalContent.style.maxWidth = '800px';
+  modalContent.style.width = '90%';
 
-  modalContent.innerHTML = `<h2>Modal for ${cardId}</h2>`;
+  // Left column
+  const formSection = document.createElement('div');
+  formSection.style.flex = '1';
+
+  const title = document.createElement('h2');
+  title.textContent = `Sensor ${cardId} Settings`;
+  formSection.appendChild(title);
+
+  const descLabel = document.createElement('label');
+  descLabel.textContent = 'Description';
   const descInput = document.createElement('input');
   descInput.type = 'text';
-  descInput.placeholder = 'Description';
   descInput.value = existingData.description || '';
+  formSection.appendChild(descLabel);
+  formSection.appendChild(descInput);
 
+  const locLabel = document.createElement('label');
+  locLabel.textContent = 'Location';
   const locInput = document.createElement('input');
   locInput.type = 'text';
-  locInput.placeholder = 'Location';
   locInput.value = existingData.location || '';
+  formSection.appendChild(locLabel);
+  formSection.appendChild(locInput);
 
+  const colorLabel = document.createElement('label');
+  colorLabel.textContent = 'Color';
   const colorSelect = document.createElement('select');
   ['green', 'blue', 'orange', 'red'].forEach(color => {
     const option = document.createElement('option');
@@ -37,61 +65,75 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
     if (existingData.color === color) option.selected = true;
     colorSelect.appendChild(option);
   });
-  modalContent.appendChild(descInput);
-  modalContent.appendChild(locInput);
-  modalContent.appendChild(colorSelect);
+  formSection.appendChild(colorLabel);
+  formSection.appendChild(colorSelect);
 
-/*******************************************/
-  const closeModalBtn = document.createElement('button');
-  closeModalBtn.id = 'closeModal';
-  closeModalBtn.textContent = 'Close';
-// ✅ Add inline styles here for visibility
+  // Failure to Report Time
+  const failureLabel = document.createElement('label');
+  failureLabel.textContent = 'Failure to Report Time';
+  const failureContainer = document.createElement('div');
+  ['Days', 'Hours', 'Minutes'].forEach(unit => {
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.placeholder = unit;
+    input.style.width = '60px';
+    failureContainer.appendChild(input);
+  });
+  formSection.appendChild(failureLabel);
+  formSection.appendChild(failureContainer);
 
-closeModalBtn.style.marginTop = '20px';
-closeModalBtn.style.padding = '10px 16px';
-closeModalBtn.style.backgroundColor = '#eee';
-closeModalBtn.style.border = '1px solid #ccc';
-closeModalBtn.style.cursor = 'pointer';
-closeModalBtn.style.fontSize = '14px';
+  // Metadata
+  const metadata = document.createElement('p');
+  metadata.innerHTML = `
+    Sensors: ${existingData.sensor_count || 1}<br>
+    Module ID: ${existingData.module_id || 'N/A'}<br>
+    Hex: ${existingData.module_id ? Number(existingData.module_id).toString(16).toUpperCase() : 'N/A'}
+  `;
+  formSection.appendChild(metadata);
 
-  closeModalBtn.onclick = () => {
-    console.log('❌ Modal closed');
-    document.body.removeChild(modal);
-  };
-  modalContent.appendChild(closeModalBtn); // ✅ This was missing!
+  // Buttons
+  const buttonRow = document.createElement('div');
+  buttonRow.style.marginTop = '20px';
+  ['Done', 'Cancel', 'Delete'].forEach(label => {
+    const btn = document.createElement('button');
+    btn.textContent = label;
+    btn.style.marginRight = '10px';
+    btn.onclick = () => {
+      if (label === 'Done') {
+        const updated = {
+          description: descInput.value.trim(),
+          location: locInput.value.trim(),
+          color: colorSelect.value,
+          image: imagePreview.src.includes(BASE_PATH)
+            ? imagePreview.src.replace(BASE_PATH, '')
+            : imagePreview.src
+        };
+        saveCardSettings(cardId, updated);
+      } else if (label === 'Delete') {
+        deleteCard(cardId);
+      }
+      document.body.removeChild(modal);
+    };
+    buttonRow.appendChild(btn);
+  });
+  formSection.appendChild(buttonRow);
 
-/*******************************************/
+  // Right column: image preview
+  const imageSection = document.createElement('div');
+  imageSection.style.flex = '0 0 150px';
 
   const imagePreview = document.createElement('img');
-
   imagePreview.src = existingData.image
     ? existingData.image.startsWith('http') ? existingData.image : `${BASE_PATH}${existingData.image}`
     : `${BASE_PATH}images/default-plant.jpg`;
-  imagePreview.className = 'modal-image-preview';
+  imagePreview.style.width = '100%';
+  imagePreview.style.borderRadius = '8px';
+  imageSection.appendChild(imagePreview);
 
-  const thumbnailGrid = document.createElement('div');
-  thumbnailGrid.className = 'thumbnail-grid';
-
-  availableImages.forEach(filename => {
-    const thumb = document.createElement('img');
-    thumb.src = `${BASE_PATH}images/${filename}`;
-    thumb.className = 'thumbnail';
-    thumb.alt = filename;
-
-    thumb.onclick = () => {
-      imagePreview.src = thumb.src;
-      document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('selected'));
-      thumb.classList.add('selected');
-    };
-
-    thumbnailGrid.appendChild(thumb);
-  });
-
+  modalContent.appendChild(formSection);
+  modalContent.appendChild(imageSection);
   modal.appendChild(modalContent);
   document.body.appendChild(modal);
-  modal.style.display = 'flex'; // ✅ overrides the default 'none'
-  console.log('✅ Modal appended to body');
-
 }
 
 
