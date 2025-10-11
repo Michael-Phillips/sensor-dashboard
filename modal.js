@@ -6,7 +6,7 @@ export function getCardSettings(cardId, data) {
   return match ? match.metadata || {} : {};
 }
 
-export function createGearModal(cardId, existingData, saveCardSettings, deleteCard, availableImages = []) {
+export function createGearModal(cardId, existingData, saveCardSettings, updateLocalCardSettings, deleteCard, availableImages = []) {
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.id = 'settingsModal';

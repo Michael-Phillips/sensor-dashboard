@@ -59,7 +59,7 @@ const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : r
 const color = metadata.color || 'white';
 card.style.backgroundColor = metadata.color || 'white';
 
-//    const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
+const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
 
     const gear = document.createElement('div');
     gear.className = 'gear-icon';
@@ -150,7 +150,7 @@ card.style.backgroundColor = metadata.color || 'white';
       console.log('📦 Existing metadata:', existingData);
       console.log('🖼️ Available images at click:', availableImages);
       try {
-        createGearModal(cardId, existingData, saveCardSettings, deleteCard, availableImages);
+        createGearModal(cardId, existingData, saveCardSettings, updateLocalCardSettings, deleteCard, availableImages);
       } catch (err) {
         console.error('❌ Modal creation failed:', err);
       }
