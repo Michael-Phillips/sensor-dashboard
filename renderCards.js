@@ -48,6 +48,7 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
 
 
   data.forEach(row => {
+const metadata = row.metadata || {};
     const card = document.createElement('div');
     card.className = 'card';
     card.dataset.cardId = row.device_id;
