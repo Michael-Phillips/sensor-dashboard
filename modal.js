@@ -53,14 +53,20 @@ descInput.style.marginBottom = '16px';
 
   const locLabel = document.createElement('label');
   locLabel.textContent = 'Location';
+descLabel.style.display = 'block';
+descLabel.style.marginBottom = '4px';
   const locInput = document.createElement('input');
   locInput.type = 'text';
   locInput.value = existingData.location || '';
+descInput.style.marginBottom = '16px';
+
   formSection.appendChild(locLabel);
   formSection.appendChild(locInput);
 
   const colorLabel = document.createElement('label');
   colorLabel.textContent = 'Color';
+descLabel.style.display = 'block';
+descLabel.style.marginBottom = '4px';
   const colorSelect = document.createElement('select');
   ['Green', 'Yellow','Aqua','Blue','Red', 'orange','Orange','Purple','Gray'].forEach(color => {
     const option = document.createElement('option');
@@ -69,6 +75,7 @@ descInput.style.marginBottom = '16px';
     if (existingData.color === color) option.selected = true;
     colorSelect.appendChild(option);
   });
+descInput.style.marginBottom = '16px';
   formSection.appendChild(colorLabel);
   formSection.appendChild(colorSelect);
 
