@@ -41,11 +41,11 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
 
   const descLabel = document.createElement('label');
   descLabel.textContent = 'Description';
+descLabel.style.display = 'block';
+descLabel.style.marginBottom = '4px';
   const descInput = document.createElement('input');
   descInput.type = 'text';
   descInput.value = existingData.description || '';
-descLabel.style.display = 'block';
-descLabel.style.marginBottom = '4px';
 descInput.style.marginBottom = '16px';
 
   formSection.appendChild(descLabel);
