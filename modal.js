@@ -45,7 +45,7 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
   const closeModalBtn = document.createElement('button');
   closeModalBtn.id = 'closeModal';
   closeModalBtn.textContent = 'Close';
-/ ✅ Add inline styles here for visibility
+// ✅ Add inline styles here for visibility
 
 closeModalBtn.style.marginTop = '20px';
 closeModalBtn.style.padding = '10px 16px';
