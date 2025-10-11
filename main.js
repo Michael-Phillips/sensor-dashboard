@@ -4,23 +4,35 @@ import { getCardSettings, createGearModal, closeModal } from './modal.js';
 // constants.js
 export const BASE_PATH = 'https://michael-phillips.github.io/sensor-dashboard/';
 
-const supabase = window.supabase;
-
 const supabaseUrl = 'https://qvlluhoxehdpssdebzyi.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2bGx1aG94ZWhkcHNzZGVienlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NDMwOTQsImV4cCI6MjA3NDQxOTA5NH0.4sJas3fvz_2z5iPY6yqL8W2X0NgZYjKUxxGNJX-JAMc';
 
 import { createClient } from '@supabase/supabase-js';
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
+export async function saveCardSettings(cardId, updatedMetadata) {
+  const { data, error } = await supabase
+    .from('devices')
+    .update({ metadata: updatedMetadata })
+    .eq('device_id', cardId);
+
+  if (error) {
+    console.error('❌ Supabase update failed:', error);
+  } else {
+    console.log('✅ Supabase update succeeded:', data);
+  }
+}
+
+
 const table = 'readings';
 
 let sensorData = [];
 
-function saveCardSettings(cardId, updated) {
+function updateLocalCardSettings(cardId, updated) {
   const row = sensorData.find(r => r.device_id === cardId);
   if (row) {
     row.metadata = { ...row.metadata, ...updated };
-    renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, deleteCard);
+    renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard);
   }
 }
 
@@ -28,7 +40,9 @@ function deleteCard(cardId) {
   const index = sensorData.findIndex(r => r.device_id === cardId);
   if (index !== -1) {
     sensorData.splice(index, 1);
-    renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, deleteCard);
+    //renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, deleteCard);
+renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard);
+
   }
 }
 

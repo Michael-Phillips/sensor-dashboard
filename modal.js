@@ -23,7 +23,9 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
 
   const modalContent = document.createElement('div');
   modalContent.className = 'modal-content';
-  modalContent.style.background = '#fff';
+  //modalContent.style.background = '#fff';
+modalContent.style.backgroundColor = existingData.color || '#fff';
+
   modalContent.style.padding = '20px';
   modalContent.style.borderRadius = '8px';
   modalContent.style.display = 'flex';
@@ -141,6 +143,7 @@ failureLabel.style.marginBottom = '16px';
             : imagePreview.src
         };
         saveCardSettings(cardId, updated);
+	updateLocalCardSettings(cardId, updated); // Update local UI
       } else if (label === 'Delete') {
         deleteCard(cardId);
       }
