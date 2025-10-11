@@ -72,6 +72,21 @@
   <!-- Load dashboard logic -->
   <script type="module" src="main.js"></script>
   <script type="module" src="modal.js"></script>
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+  const supabaseUrl = 'https://qvlluhoxehdpssdebzyi.supabase.co';
+  const supabaseKey = 'your-actual-anon-key';
+
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  const { data, error } = await supabase
+    .from('devices')
+    .select('*')
+    .limit(1);
+
+  console.log('Test Supabase response:', data, error);
+</script>
 
   <!-- Optional: Global closeModal fallback -->
   <script>
