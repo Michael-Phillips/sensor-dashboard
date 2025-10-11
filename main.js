@@ -23,7 +23,6 @@ export async function saveCardSettings(cardId, updatedMetadata) {
   }
 }
 
-<script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
   const supabaseUrl = 'https://qvlluhoxehdpssdebzyi.supabase.co';
