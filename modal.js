@@ -42,14 +42,22 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
   modalContent.appendChild(colorSelect);
 
 /*******************************************/
-const closeModalBtn = document.createElement('button');
-closeModalBtn.id = 'closeModal';
-closeModalBtn.textContent = 'Close';
-closeModalBtn.onclick = () => {
-  console.log('❌ Modal closed');
-  document.body.removeChild(modal);
-};
-modalContent.appendChild(closeModalBtn); // ✅ This was missing!
+  const closeModalBtn = document.createElement('button');
+  closeModalBtn.id = 'closeModal';
+  closeModalBtn.textContent = 'Close';
+/ ✅ Add inline styles here for visibility
+closeModalBtn.style.marginTop = '20px';
+closeModalBtn.style.padding = '10px 16px';
+closeModalBtn.style.backgroundColor = '#eee';
+closeModalBtn.style.border = '1px solid #ccc';
+closeModalBtn.style.cursor = 'pointer';
+closeModalBtn.style.fontSize = '14px';
+
+  closeModalBtn.onclick = () => {
+    console.log('❌ Modal closed');
+    document.body.removeChild(modal);
+  };
+  modalContent.appendChild(closeModalBtn); // ✅ This was missing!
 
 /*******************************************/
 
