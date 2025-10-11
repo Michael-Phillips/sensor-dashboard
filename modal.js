@@ -220,6 +220,14 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
   modalContent.appendChild(thumbnailGrid);
   modalContent.appendChild(saveBtn);
   modalContent.appendChild(deleteBtn);
+  const closeModalBtn = document.createElement('button');
+  closeModalBtn.id = 'closeModal';
+  closeModalBtn.textContent = 'Close';
+  closeModalBtn.onclick = () => {
+    console.log('❌ Modal closed');
+    document.body.removeChild(modal);
+  };
+  modalContent.appendChild(closeModalBtn);
 
   modal.appendChild(modalContent);
 
@@ -230,7 +238,7 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
 export function closeModal() {
   const modal = document.getElementById('settingsModal');
   if (modal) {
-    modal.style.display = 'none';
+    document.body.removeChild(modal);
   }
 }
 
