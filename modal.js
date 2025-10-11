@@ -82,15 +82,6 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
   formSection.appendChild(failureLabel);
   formSection.appendChild(failureContainer);
 
-  /* Metadata
-  const metadata = document.createElement('p');
-  metadata.innerHTML = `
-    Sensors: ${existingData.sensor_count || 1}<br>
-    Module ID: ${existingData.module_id || 'N/A'}<br>
-    Hex: ${existingData.module_id ? Number(existingData.module_id).toString(16).toUpperCase() : 'N/A'}
-  `;
-  formSection.appendChild(metadata);
-  */
 
   // Sensor count only (optional)
   const sensorInfo = document.createElement('p');
