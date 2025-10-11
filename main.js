@@ -8,6 +8,8 @@ const supabaseUrl = 'https://qvlluhoxehdpssdebzyi.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2bGx1aG94ZWhkcHNzZGVienlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NDMwOTQsImV4cCI6MjA3NDQxOTA5NH0.4sJas3fvz_2z5iPY6yqL8W2X0NgZYjKUxxGNJX-JAMc';
 
 export async function saveCardSettings(cardId, updatedMetadata) {
+  const supabase = window.supabase; // ✅ Access the global client
+
   const { data, error } = await supabase
     .from('devices')
     .update({ metadata: updatedMetadata })
@@ -19,16 +21,6 @@ export async function saveCardSettings(cardId, updatedMetadata) {
     console.log('✅ Supabase update succeeded:', data);
   }
 }
-
-
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-  const supabaseUrl = 'https://qvlluhoxehdpssdebzyi.supabase.co';
-  const supabaseKey = 'your-anon-key-here'; // use your actual key
-
-  const supabase = createClient(supabaseUrl, supabaseKey);
-
-  
 
 const table = 'readings';
 
