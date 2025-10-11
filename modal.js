@@ -75,7 +75,7 @@ colorLabel.style.marginBottom = '4px';
     if (existingData.color === color) option.selected = true;
     colorSelect.appendChild(option);
   });
-colorInput.style.marginBottom = '16px';
+colorSelect.style.marginBottom = '16px';
   formSection.appendChild(colorLabel);
   formSection.appendChild(colorSelect);
 
