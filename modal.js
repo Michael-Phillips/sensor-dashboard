@@ -58,7 +58,7 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
   const colorLabel = document.createElement('label');
   colorLabel.textContent = 'Color';
   const colorSelect = document.createElement('select');
-  ['green', 'blue', 'orange', 'red'].forEach(color => {
+  ['Green', 'Yellow','Aqua','Blue','Red', 'orange','Orange','Purple','Gray'].forEach(color => {
     const option = document.createElement('option');
     option.value = color;
     option.textContent = color;
