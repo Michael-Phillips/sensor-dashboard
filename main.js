@@ -8,8 +8,6 @@ const supabase = window.supabase;
 const supabaseUrl = window.supabaseUrl;
 const supabaseKey = window.supabaseKey;
 
-2z5iPY6yqL8W2X0NgZYjKUxxGNJX-JAMc';
-
 export async function saveCardSettings(cardId, updatedMetadata) {
   const supabase = window.supabase; // ✅ Access the global client
 
