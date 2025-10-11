@@ -52,6 +52,16 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
   modalContent.appendChild(locInput);
   modalContent.appendChild(colorSelect);
 
+/*******************************************/
+  const closeModalBtn = document.createElement('button');
+  closeModalBtn.id = 'closeModal';
+  closeModalBtn.textContent = 'Close';
+  closeModalBtn.onclick = () => {
+    console.log('❌ Modal closed');
+    document.body.removeChild(modal);
+  };
+/*******************************************/
+
   const imagePreview = document.createElement('img');
 
   imagePreview.src = existingData.image
@@ -220,13 +230,7 @@ export function createGearModal(cardId, existingData, saveCardSettings, deleteCa
   modalContent.appendChild(thumbnailGrid);
   modalContent.appendChild(saveBtn);
   modalContent.appendChild(deleteBtn);
-  const closeModalBtn = document.createElement('button');
-  closeModalBtn.id = 'closeModal';
-  closeModalBtn.textContent = 'Close';
-  closeModalBtn.onclick = () => {
-    console.log('❌ Modal closed');
-    document.body.removeChild(modal);
-  };
+
   modalContent.appendChild(closeModalBtn);
 
   modal.appendChild(modalContent);
