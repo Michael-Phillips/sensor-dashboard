@@ -35,7 +35,7 @@ console.log('📡 Starting GitHub API image fetch...');
   }
 }
 
-export function renderCards(data, container, saveCardSettings, deleteCard) {
+export function renderCards(data, container, saveCardSettings, updateLocalCardSettings, deleteCard) {
   container.innerHTML = '';
 
   // 🔍 Log available images once at render
