@@ -48,7 +48,6 @@ export function renderCards(data, container, saveCardSettings, deleteCard) {
 
 
   data.forEach(row => {
-//const metadata = row.metadata || {};
 const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
 
     const card = document.createElement('div');
@@ -58,8 +57,6 @@ const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : r
 // Apply background color from metadata
 const color = metadata.color || 'white';
 card.style.backgroundColor = metadata.color || 'white';
-
-const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
 
     const gear = document.createElement('div');
     gear.className = 'gear-icon';
