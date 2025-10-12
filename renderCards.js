@@ -62,7 +62,7 @@ card.style.backgroundColor = metadata.color || 'white';
     gear.className = 'gear-icon';
     gear.dataset.id = row.device_id;
     gear.innerHTML = '<i class="fas fa-cog"></i>';
-    console.log('🔧 Gear element created for', row.device_id, gear);
+    //console.log('🔧 Gear element created for', row.device_id, gear);
     card.appendChild(gear);
 
     const img = document.createElement('img');
