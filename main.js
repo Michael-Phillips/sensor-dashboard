@@ -27,10 +27,10 @@ const table = 'readings';
 
 let sensorData = [];
 
-function updateLocalCardSettings(cardId, updated) {
+function updateLocalCardSettings(cardId, updatedMetadata) {
   const row = sensorData.find(r => r.device_id === cardId);
   if (row) {
-    row.metadata = { ...row.metadata, ...updated };
+    row.metadata = { ...row.metadata, ...updatedMetadata };
     renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard);
   }
 }

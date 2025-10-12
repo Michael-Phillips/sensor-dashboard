@@ -134,7 +134,7 @@ failureLabel.style.marginBottom = '16px';
     btn.style.marginRight = '10px';
     btn.onclick = () => {
       if (label === 'Done') {
-        const updated = {
+        const updatedMetadata  = {
           description: descInput.value.trim(),
           location: locInput.value.trim(),
           color: colorSelect.value,
@@ -142,8 +142,8 @@ failureLabel.style.marginBottom = '16px';
             ? imagePreview.src.replace(BASE_PATH, '')
             : imagePreview.src
         };
-        saveCardSettings(cardId, updated);
-	updateLocalCardSettings(cardId, updated); // Update local UI
+        saveCardSettings(cardId, updatedMetadata );
+	updateLocalCardSettings(cardId, updatedMetadata ); // Update local UI
       } else if (label === 'Delete') {
         deleteCard(cardId);
       }
