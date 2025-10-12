@@ -14,7 +14,7 @@ export async function saveCardSettings(cardId, updatedMetadata) {
   const { data, error } = await supabase
     .from('devices')
     .update({ metadata: updatedMetadata })
-    .eq('device_id', cardId);
+    .eq('device_id', String(cardId).trim()); // ✅ Ensure string match
 
   if (error) {
     console.error('❌ Supabase update failed:', error);
