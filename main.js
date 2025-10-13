@@ -36,6 +36,8 @@ function updateLocalCardSettings(cardId, updatedMetadata) {
       ? { ...row, metadata: { ...row.metadata, ...updatedMetadata } }
       : row
   );
+console.log('📦 Updating local card for:', cardId);
+console.log('📦 Metadata being applied:', updatedMetadata);
 
   sensorData = updatedSensorData; // ✅ update global reference
 

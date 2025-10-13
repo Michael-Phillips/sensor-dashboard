@@ -93,11 +93,8 @@ Object.entries(colorOptions).forEach(([name, hex]) => {
   option.textContent = name;
   if (existingData.color === hex) option.selected = true;
   colorSelect.appendChild(option);
-
-
-
   });
-colorSelect.style.marginBottom = '16px';
+  colorSelect.style.marginBottom = '16px';
   formSection.appendChild(colorLabel);
   formSection.appendChild(colorSelect);
 
@@ -148,6 +145,7 @@ failureLabel.style.marginBottom = '16px';
           color: colorSelect.value,
           image: finalImage
         };
+console.log('🧠 Metadata before save:', updatedMetadata);
 
         saveCardSettings(cardId, updatedMetadata );
 	      updateLocalCardSettings(cardId, updatedMetadata ); // Update local UI
