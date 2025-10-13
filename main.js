@@ -13,13 +13,11 @@ export async function saveCardSettings(cardId, updatedMetadata) {
 
   const { data, error } = await supabase
     .from('readings')
-  .select('*')
-  .eq('device_id', String(cardId).trim());
+    .select('*')
+    .eq('device_id', String(cardId).trim())
+    .update({ metadata: updatedMetadata })
+    .eq('device_id', String(cardId).trim()); // ✅ Ensure string match
    console.log('🔍 Row check:', data, error);
-
-//    .update({ metadata: updatedMetadata })
-//    .eq('device_id', String(cardId).trim()); // ✅ Ensure string match
-
   if (error) {
     console.error('❌ Supabase update failed:', error);
   } else {
