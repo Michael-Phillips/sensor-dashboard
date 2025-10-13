@@ -37,13 +37,29 @@ function updateLocalCardSettings(cardId, updatedMetadata) {
       : row
   );
 
+  sensorData = updatedSensorData; // ✅ update global reference
+
+  console.log('🔄 Updated metadata for', cardId, updatedMetadata);
+
+  renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard);
+}
+
+/*
+function updateLocalCardSettings(cardId, updatedMetadata) {
+  // Clone and update sensorData safely
+  const updatedSensorData = sensorData.map(row =>
+    row.device_id === cardId
+      ? { ...row, metadata: { ...row.metadata, ...updatedMetadata } }
+      : row
+  );
+
   // Optional: log the updated row for debugging
   console.log('🔄 Updated metadata for', cardId, updatedMetadata);
 
   // Re-render with the updated array
   renderCards(updatedSensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard);
 }
-
+*/
 
 function deleteCard(cardId) {
   const index = sensorData.findIndex(r => r.device_id === cardId);
