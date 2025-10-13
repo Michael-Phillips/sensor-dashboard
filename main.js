@@ -15,11 +15,20 @@ export async function saveCardSettings(cardId, updatedMetadata) {
     .from('readings')
     .update({ metadata: updatedMetadata })
     .eq('device_id', String(cardId).trim()); // ✅ Ensure string match
-   console.log('🔍 Row check:', data, error);
   if (error) {
     console.error('❌ Supabase update failed:', error);
   } else {
     console.log('✅ Supabase update succeeded:', data);
+    // Fetch updated row and re-render
+    const { data: updatedRow, error: fetchError } = await supabase
+      .from('readings')
+      .select('*')
+      .eq('device_id', String(cardId).trim());
+
+    if (updatedRow && updatedRow.length > 0) {
+      updateLocalCardSettings(cardId, updatedRow[0].metadata);
+    }
+
   }
 }
 
