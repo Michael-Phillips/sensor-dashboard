@@ -129,6 +129,8 @@ failureLabel.style.marginBottom = '16px';
     const btn = document.createElement('button');
     btn.textContent = label;
     btn.style.marginRight = '10px';
+    
+    const sensorData = window.sensorData;
     btn.onclick = () => {
       if (label === 'Done') {
         const existingData = sensorData.find(r => r.device_id === cardId)?.metadata || {};
