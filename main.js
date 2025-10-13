@@ -12,7 +12,7 @@ export async function saveCardSettings(cardId, updatedMetadata) {
   const supabase = window.supabase; // ✅ Access the global client
 
   const { data, error } = await supabase
-    .from('devices')
+    .from('readings')
   .select('*')
   .eq('device_id', String(cardId).trim());
    console.log('🔍 Row check:', data, error);
