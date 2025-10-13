@@ -24,11 +24,11 @@ export async function saveCardSettings(cardId, updatedMetadata) {
       .from('readings')
       .select('*')
       .eq('device_id', String(cardId).trim());
+      console.log('🔄 Updated row:', row);
 
     if (updatedRow && updatedRow.length > 0) {
       updateLocalCardSettings(cardId, updatedRow[0].metadata);
     }
-
   }
 }
 
@@ -37,12 +37,20 @@ const table = 'readings';
 let sensorData = [];
 
 function updateLocalCardSettings(cardId, updatedMetadata) {
-  const row = sensorData.find(r => r.device_id === cardId);
-  if (row) {
-    row.metadata = { ...row.metadata, ...updatedMetadata };
-    renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard);
-  }
+  // Clone and update sensorData safely
+  const updatedSensorData = sensorData.map(row =>
+    row.device_id === cardId
+      ? { ...row, metadata: { ...row.metadata, ...updatedMetadata } }
+      : row
+  );
+
+  // Optional: log the updated row for debugging
+  console.log('🔄 Updated metadata for', cardId, updatedMetadata);
+
+  // Re-render with the updated array
+  renderCards(updatedSensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard);
 }
+
 
 function deleteCard(cardId) {
   const index = sensorData.findIndex(r => r.device_id === cardId);
