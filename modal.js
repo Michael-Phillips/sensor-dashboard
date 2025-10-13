@@ -134,13 +134,20 @@ failureLabel.style.marginBottom = '16px';
     btn.style.marginRight = '10px';
     btn.onclick = () => {
       if (label === 'Done') {
+        const imageSrc = imagePreview.src?.trim();
+        const imagePath = imageSrc && imageSrc.includes(BASE_PATH)
+          ? imageSrc.replace(BASE_PATH, '')
+          : imageSrc;
+
+        // ✅ Fallback to default if image is missing or invalid
         const updatedMetadata  = {
           description: descInput.value.trim(),
           location: locInput.value.trim(),
           color: colorSelect.value,
-          image: imagePreview.src.includes(BASE_PATH)
-            ? imagePreview.src.replace(BASE_PATH, '')
-            : imagePreview.src
+          image: imagePath || 'default-plant.jpg'
+//          image: imagePreview.src.includes(BASE_PATH)
+//            ? imagePreview.src.replace(BASE_PATH, '')
+//            : imagePreview.src
         };
         saveCardSettings(cardId, updatedMetadata );
 	updateLocalCardSettings(cardId, updatedMetadata ); // Update local UI
