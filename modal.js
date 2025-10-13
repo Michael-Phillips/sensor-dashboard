@@ -129,10 +129,15 @@ failureLabel.style.marginBottom = '16px';
     const btn = document.createElement('button');
     btn.textContent = label;
     btn.style.marginRight = '10px';
-    
+
     const sensorData = window.sensorData;
     btn.onclick = () => {
       if (label === 'Done') {
+        if (!sensorData || !Array.isArray(sensorData)) {
+          console.error('⛔ sensorData is undefined or not an array');
+          return;
+        }
+
         const existingData = sensorData.find(r => r.device_id === cardId)?.metadata || {};
         const imageSrc = imagePreview.src?.trim();
         const imagePath = imageSrc && imageSrc.includes(BASE_PATH)
