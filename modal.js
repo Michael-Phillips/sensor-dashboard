@@ -146,15 +146,8 @@ failureLabel.style.marginBottom = '16px';
           location: locInput.value.trim(),
           color: colorSelect.value,
           image: finalImage
-// console.log('✅ description:', description);
-//          image: imagePath || 'default-plant.jpg'
-//          image: imagePreview.src.includes(BASE_PATH)
-//            ? imagePreview.src.replace(BASE_PATH, '')
-//            : imagePreview.src
         };
-        console.log('✅ description:', description);
-        console.log('✅ color:', color);
-        console.log('✅ image:', image);
+
         saveCardSettings(cardId, updatedMetadata );
 	updateLocalCardSettings(cardId, updatedMetadata ); // Update local UI
       } else if (label === 'Delete') {
