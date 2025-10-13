@@ -130,7 +130,7 @@ failureLabel.style.marginBottom = '16px';
     btn.textContent = label;
     btn.style.marginRight = '10px';
 
-    const sensorData = window.sensorData;
+    //const sensorData = window.sensorData;
     btn.onclick = () => {
       if (label === 'Done') {
         if (!sensorData || !Array.isArray(sensorData)) {
