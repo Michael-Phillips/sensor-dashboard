@@ -134,6 +134,7 @@ failureLabel.style.marginBottom = '16px';
     btn.style.marginRight = '10px';
     btn.onclick = () => {
       if (label === 'Done') {
+        const existingData = sensorData.find(r => r.device_id === cardId)?.metadata || {};
         const imageSrc = imagePreview.src?.trim();
         const imagePath = imageSrc && imageSrc.includes(BASE_PATH)
           ? imageSrc.replace(BASE_PATH, '')
@@ -149,7 +150,7 @@ failureLabel.style.marginBottom = '16px';
         };
 
         saveCardSettings(cardId, updatedMetadata );
-	updateLocalCardSettings(cardId, updatedMetadata ); // Update local UI
+	      updateLocalCardSettings(cardId, updatedMetadata ); // Update local UI
       } else if (label === 'Delete') {
         deleteCard(cardId);
       }
