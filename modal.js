@@ -140,11 +140,14 @@ failureLabel.style.marginBottom = '16px';
           : imageSrc;
 
         // ✅ Fallback to default if image is missing or invalid
+        const finalImage = imagePath || existingData.image || 'default-plant.jpg';
         const updatedMetadata  = {
           description: descInput.value.trim(),
           location: locInput.value.trim(),
           color: colorSelect.value,
-          image: imagePath || 'default-plant.jpg'
+          image: finalImage
+
+//          image: imagePath || 'default-plant.jpg'
 //          image: imagePreview.src.includes(BASE_PATH)
 //            ? imagePreview.src.replace(BASE_PATH, '')
 //            : imagePreview.src
