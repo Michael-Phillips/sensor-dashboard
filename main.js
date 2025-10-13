@@ -9,26 +9,19 @@ const supabaseUrl = window.supabaseUrl;
 const supabaseKey = window.supabaseKey;
 
 export async function saveCardSettings(cardId, updatedMetadata) {
-  const supabase = window.supabase; // ✅ Access the global client
+  const supabase = window.supabase;
+
+  console.log('💾 Saving metadata for', cardId, updatedMetadata);
 
   const { data, error } = await supabase
     .from('readings')
     .update({ metadata: updatedMetadata })
-    .eq('device_id', String(cardId).trim()); // ✅ Ensure string match
+    .eq('device_id', String(cardId).trim());
+
   if (error) {
     console.error('❌ Supabase update failed:', error);
   } else {
     console.log('✅ Supabase update succeeded:', data);
-    // Fetch updated row and re-render
-    const { data: updatedRow, error: fetchError } = await supabase
-      .from('readings')
-      .select('*')
-      .eq('device_id', String(cardId).trim());
-      console.log('🔄 Updated row:', row);
-
-    if (updatedRow && updatedRow.length > 0) {
-      updateLocalCardSettings(cardId, updatedRow[0].metadata);
-    }
   }
 }
 
