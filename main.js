@@ -40,7 +40,7 @@ console.log('📦 Updating local card for:', cardId);
 console.log('📦 Metadata being applied:', updatedMetadata);
 
   sensorData = updatedSensorData; // ✅ update global reference
-  window.sensorData = sensorData;
+  
   console.log('🔄 Updated metadata for', cardId, updatedMetadata);
 
   renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard);
