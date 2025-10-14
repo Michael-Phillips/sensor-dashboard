@@ -36,15 +36,40 @@ body {
   position: fixed;
   top: 16px;
   right: 20px;
-  padding: 8px 14px;
   border-radius: 999px;
   border: 1px solid var(--toggle-border-color);
   background: var(--toggle-bg);
   color: var(--toggle-text-color);
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
   z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+}
+
+.theme-toggle .theme-icon {
+  width: 24px;
+  height: 24px;
+  display: none;
+  pointer-events: none;
+}
+
+.theme-toggle .theme-icon--moon {
+  display: block;
+}
+
+body.dark-theme .theme-toggle .theme-icon--moon {
+  display: none;
+}
+
+body.dark-theme .theme-toggle .theme-icon--sun {
+  display: block;
 }
 
 .theme-toggle:hover {

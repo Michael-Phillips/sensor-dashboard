@@ -12,6 +12,28 @@ const table = 'readings';
 let sensorData = [];
 
 const THEME_STORAGE_KEY = 'sensorDashboardTheme';
+const THEME_TRANSITION_MS = 450;
+const TOGGLE_PULSE_MS = 320;
+
+let themeTransitionTimeoutId = null;
+let togglePulseTimeoutId = null;
+let prefersReducedMotion = false;
+
+const reduceMotionQuery = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+
+if (reduceMotionQuery) {
+  const handleMotionPreference = (event) => {
+    prefersReducedMotion = event.matches;
+  };
+
+  prefersReducedMotion = reduceMotionQuery.matches;
+
+  if (typeof reduceMotionQuery.addEventListener === 'function') {
+    reduceMotionQuery.addEventListener('change', handleMotionPreference);
+  } else if (typeof reduceMotionQuery.addListener === 'function') {
+    reduceMotionQuery.addListener(handleMotionPreference);
+  }
+}
 
 function applyTheme(theme) {
   const resolvedTheme = theme === 'dark' ? 'dark' : 'light';
@@ -21,8 +43,10 @@ function applyTheme(theme) {
 
   const toggle = document.getElementById('themeToggle');
   if (toggle) {
-    toggle.textContent = isDark ? 'Light mode' : 'Dark mode';
     toggle.setAttribute('aria-pressed', String(isDark));
+    const label = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+    toggle.setAttribute('aria-label', label);
+    toggle.setAttribute('title', label);
   }
 }
 
@@ -56,6 +80,49 @@ function resolveInitialTheme() {
   return 'light';
 }
 
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function triggerThemeTransition(toggle) {
+  if (!toggle || prefersReducedMotion) {
+    return;
+  }
+
+  const rect = toggle.getBoundingClientRect();
+  const xPercent = clamp(((rect.left + rect.width / 2) / window.innerWidth) * 100, 0, 100);
+  const yPercent = clamp(((rect.top + rect.height / 2) / window.innerHeight) * 100, 0, 100);
+
+  document.body.style.setProperty('--transition-origin-x', `${xPercent}%`);
+  document.body.style.setProperty('--transition-origin-y', `${yPercent}%`);
+
+  document.body.classList.remove('theme-transition');
+  void document.body.offsetWidth;
+  document.body.classList.add('theme-transition');
+
+  if (themeTransitionTimeoutId) {
+    clearTimeout(themeTransitionTimeoutId);
+  }
+
+  themeTransitionTimeoutId = setTimeout(() => {
+    document.body.classList.remove('theme-transition');
+    themeTransitionTimeoutId = null;
+  }, THEME_TRANSITION_MS);
+
+  toggle.classList.remove('theme-toggle--pulse');
+  void toggle.offsetWidth;
+  toggle.classList.add('theme-toggle--pulse');
+
+  if (togglePulseTimeoutId) {
+    clearTimeout(togglePulseTimeoutId);
+  }
+
+  togglePulseTimeoutId = setTimeout(() => {
+    toggle.classList.remove('theme-toggle--pulse');
+    togglePulseTimeoutId = null;
+  }, TOGGLE_PULSE_MS);
+}
+
 function initThemeToggle() {
   const toggle = document.getElementById('themeToggle');
   if (!toggle) {
@@ -64,6 +131,7 @@ function initThemeToggle() {
 
   toggle.addEventListener('click', () => {
     const nextTheme = document.body.classList.contains('dark-theme') ? 'light' : 'dark';
+    triggerThemeTransition(toggle);
     applyTheme(nextTheme);
     storeTheme(nextTheme);
   });
