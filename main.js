@@ -9,15 +9,13 @@ const supabaseUrl = window.supabaseUrl;
 const supabaseKey = window.supabaseKey;
 const table = 'readings';
 
-let sensorData = [];
+let sensorData = []; // ✅ Global reference
 
 export async function saveCardSettings(cardId, updatedMetadata) {
-  const supabase = window.supabase;
-
   console.log('💾 Saving metadata for', cardId, updatedMetadata);
 
   const { data, error } = await supabase
-    .from('readings')
+    .from(table)
     .update({ metadata: updatedMetadata })
     .eq('device_id', String(cardId).trim());
 
@@ -29,51 +27,51 @@ export async function saveCardSettings(cardId, updatedMetadata) {
 }
 
 function updateLocalCardSettings(cardId, updatedMetadata) {
-  // Clone and update sensorData safely
   const updatedSensorData = sensorData.map(row =>
     String(row.device_id).trim() === String(cardId).trim()
       ? { ...row, metadata: { ...row.metadata, ...updatedMetadata } }
       : row
   );
-console.log('📦 Updating local card for:', cardId);
-console.log('📦 Metadata being applied:', updatedMetadata);
+
+  console.log('📦 Updating local card for:', cardId);
+  console.log('📦 Metadata being applied:', updatedMetadata);
 
   sensorData = updatedSensorData; // ✅ update global reference
-  console.log('📦 sensorData contents at Done click:', sensorData);
+  console.log('📦 sensorData contents after update:', sensorData);
   console.log('🔄 Updated metadata for', cardId, updatedMetadata);
 
-  renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard);
+  renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard, saveCardSettings);
 }
 
 function deleteCard(cardId) {
-  const index = sensorData.findIndex(r => r.device_id === cardId);
-  if (index !== -1) {
-    sensorData.splice(index, 1);
-    //renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, deleteCard);
-    renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard);
+  sensorData = sensorData.filter(row => String(row.device_id).trim() !== String(cardId).trim());
+  console.log('🗑️ Deleted card:', cardId);
 
-  }
+  renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard, saveCardSettings);
 }
 
 async function fetchReadings() {
-  const response = await fetch(`${supabaseUrl}/rest/v1/${table}?select=*&order=timestamp.desc`, {
-    headers: {
-      apikey: supabaseKey,
-      Authorization: `Bearer ${supabaseKey}`,
+  try {
+    const response = await fetch(`${supabaseUrl}/rest/v1/${table}?select=*&order=timestamp.desc`, {
+      headers: {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+      }
+    });
+
+    const data = await response.json();
+    if (!Array.isArray(data)) {
+      document.getElementById('cardContainer').innerHTML = `<div class="card"><h3>API Error</h3><p>${data.message}</p></div>`;
+      return;
     }
-  });
 
-  const data = await response.json();
-  if (!Array.isArray(data)) {
-    document.getElementById('cardContainer').innerHTML = `<div class="card"><h3>API Error</h3><p>${data.message}</p></div>`;
-    return;
+    sensorData = getLatestPerDevice(data);
+    renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard, saveCardSettings);
+  } catch (err) {
+    console.error('❌ Failed to fetch readings:', err);
   }
-
-  sensorData = getLatestPerDevice(data);
-  renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, deleteCard);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   fetchReadings();
 });
-
