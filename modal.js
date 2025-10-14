@@ -6,7 +6,7 @@ export function getCardSettings(cardId, data) {
   return match ? match.metadata || {} : {};
 }
 
-export function createGearModal(cardId, existingData, saveCardSettings, updateLocalCardSettings, deleteCard, availableImages = []) {
+export function createGearModal(cardId, existingData, saveCardSettings, updateLocalCardSettings, deleteCard, availableImages = [], sensorData = []) {
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.id = 'settingsModal';
@@ -133,9 +133,8 @@ failureLabel.style.marginBottom = '16px';
     //const sensorData = window.sensorData;
     btn.onclick = () => {
       if (label === 'Done') {
-        console.log('📦 sensorData contents at Done click:', sensorData);
-
-        if (!sensorData || !Array.isArray(sensorData)) {
+          console.log('📦 sensorData contents at Done click:', sensorData);
+          if (!sensorData || !Array.isArray(sensorData)) {
           console.error('⛔ sensorData is undefined or not an array');
           return;
         }

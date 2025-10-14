@@ -35,7 +35,7 @@ console.log('📡 Starting GitHub API image fetch...');
   }
 }
 
-export function renderCards(data, container, saveCardSettings, updateLocalCardSettings, deleteCard) {
+export function renderCards(data, container, updateLocalCardSettings, deleteCard, saveCardSettings, sensorData){
   container.innerHTML = '';
 
   // 🔍 Log available images once at render
@@ -46,17 +46,21 @@ export function renderCards(data, container, saveCardSettings, updateLocalCardSe
     availableImages = images;
   });
 
+console.log('🎨 Rendering card for:', row.device_id, metadata);
 
   data.forEach(row => {
-const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
+    const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
+console.log('🎨 Rendering card for:', row.device_id);
+console.log('🎨 Metadata:', row.metadata);
+console.log('🎨 Image:', row.metadata?.image || row.image_url);
 
     const card = document.createElement('div');
     card.className = 'card';
     card.dataset.cardId = row.device_id;
 
-// Apply background color from metadata
-const color = metadata.color || 'white';
-card.style.backgroundColor = metadata.color || 'white';
+    // Apply background color from metadata
+    const color = metadata.color || 'white';
+    card.style.backgroundColor = metadata.color || 'white';
 
     const gear = document.createElement('div');
     gear.className = 'gear-icon';
@@ -66,16 +70,18 @@ card.style.backgroundColor = metadata.color || 'white';
     card.appendChild(gear);
 
     const img = document.createElement('img');
+
     let imageUrl = metadata.image?.trim() || row.image_url?.trim();
 
-    // 🛠 Normalize broken metadata like "default-plant.jpg"
-    if (!imageUrl || imageUrl.length === 0) {
+    if (!imageUrl || imageUrl === 'undefined' || imageUrl.length === 0) {
       imageUrl = 'images/default-plant.jpg';
     } else if (!imageUrl.startsWith('http') && !imageUrl.includes('images/')) {
       imageUrl = `images/${imageUrl}`;
     }
 
     img.src = imageUrl.startsWith('http') ? imageUrl : `${BASE_PATH}${imageUrl}`;
+    console.log('🖼️ Final image URL:', img.src);
+
 
     img.onerror = () => {
       console.warn('Image failed to load:', img.src);
