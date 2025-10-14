@@ -153,7 +153,7 @@ console.log('🎨 Image:', row.metadata?.image || row.image_url);
       console.log('📦 Existing metadata:', existingData);
       console.log('🖼️ Available images at click:', availableImages);
       try {
-        createGearModal(cardId, existingData, saveCardSettings, updateLocalCardSettings, deleteCard, availableImages);
+        createGearModal(cardId, existingData, saveCardSettings, updateLocalCardSettings, deleteCard, availableImages, data);
       } catch (err) {
         console.error('❌ Modal creation failed:', err);
       }
