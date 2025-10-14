@@ -138,8 +138,8 @@ failureLabel.style.marginBottom = '16px';
           console.error('⛔ sensorData is undefined or not an array');
           return;
         }
-
-        const existingData = sensorData.find(r => r.device_id === cardId)?.metadata || {};
+        const existingData = sensorData.find(r => String(r.device_id).trim() === String(cardId).trim())?.metadata || {};
+        //const existingData = sensorData.find(r => r.device_id === cardId)?.metadata || {};
         const imageSrc = imagePreview.src?.trim();
         const imagePath = imageSrc && imageSrc.includes(BASE_PATH)
           ? imageSrc.replace(BASE_PATH, '')

@@ -31,7 +31,7 @@ export async function saveCardSettings(cardId, updatedMetadata) {
 function updateLocalCardSettings(cardId, updatedMetadata) {
   // Clone and update sensorData safely
   const updatedSensorData = sensorData.map(row =>
-    row.device_id === cardId
+    String(row.device_id).trim() === String(cardId).trim()
       ? { ...row, metadata: { ...row.metadata, ...updatedMetadata } }
       : row
   );
@@ -39,7 +39,7 @@ console.log('📦 Updating local card for:', cardId);
 console.log('📦 Metadata being applied:', updatedMetadata);
 
   sensorData = updatedSensorData; // ✅ update global reference
-  
+  console.log('📦 sensorData contents at Done click:', sensorData);
   console.log('🔄 Updated metadata for', cardId, updatedMetadata);
 
   renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard);
@@ -50,7 +50,7 @@ function deleteCard(cardId) {
   if (index !== -1) {
     sensorData.splice(index, 1);
     //renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, deleteCard);
-renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard);
+    renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard);
 
   }
 }
