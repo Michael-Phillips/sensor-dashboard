@@ -1,5 +1,6 @@
 import { BASE_PATH } from './main.js'; // Optional: if you centralize BASE_PATH
 import { getRelativeTime } from './utils.js';
+import { saveCardSettings } from './main.js';
 
 export function getCardSettings(cardId, data) {
   const match = data.find(row => row.device_id === cardId);
