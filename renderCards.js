@@ -59,8 +59,11 @@ console.log('🎨 Image:', row.metadata?.image || row.image_url);
     card.dataset.cardId = row.device_id;
 
     // Apply background color from metadata
-    const color = metadata.color || 'white';
-    card.style.backgroundColor = metadata.color || 'white';
+    if (metadata.color) {
+      card.style.backgroundColor = metadata.color;
+    } else {
+      card.style.removeProperty('background-color');
+    }
 
     const gear = document.createElement('div');
     gear.className = 'gear-icon';

@@ -11,6 +11,64 @@ const table = 'readings';
 
 let sensorData = [];
 
+const THEME_STORAGE_KEY = 'sensorDashboardTheme';
+
+function applyTheme(theme) {
+  const resolvedTheme = theme === 'dark' ? 'dark' : 'light';
+  const isDark = resolvedTheme === 'dark';
+
+  document.body.classList.toggle('dark-theme', isDark);
+
+  const toggle = document.getElementById('themeToggle');
+  if (toggle) {
+    toggle.textContent = isDark ? 'Light mode' : 'Dark mode';
+    toggle.setAttribute('aria-pressed', String(isDark));
+  }
+}
+
+function readStoredTheme() {
+  try {
+    return localStorage.getItem(THEME_STORAGE_KEY);
+  } catch (error) {
+    console.warn('Unable to access localStorage for theme', error);
+    return null;
+  }
+}
+
+function storeTheme(theme) {
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch (error) {
+    console.warn('Unable to store theme preference', error);
+  }
+}
+
+function resolveInitialTheme() {
+  const stored = readStoredTheme();
+  if (stored === 'dark' || stored === 'light') {
+    return stored;
+  }
+
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    return 'dark';
+  }
+
+  return 'light';
+}
+
+function initThemeToggle() {
+  const toggle = document.getElementById('themeToggle');
+  if (!toggle) {
+    return;
+  }
+
+  toggle.addEventListener('click', () => {
+    const nextTheme = document.body.classList.contains('dark-theme') ? 'light' : 'dark';
+    applyTheme(nextTheme);
+    storeTheme(nextTheme);
+  });
+}
+
 export async function saveCardSettings(cardId, updatedMetadata) {
   const supabase = window.supabase;
 
@@ -73,7 +131,10 @@ async function fetchReadings() {
   renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, deleteCard);
 }
 
+const initialTheme = resolveInitialTheme();
+applyTheme(initialTheme);
+
 document.addEventListener('DOMContentLoaded', () => {
+  initThemeToggle();
   fetchReadings();
 });
-
