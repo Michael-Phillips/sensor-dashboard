@@ -133,6 +133,8 @@ failureLabel.style.marginBottom = '16px';
     //const sensorData = window.sensorData;
     btn.onclick = () => {
       if (label === 'Done') {
+        console.log('📦 sensorData contents at Done click:', sensorData);
+
         if (!sensorData || !Array.isArray(sensorData)) {
           console.error('⛔ sensorData is undefined or not an array');
           return;
