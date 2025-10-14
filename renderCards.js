@@ -33,8 +33,7 @@ async function listRepoImages() {
     return [];
   }
 }
-
-export function renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettings) {
+export function renderCards(sensorData, container, saveCardSettings, updateLocalCardSettings, deleteCard) {
   container.innerHTML = '';
 
   let availableImages = [];
