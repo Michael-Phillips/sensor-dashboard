@@ -46,7 +46,7 @@ export function renderCards(data, container, updateLocalCardSettings, deleteCard
     availableImages = images;
   });
 
-console.log('🎨 Rendering card for:', row.device_id, metadata);
+//console.log('🎨 Rendering card for:', row.device_id, metadata);
 
   data.forEach(row => {
     const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
