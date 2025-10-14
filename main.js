@@ -1,6 +1,7 @@
 import { getLatestPerDevice } from './utils.js';
 import { renderCards } from './renderCards.js';
 import { getCardSettings, createGearModal, closeModal } from './modal.js';
+import mockSensors from './src/mocks/sensors.js';
 
 export const BASE_PATH = 'https://michael-phillips.github.io/sensor-dashboard/';
 
@@ -35,42 +36,56 @@ function updateLocalCardSettings(cardId, updatedMetadata) {
       ? { ...row, metadata: { ...row.metadata, ...updatedMetadata } }
       : row
   );
-console.log('📦 Updating local card for:', cardId);
-console.log('📦 Metadata being applied:', updatedMetadata);
 
   sensorData = updatedSensorData; // ✅ update global reference
-  
-  console.log('🔄 Updated metadata for', cardId, updatedMetadata);
 
-  renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard);
+  // Re-render using unified argument order: (data, container, save, updateLocal, delete, sensorData)
+  renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, updateLocalCardSettings, deleteCard, sensorData);
 }
 
 function deleteCard(cardId) {
   const index = sensorData.findIndex(r => r.device_id === cardId);
   if (index !== -1) {
     sensorData.splice(index, 1);
-    //renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, deleteCard);
-renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard);
-
+    renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, updateLocalCardSettings, deleteCard, sensorData);
   }
 }
 
 async function fetchReadings() {
-  const response = await fetch(`${supabaseUrl}/rest/v1/${table}?select=*&order=timestamp.desc`, {
-    headers: {
-      apikey: supabaseKey,
-      Authorization: `Bearer ${supabaseKey}`,
-    }
-  });
+  const urlParams = new URLSearchParams(window.location.search);
+  const useMock = urlParams.get('mock') === '1';
 
-  const data = await response.json();
-  if (!Array.isArray(data)) {
-    document.getElementById('cardContainer').innerHTML = `<div class="card"><h3>API Error</h3><p>${data.message}</p></div>`;
+  if (useMock) {
+    console.log('🧪 Using mock sensor data (explicit ?mock=1)');
+    sensorData = getLatestPerDevice(mockSensors);
+    renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, updateLocalCardSettings, deleteCard, sensorData);
     return;
   }
 
-  sensorData = getLatestPerDevice(data);
-  renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, deleteCard);
+  try {
+    const response = await fetch(`${supabaseUrl}/rest/v1/${table}?select=*&order=timestamp.desc`, {
+      headers: {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+      }
+    });
+
+    const data = await response.json();
+
+    if (!Array.isArray(data) || data.length === 0) {
+      console.warn('⚠️ API returned no array. Falling back to mock data.');
+      sensorData = getLatestPerDevice(mockSensors);
+      renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, updateLocalCardSettings, deleteCard, sensorData);
+      return;
+    }
+
+    sensorData = getLatestPerDevice(data);
+    renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, updateLocalCardSettings, deleteCard, sensorData);
+  } catch (err) {
+    console.error('❌ Fetch failed, falling back to mock data:', err);
+    sensorData = getLatestPerDevice(mockSensors);
+    renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, updateLocalCardSettings, deleteCard, sensorData);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
