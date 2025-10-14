@@ -1,38 +1,47 @@
-import { BASE_PATH } from './main.js'; // Optional: if you centralize BASE_PATH
+import { BASE_PATH } from './main.js';
 import { getRelativeTime } from './utils.js';
-import { saveCardSettings } from './main.js';
 
-export function getCardSettings(cardId, data) {
-  const match = data.find(row => row.device_id === cardId);
+export function getCardSettings(cardId, sensorData) {
+  const match = sensorData.find(row => String(row.device_id).trim() === String(cardId).trim());
   return match ? match.metadata || {} : {};
 }
 
-export function createGearModal(cardId, existingData, saveCardSettings, updateLocalCardSettings, deleteCard, availableImages = [], sensorData = []) {
+export function createGearModal(
+  cardId,
+  existingData,
+  saveCardSettings,
+  updateLocalCardSettings,
+  deleteCard,
+  availableImages = [],
+  sensorData = []
+) {
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.id = 'settingsModal';
-  modal.style.display = 'flex';
-  modal.style.justifyContent = 'center';
-  modal.style.alignItems = 'center';
-  modal.style.position = 'fixed';
-  modal.style.top = '0';
-  modal.style.left = '0';
-  modal.style.width = '100%';
-  modal.style.height = '100%';
-  modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
-  modal.style.zIndex = '1000';
+  Object.assign(modal.style, {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'fixed',
+    top: '0',
+    left: '0',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    zIndex: '1000'
+  });
 
   const modalContent = document.createElement('div');
   modalContent.className = 'modal-content';
-  //modalContent.style.background = '#fff';
-modalContent.style.backgroundColor = existingData.color || '#fff';
-
-  modalContent.style.padding = '20px';
-  modalContent.style.borderRadius = '8px';
-  modalContent.style.display = 'flex';
-  modalContent.style.gap = '20px';
-  modalContent.style.maxWidth = '800px';
-  modalContent.style.width = '90%';
+  Object.assign(modalContent.style, {
+    backgroundColor: existingData.color || '#fff',
+    padding: '20px',
+    borderRadius: '8px',
+    display: 'flex',
+    gap: '20px',
+    maxWidth: '800px',
+    width: '90%'
+  });
 
   // Left column
   const formSection = document.createElement('div');
@@ -42,59 +51,48 @@ modalContent.style.backgroundColor = existingData.color || '#fff';
   title.textContent = `Sensor ${cardId} Settings`;
   formSection.appendChild(title);
 
-  const descLabel = document.createElement('label');
-  descLabel.textContent = 'Description';
-descLabel.style.display = 'block';
-descLabel.style.marginBottom = '4px';
-  const descInput = document.createElement('input');
-  descInput.type = 'text';
-  descInput.value = existingData.description || '';
-descInput.style.marginBottom = '16px';
+  const createLabeledInput = (labelText, value = '') => {
+    const label = document.createElement('label');
+    label.textContent = labelText;
+    Object.assign(label.style, { display: 'block', marginBottom: '4px' });
 
-  formSection.appendChild(descLabel);
-  formSection.appendChild(descInput);
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = value;
+    input.style.marginBottom = '16px';
 
-  const locLabel = document.createElement('label');
-  locLabel.textContent = 'Location';
-locLabel.style.display = 'block';
-locLabel.style.marginBottom = '4px';
-  const locInput = document.createElement('input');
-  locInput.type = 'text';
-  locInput.value = existingData.location || '';
-locInput.style.marginBottom = '16px';
+    formSection.appendChild(label);
+    formSection.appendChild(input);
+    return input;
+  };
 
-  formSection.appendChild(locLabel);
-  formSection.appendChild(locInput);
+  const descInput = createLabeledInput('Description', existingData.description || '');
+  const locInput = createLabeledInput('Location', existingData.location || '');
 
   const colorLabel = document.createElement('label');
   colorLabel.textContent = 'Color';
-colorLabel.style.display = 'block';
-colorLabel.style.marginBottom = '4px';
-  const colorSelect = document.createElement('select');
- // ['Green', 'Yellow','Aqua','Blue','Red', 'orange','Orange','Purple','Gray'].forEach(color => {
- //   const option = document.createElement('option');
- //   option.value = color;
- //   option.textContent = color;
- //   if (existingData.color === color) option.selected = true;
- //   colorSelect.appendChild(option);
-const colorOptions = {
-  Green:  '#CBE66E',
-  Yellow: '#F2F187',
-  Aqua:   '#A1CBCD',
-  Blue:   '#97D1E6',
-  Red:    '#F3797A',
-  Orange: '#F8C274',
-  Purple: '#B185BA',
-  Gray:   '#B7B7B7'
-};
+  Object.assign(colorLabel.style, { display: 'block', marginBottom: '4px' });
 
-Object.entries(colorOptions).forEach(([name, hex]) => {
-  const option = document.createElement('option');
-  option.value = hex;
-  option.textContent = name;
-  if (existingData.color === hex) option.selected = true;
-  colorSelect.appendChild(option);
+  const colorSelect = document.createElement('select');
+  const colorOptions = {
+    Green: '#CBE66E',
+    Yellow: '#F2F187',
+    Aqua: '#A1CBCD',
+    Blue: '#97D1E6',
+    Red: '#F3797A',
+    Orange: '#F8C274',
+    Purple: '#B185BA',
+    Gray: '#B7B7B7'
+  };
+
+  Object.entries(colorOptions).forEach(([name, hex]) => {
+    const option = document.createElement('option');
+    option.value = hex;
+    option.textContent = name;
+    if (existingData.color === hex) option.selected = true;
+    colorSelect.appendChild(option);
   });
+
   colorSelect.style.marginBottom = '16px';
   formSection.appendChild(colorLabel);
   formSection.appendChild(colorSelect);
@@ -102,8 +100,7 @@ Object.entries(colorOptions).forEach(([name, hex]) => {
   // Failure to Report Time
   const failureLabel = document.createElement('label');
   failureLabel.textContent = 'Failure to Report Time';
-failureLabel.style.display = 'block';
-failureLabel.style.marginBottom = '4px';
+  Object.assign(failureLabel.style, { display: 'block', marginBottom: '4px' });
 
   const failureContainer = document.createElement('div');
   ['Days', 'Hours', 'Minutes'].forEach(unit => {
@@ -113,12 +110,12 @@ failureLabel.style.marginBottom = '4px';
     input.style.width = '60px';
     failureContainer.appendChild(input);
   });
-failureLabel.style.marginBottom = '16px';
+
+  failureLabel.style.marginBottom = '16px';
   formSection.appendChild(failureLabel);
   formSection.appendChild(failureContainer);
 
-
-  // Sensor count only (optional)
+  // Sensor count
   const sensorInfo = document.createElement('p');
   sensorInfo.textContent = `Sensors: ${existingData.sensor_count || 1}`;
   formSection.appendChild(sensorInfo);
@@ -126,45 +123,46 @@ failureLabel.style.marginBottom = '16px';
   // Buttons
   const buttonRow = document.createElement('div');
   buttonRow.style.marginTop = '20px';
+
   ['Done', 'Cancel', 'Delete'].forEach(label => {
     const btn = document.createElement('button');
     btn.textContent = label;
     btn.style.marginRight = '10px';
 
-    //const sensorData = window.sensorData;
     btn.onclick = () => {
       if (label === 'Done') {
-          console.log('📦 sensorData contents at Done click:', sensorData);
-          if (!sensorData || !Array.isArray(sensorData)) {
+        console.log('📦 sensorData contents at Done click:', sensorData);
+        if (!Array.isArray(sensorData)) {
           console.error('⛔ sensorData is undefined or not an array');
           return;
         }
-        const existingData = sensorData.find(r => String(r.device_id).trim() === String(cardId).trim())?.metadata || {};
-        //const existingData = sensorData.find(r => r.device_id === cardId)?.metadata || {};
-        const imageSrc = imagePreview.src?.trim();
-        const imagePath = imageSrc && imageSrc.includes(BASE_PATH)
-          ? imageSrc.replace(BASE_PATH, '')
-          : imageSrc;
 
-        // ✅ Fallback to default if image is missing or invalid
-        const finalImage = imagePath || existingData.image || 'default-plant.jpg';
-        const updatedMetadata  = {
+        const currentRow = sensorData.find(r => String(r.device_id).trim() === String(cardId).trim());
+        const fallbackMetadata = currentRow?.metadata || {};
+        const imageSrc = imagePreview.src?.trim();
+        const imagePath = imageSrc?.includes(BASE_PATH) ? imageSrc.replace(BASE_PATH, '') : imageSrc;
+        const finalImage = imagePath || fallbackMetadata.image || 'default-plant.jpg';
+
+        const updatedMetadata = {
           description: descInput.value.trim(),
           location: locInput.value.trim(),
           color: colorSelect.value,
           image: finalImage
         };
-console.log('🧠 Metadata before save:', updatedMetadata);
 
-        saveCardSettings(cardId, updatedMetadata );
-	      updateLocalCardSettings(cardId, updatedMetadata ); // Update local UI
+        console.log('🧠 Metadata before save:', updatedMetadata);
+        saveCardSettings(cardId, updatedMetadata);
+        updateLocalCardSettings(cardId, updatedMetadata);
       } else if (label === 'Delete') {
         deleteCard(cardId);
       }
+
       document.body.removeChild(modal);
     };
+
     buttonRow.appendChild(btn);
   });
+
   formSection.appendChild(buttonRow);
 
   // Right column: image preview
@@ -173,10 +171,16 @@ console.log('🧠 Metadata before save:', updatedMetadata);
 
   const imagePreview = document.createElement('img');
   imagePreview.src = existingData.image
-    ? existingData.image.startsWith('http') ? existingData.image : `${BASE_PATH}${existingData.image}`
+    ? existingData.image.startsWith('http')
+      ? existingData.image
+      : `${BASE_PATH}${existingData.image}`
     : `${BASE_PATH}images/default-plant.jpg`;
-  imagePreview.style.width = '100%';
-  imagePreview.style.borderRadius = '8px';
+
+  Object.assign(imagePreview.style, {
+    width: '100%',
+    borderRadius: '8px'
+  });
+
   imageSection.appendChild(imagePreview);
 
   modalContent.appendChild(formSection);
@@ -185,9 +189,6 @@ console.log('🧠 Metadata before save:', updatedMetadata);
   document.body.appendChild(modal);
 }
 
-
-
-// Optional: global closeModal function
 export function closeModal() {
   const modal = document.getElementById('settingsModal');
   if (modal) {
@@ -195,5 +196,4 @@ export function closeModal() {
   }
 }
 
-// Make closeModal globally accessible if needed in HTML
 window.closeModal = closeModal;
