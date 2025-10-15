@@ -33,7 +33,7 @@ async function listRepoImages() {
     return [];
   }
 }
-export function renderCards(sensorData, container, saveCardSettings, updateLocalCardSettings, deleteCard) {
+export function renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettings) {
   container.innerHTML = '';
 
   let availableImages = [];
@@ -52,16 +52,17 @@ export function renderCards(sensorData, container, saveCardSettings, updateLocal
     card.className = 'card';
     card.dataset.cardId = row.device_id;
 
-    const color = metadata.color || 'white';
-    card.style.backgroundColor = color;
+    const color = typeof metadata.color === 'string' ? metadata.color.trim() : '';
+    if (color) {
+      card.style.setProperty('--card-background', color);
+    }
 
-    const gear = document.createElement('div');
-    gear.className = 'gear-icon';
-    gear.dataset.id = row.device_id;
-    gear.innerHTML = '<i class="fas fa-cog"></i>';
-    card.appendChild(gear);
+    const imageWrapper = document.createElement('div');
+    imageWrapper.className = 'card-image-wrapper';
 
     const img = document.createElement('img');
+    img.className = 'card-image';
+
     let imageUrl = metadata.image?.trim() || row.image_url?.trim();
 
     if (!imageUrl || imageUrl === 'undefined' || imageUrl.length === 0) {
@@ -80,63 +81,100 @@ export function renderCards(sensorData, container, saveCardSettings, updateLocal
       }
     };
 
-    card.appendChild(img);
+    imageWrapper.appendChild(img);
+    card.appendChild(imageWrapper);
 
     const sensorLabel = metadata.description || row.label || row.device_id;
-    const label = document.createElement('h3');
-    label.textContent = sensorLabel;
-    card.appendChild(label);
 
     const sensorKeys = Object.keys(row).filter(k => k.startsWith('sensor_') && typeof row[k] === 'number');
     let sensorIndex = 0;
 
-    const sensorDisplay = document.createElement('p');
-    sensorDisplay.className = 'sensor-reading';
+    const cardContent = document.createElement('div');
+    cardContent.className = 'card-content';
 
-    const sensorValue = document.createElement('span');
-    sensorValue.className = 'sensor-value';
+    const topRow = document.createElement('div');
+    topRow.className = 'card-top-row';
 
-    const sensorIndexDisplay = document.createElement('span');
-    sensorIndexDisplay.className = 'sensor-index';
+    const textColumn = document.createElement('div');
 
-    sensorDisplay.appendChild(sensorValue);
-    sensorDisplay.appendChild(sensorIndexDisplay);
-    card.appendChild(sensorDisplay);
+    const cardNumber = document.createElement('p');
+    cardNumber.className = 'card-number';
+
+    const title = document.createElement('p');
+    title.className = 'card-title';
+    title.textContent = sensorLabel;
+
+    const timestamp = document.createElement('p');
+    timestamp.className = 'card-timestamp';
+    timestamp.textContent = getRelativeTime(row.timestamp);
+
+    textColumn.append(cardNumber, title, timestamp);
+
+    const status = document.createElement('p');
+    status.className = 'card-status';
+    status.hidden = true;
+
+    topRow.append(textColumn, status);
 
     const typeDisplay = document.createElement('p');
-    typeDisplay.className = 'sensor-type';
+    typeDisplay.className = 'card-type';
+
+    const iconWrapper = document.createElement('div');
+    iconWrapper.className = 'card-icon-wrapper';
+
+    const gearButton = document.createElement('button');
+    gearButton.type = 'button';
+    gearButton.className = 'card-icon-button';
+    gearButton.dataset.id = row.device_id;
+    gearButton.setAttribute('aria-label', 'Open card settings');
+    gearButton.innerHTML = '<i class="fas fa-cog" aria-hidden="true"></i>';
+
+    iconWrapper.appendChild(gearButton);
+
+    cardContent.append(topRow, typeDisplay, iconWrapper);
+    card.appendChild(cardContent);
+
+    const border = document.createElement('div');
+    border.className = 'card-border';
+    card.appendChild(border);
 
     const updateSensorDisplay = () => {
+      if (!sensorKeys.length) {
+        cardNumber.textContent = '--';
+        status.textContent = '—';
+        typeDisplay.textContent = '';
+        return;
+      }
+
       const key = sensorKeys[sensorIndex];
       const meta = metadata[key] || {};
       const unit = typeof meta.unit === 'string' ? meta.unit.trim() : '';
-      const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
+      const value = row[key];
+      const formattedValue = typeof value === 'number'
+        ? value.toLocaleString(undefined, { maximumFractionDigits: 2 })
+        : value;
 
-      sensorValue.textContent = `${row[key]} ${unit}`;
-      sensorIndexDisplay.textContent = indexText;
-      typeDisplay.textContent = meta.type ? ` ${meta.type}` : '';
+      cardNumber.textContent = unit ? `${formattedValue} ${unit}` : `${formattedValue}`;
+      const multipleSensors = sensorKeys.length > 1;
+      status.textContent = multipleSensors ? `${sensorIndex + 1}/${sensorKeys.length}` : '';
+      status.hidden = !multipleSensors;
+      typeDisplay.textContent = meta.type || '';
     };
 
     updateSensorDisplay();
-    card.appendChild(typeDisplay);
 
-    const timestamp = document.createElement('div');
-    timestamp.className = 'timestamp';
-    timestamp.textContent = getRelativeTime(row.timestamp);
-    card.appendChild(timestamp);
-
-    card.addEventListener('click', () => {
-      sensorIndex = (sensorIndex + 1) % sensorKeys.length;
-      updateSensorDisplay();
-    });
+    if (sensorKeys.length) {
+      card.addEventListener('click', () => {
+        sensorIndex = (sensorIndex + 1) % sensorKeys.length;
+        updateSensorDisplay();
+      });
+    }
 
     // ⚙️ Modal trigger
-    gear.addEventListener('click', (event) => {
+    gearButton.addEventListener('click', (event) => {
       event.stopPropagation();
       console.log('📎 Gear listener attached for', row.device_id);
-      const cardId = gear.dataset.id;
-
-      const testDiv = document.createElement('div');
+      const cardId = gearButton.dataset.id;
 
       console.log('Gear clicked for', cardId);
       const existingData = getCardSettings(cardId, sensorData);
@@ -148,8 +186,6 @@ export function renderCards(sensorData, container, saveCardSettings, updateLocal
       } catch (err) {
         console.error('❌ Modal creation failed:', err);
       }
-
-      document.body.appendChild(testDiv);
     });
 
     container.appendChild(card);

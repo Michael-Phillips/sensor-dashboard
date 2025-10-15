@@ -1,94 +1,170 @@
+:root {
+  --font-family-base: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --color-page: #d8e5ee;
+  --color-card-background: #f9ffff;
+  --color-card-text: #151e24;
+  --color-card-muted: #152a38;
+  --color-accent: #678800;
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --card-border-color: rgba(0, 0, 0, 0.04);
+  --icon-surface: rgba(21, 42, 56, 0.08);
+  --icon-surface-hover: rgba(21, 42, 56, 0.12);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: sans-serif;
-  background-color: #f5f5f5;
   margin: 0;
+  min-height: 100vh;
   padding: 20px;
+  font-family: var(--font-family-base);
+  background-color: var(--color-page);
+  color: var(--color-card-text);
+}
+
+h1 {
+  margin: 0 0 24px;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+button {
+  font: inherit;
+}
+
+#cardContainer {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .card {
   position: relative;
-  width: 180px;
-  height: 300px; /* Increased height */
-  margin: 6px;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  font-size: 0.85rem;
-  line-height: 1.2;
-  display: inline-block;
-  vertical-align: top;
-  text-align: left;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--card-background, var(--color-card-background));
+  border-radius: 24px;
+  box-shadow: var(--card-shadow);
   overflow: hidden;
-  padding: 0;
-  transition: transform 0.2s cubic-bezier(0.33, 0, 0, 1) /* updated timing function */
+  transition: transform 0.2s cubic-bezier(0.33, 0, 0, 1);
 }
 
 .card:hover {
-  transform: scale(1.05);
+  transform: translateY(-4px);
 }
 
-.card img {
-  display: block;
+.card-image-wrapper {
   width: 100%;
-  height: 150px;
-  aspect-ratio: 4 / 3; /* Keeps image ratio consistent */
+  aspect-ratio: 4 / 3;
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px 24px 0 0;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
-.card .timestamp {
+.card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.card-top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.card-number {
+  margin: 0;
+  font-size: 40px;
+  font-style: italic;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--color-card-text);
+}
+
+.card-title {
+  margin: 8px 0 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-card-text);
+}
+
+.card-timestamp {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--color-accent);
+}
+
+.card-status {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--color-accent);
+}
+
+.card-type {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(21, 42, 56, 0.64);
+}
+
+.card-type:empty {
+  display: none;
+}
+
+.card-icon-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+}
+
+.card-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 9999px;
+  background-color: var(--icon-surface);
+  color: var(--color-card-muted);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.card-icon-button:hover,
+.card-icon-button:focus-visible {
+  background-color: var(--icon-surface-hover);
+}
+
+.card-icon-button i {
+  font-size: 14px;
+}
+
+.card-border {
   position: absolute;
-  bottom: 6px;
-  left: 35px; /* Leaves space for gear icon */
-  font-size: 0.7rem;
-  color: #555;
-}
-
-.card img:hover {
-  transform: scale(1.03);
-  transition: transform 0.2s ease;
-}
-
-.card h3 {
-  font-size: .75rem;
-  margin: 4px 0;
-  text-align: left;
-}
-
-
-.card p {
-  margin: 2px 0;
-  text-align: left;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid var(--card-border-color);
+  border-radius: 24px;
 }
 
 .form-section {
   flex: 1;
-}
-
-.sensor-reading {
-  font-size: 1.25rem;      /* Larger font */
-  font-weight: bold;
-  margin: 4px 0;
-  text-align: left;
-  position: relative;
-}
-
-.sensor-index {
-  position: absolute;
-  right: 0;
-  top: 0;
-  font-size: 0.625rem; /* Half of 1.25rem */
-  color: #666;
-}
-
-.gear-icon {
-  position: absolute;
-  bottom: 6px;
-  left: 6px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  z-index: 2;
 }
 
 .modal {
@@ -121,12 +197,6 @@ body {
   display: flex;
   justify-content: space-between;
   gap: 20px;
-}
-
-#modalImagePreview {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: cover;
 }
 
 .image-frame {
@@ -219,28 +289,20 @@ body {
   cursor: pointer;
 }
 
-#cardContainer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-}
-
 @media (max-width: 480px) {
-  .card {
-    max-width: 100%;
-    margin: 8px;
+  body {
+    padding: 16px;
   }
 
-  .sensor-reading {
-    font-size: 1rem;
+  .card-content {
+    padding: 14px;
   }
 
-  .sensor-index {
-    font-size: 0.5rem;
+  .card-number {
+    font-size: 32px;
   }
 
-  .timestamp {
-    font-size: 0.6rem;
+  .card-title {
+    font-size: 13px;
   }
 }
