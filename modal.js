@@ -6,6 +6,8 @@ export function getCardSettings(cardId, sensorData) {
   return match ? match.metadata || {} : {};
 }
 
+const table = 'readings';
+
 export function createGearModal(
   cardId,
   existingData,
