@@ -175,7 +175,8 @@ export function createGearModal(
           const { data, error } = await supabase
             .from(table)
             .delete()
-            .eq('device_id', String(cardId).trim());
+            .eq('device_id', String(cardId).trim())
+            .select(); // optional, returns deleted rows
 
           if (error) {
             console.error('❌ Supabase delete error:', error);
