@@ -20,7 +20,8 @@ console.log('🧪 Supabase update using device_id:', JSON.stringify(String(cardI
   const { data, error } = await supabase
     .from(table)
     .update({ metadata: updatedMetadata })
-    .eq('device_id', String(cardId).trim());
+    .eq('device_id', String(cardId).trim())
+    .select(); // 👈 This tells Supabase to return the updated rows
 
   if (error) {
     console.error('❌ Supabase update failed:', error);
