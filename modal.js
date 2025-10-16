@@ -127,6 +127,8 @@ export function createGearModal(
 
     btn.onclick = async () => {
       if (label === 'Done') {
+        console.log('🧪 saveCardSettings type:', typeof saveCardSettings);
+        console.log('🧪 saveCardSettings value:', saveCardSettings);
         console.log('📦 sensorData contents at Done click:', sensorData);
         if (!Array.isArray(sensorData)) {
           console.error('⛔ sensorData is undefined or not an array');
