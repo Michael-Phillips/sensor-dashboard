@@ -171,7 +171,12 @@ export function createGearModal(
         deleteCard(cardId);
       }
 
-      document.body.removeChild(modal);
+      //document.body.removeChild(modal);
+      if (modal && typeof modal.remove === 'function') {
+        modal.remove();
+      } else {
+        console.warn('⚠️ Modal not removable or already detached:', modal);
+      }
     };
 
     buttonRow.appendChild(btn);
