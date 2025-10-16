@@ -141,9 +141,15 @@ export function createGearModal(
         const currentRow = sensorData.find(r => String(r.device_id).trim() === String(cardId).trim());
         const fallbackMetadata = currentRow?.metadata || {};
         const imageSrc = imagePreview.src?.trim();
-        const imagePath = imageSrc?.includes(BASE_PATH) ? imageSrc.replace(BASE_PATH, '') : imageSrc;
-        const finalImage = imagePath || fallbackMetadata.image || 'default-plant.jpg';
+        let imagePath = imageSrc?.includes(BASE_PATH) ? imageSrc.replace(BASE_PATH, '') : imageSrc;
 
+        // Strip full URLs if needed
+        if (imagePath?.startsWith('http')) {
+          const parts = imagePath.split('/');
+          imagePath = parts[parts.length - 1]; // just the filename
+        }
+
+        const finalImage = imagePath || fallbackMetadata.image || 'default-plant.jpg';
         const updatedMetadata = {
           description: descInput.value.trim(),
           location: locInput.value.trim(),
