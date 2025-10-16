@@ -125,7 +125,7 @@ export function createGearModal(
     btn.textContent = label;
     btn.style.marginRight = '10px';
 
-    btn.onclick = () => {
+    btn.onclick = async () => {
       if (label === 'Done') {
         console.log('📦 sensorData contents at Done click:', sensorData);
         if (!Array.isArray(sensorData)) {
@@ -147,8 +147,21 @@ export function createGearModal(
         };
 
         console.log('🧠 Metadata before save:', updatedMetadata);
-        saveCardSettings(cardId, updatedMetadata);
-        updateLocalCardSettings(cardId, updatedMetadata);
+        try {
+          const result = await saveCardSettings(cardId, updatedMetadata);
+          console.log('🧾 Supabase result:', result);
+
+          if (result?.error || !result?.data?.length) {
+            console.error('❌ Supabase update failed or returned no data');
+            return; // Don't update local state or close modal
+          }
+
+          updateLocalCardSettings(cardId, updatedMetadata);
+          document.body.removeChild(modal);
+        } catch (err) {
+          console.error('❌ Unexpected error during save:', err);
+        }
+
       } else if (label === 'Delete') {
         deleteCard(cardId);
       }
