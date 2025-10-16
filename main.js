@@ -96,6 +96,13 @@ async function fetchReadings() {
     }
 
     sensorData = getLatestPerDevice(data);
+    // 🔍 Add this here
+    sensorData.forEach(row => {
+      if (JSON.stringify(row).includes('git push')) {
+        console.log('🧨 Found git push in:', row.device_id, row.metadata);
+      }
+    });
+
     renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard, saveCardSettings);
   } catch (err) {
     console.error('❌ Failed to fetch readings:', err);
