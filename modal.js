@@ -15,6 +15,9 @@ export function createGearModal(
   availableImages = [],
   sensorData = []
 ) {
+  console.log('🧪 saveCardSettings type:', typeof saveCardSettings);
+  console.log('🧪 saveCardSettings value:', saveCardSettings);
+
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.id = 'settingsModal';
