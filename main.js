@@ -55,7 +55,8 @@ function updateLocalCardSettings(cardId, updatedMetadata) {
   //console.log('📦 sensorData AFTER update:', JSON.stringify(sensorData, null, 2));
 
   sensorData = updatedSensorData;
-  renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard, saveCardSettings);
+  renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, updateLocalCardSettings, deleteCard);
+  //renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard, saveCardSettings);
 }
 
 /*
@@ -80,7 +81,8 @@ function deleteCard(cardId) {
   sensorData = sensorData.filter(row => String(row.device_id).trim() !== String(cardId).trim());
   console.log('🗑️ Deleted card:', cardId);
 
-  renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard, saveCardSettings);
+  renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, updateLocalCardSettings, deleteCard);
+  //renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard, saveCardSettings);
 }
 
 async function fetchReadings() {
@@ -106,7 +108,8 @@ async function fetchReadings() {
       }
     });
 
-    renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard, saveCardSettings);
+    renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, updateLocalCardSettings, deleteCard);
+    //renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard, saveCardSettings);
   } catch (err) {
     console.error('❌ Failed to fetch readings:', err);
   }
