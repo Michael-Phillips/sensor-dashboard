@@ -24,6 +24,7 @@ export async function saveCardSettings(cardId, updatedMetadata) {
   } else {
     console.log('✅ Supabase update succeeded:', data);
   }
+  return { data, error }; // 👈 This is the key addition
 }
 
 function updateLocalCardSettings(cardId, updatedMetadata) {
