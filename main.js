@@ -14,6 +14,9 @@ let sensorData = []; // ✅ Global reference
 export async function saveCardSettings(cardId, updatedMetadata) {
   console.log('💾 Saving metadata for', cardId, updatedMetadata);
 
+console.log('🧪 Updating device_id:', String(cardId).trim());
+console.log('🧪 Supabase update using device_id:', JSON.stringify(String(cardId).trim()));
+
   const { data, error } = await supabase
     .from(table)
     .update({ metadata: updatedMetadata })
