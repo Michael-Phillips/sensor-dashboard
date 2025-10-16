@@ -26,7 +26,7 @@ async function listRepoImages() {
       .filter(item => item.path.startsWith(`${folder}/`) && item.type === 'blob')
       .map(item => item.path.replace(`${folder}/`, ''));
 
-    console.log('📁 Available images in repo:', imageFiles);
+    //console.log('📁 Available images in repo:', imageFiles);
     return imageFiles;
   } catch (error) {
     console.error('Error fetching image list:', error);
@@ -45,7 +45,7 @@ export function renderCards(sensorData, container, saveCardSettings, updateLocal
   sensorData.forEach(row => {
     const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
     console.log('🎨 Rendering card for:', row.device_id);
-    console.log('🎨 Metadata:', row.metadata);
+    //console.log('🎨 Metadata:', row.metadata);
     console.log('🎨 Image:', row.metadata?.image || row.image_url);
 
     const card = document.createElement('div');

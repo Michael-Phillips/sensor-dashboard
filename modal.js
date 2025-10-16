@@ -43,7 +43,6 @@ export function createGearModal(
     width: '90%'
   });
 
-  // Left column
   const formSection = document.createElement('div');
   formSection.style.flex = '1';
 
@@ -97,7 +96,6 @@ export function createGearModal(
   formSection.appendChild(colorLabel);
   formSection.appendChild(colorSelect);
 
-  // Failure to Report Time
   const failureLabel = document.createElement('label');
   failureLabel.textContent = 'Failure to Report Time';
   Object.assign(failureLabel.style, { display: 'block', marginBottom: '4px' });
@@ -115,12 +113,10 @@ export function createGearModal(
   formSection.appendChild(failureLabel);
   formSection.appendChild(failureContainer);
 
-  // Sensor count
   const sensorInfo = document.createElement('p');
   sensorInfo.textContent = `Sensors: ${existingData.sensor_count || 1}`;
   formSection.appendChild(sensorInfo);
 
-  // Buttons
   const buttonRow = document.createElement('div');
   buttonRow.style.marginTop = '20px';
 
@@ -129,8 +125,7 @@ export function createGearModal(
     btn.textContent = label;
     btn.style.marginRight = '10px';
 
-    btn.onclick = async () => {
-      //  DONE BUTTON
+    btn.onclick = () => {
       if (label === 'Done') {
         console.log('📦 sensorData contents at Done click:', sensorData);
         if (!Array.isArray(sensorData)) {
@@ -141,15 +136,9 @@ export function createGearModal(
         const currentRow = sensorData.find(r => String(r.device_id).trim() === String(cardId).trim());
         const fallbackMetadata = currentRow?.metadata || {};
         const imageSrc = imagePreview.src?.trim();
-        let imagePath = imageSrc?.includes(BASE_PATH) ? imageSrc.replace(BASE_PATH, '') : imageSrc;
-
-        // Strip full URLs if needed
-        if (imagePath?.startsWith('http')) {
-          const parts = imagePath.split('/');
-          imagePath = parts[parts.length - 1]; // just the filename
-        }
-
+        const imagePath = imageSrc?.includes(BASE_PATH) ? imageSrc.replace(BASE_PATH, '') : imageSrc;
         const finalImage = imagePath || fallbackMetadata.image || 'default-plant.jpg';
+
         const updatedMetadata = {
           description: descInput.value.trim(),
           location: locInput.value.trim(),
@@ -158,27 +147,13 @@ export function createGearModal(
         };
 
         console.log('🧠 Metadata before save:', updatedMetadata);
-        try {
-      const result = await saveCardSettings(cardId, updatedMetadata);
-      if (result?.error) {
-        console.error('❌ Supabase update failed:', result.error);
-        return; // Don't update local state or close modal
+        saveCardSettings(cardId, updatedMetadata);
+        updateLocalCardSettings(cardId, updatedMetadata);
+      } else if (label === 'Delete') {
+        deleteCard(cardId);
       }
 
-      updateLocalCardSettings(cardId, updatedMetadata);
       document.body.removeChild(modal);
-    } catch (err) {
-      console.error('❌ Unexpected error during save:', err);
-    }
-
-    // DELETE BUTTON
-  } else if (label === 'Delete') {
-    deleteCard(cardId);
-    document.body.removeChild(modal);
-  } else {
-    document.body.removeChild(modal);
-  }
-
     };
 
     buttonRow.appendChild(btn);
@@ -186,7 +161,6 @@ export function createGearModal(
 
   formSection.appendChild(buttonRow);
 
-  // Right column: image preview
   const imageSection = document.createElement('div');
   imageSection.style.flex = '0 0 150px';
 
@@ -199,15 +173,62 @@ export function createGearModal(
 
   Object.assign(imagePreview.style, {
     width: '100%',
-    borderRadius: '8px'
+    borderRadius: '8px',
+    cursor: 'pointer'
   });
 
-  imageSection.appendChild(imagePreview);
+  imagePreview.onclick = () => {
+    openImagePicker();
+  };
 
+  imageSection.appendChild(imagePreview);
   modalContent.appendChild(formSection);
   modalContent.appendChild(imageSection);
   modal.appendChild(modalContent);
   document.body.appendChild(modal);
+
+  function openImagePicker() {
+    const picker = document.createElement('div');
+    picker.className = 'image-picker';
+    Object.assign(picker.style, {
+      position: 'fixed',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      backgroundColor: '#fff',
+      padding: '20px',
+      borderRadius: '8px',
+      boxShadow: '0 0 10px rgba(0,0,0,0.3)',
+      zIndex: '1100',
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fill, 100px)',
+      gap: '10px',
+      maxHeight: '80vh',
+      overflowY: 'auto'
+    });
+
+    availableImages.forEach(img => {
+      const thumb = document.createElement('img');
+      thumb.src = `${BASE_PATH}images/${img}`;
+      Object.assign(thumb.style, {
+        width: '100px',
+        height: '100px',
+        objectFit: 'cover',
+        borderRadius: '6px',
+        cursor: 'pointer',
+        border: imagePreview.src.includes(img) ? '2px solid #333' : 'none'
+      });
+
+      thumb.onclick = () => {
+        imagePreview.src = thumb.src;
+        document.body.removeChild(picker);
+      };
+
+      picker.appendChild(thumb);
+    });
+
+    document.body.appendChild(picker);
+  }
 }
 
 export function closeModal() {
