@@ -28,7 +28,7 @@ export async function saveCardSettings(cardId, updatedMetadata) {
 }
 
 function updateLocalCardSettings(cardId, updatedMetadata) {
-  console.log('📦 sensorData BEFORE update:', JSON.stringify(sensorData, null, 2));
+  //console.log('📦 sensorData BEFORE update:', JSON.stringify(sensorData, null, 2));
 
   const updatedSensorData = sensorData.map(row => {
     if (String(row.device_id).trim() !== String(cardId).trim()) return row;
@@ -49,7 +49,7 @@ function updateLocalCardSettings(cardId, updatedMetadata) {
       metadata: mergedMeta // ✅ always an object
     };
   });
-  console.log('📦 sensorData AFTER update:', JSON.stringify(sensorData, null, 2));
+  //console.log('📦 sensorData AFTER update:', JSON.stringify(sensorData, null, 2));
 
   sensorData = updatedSensorData;
   renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard, saveCardSettings);
