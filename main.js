@@ -28,6 +28,32 @@ export async function saveCardSettings(cardId, updatedMetadata) {
 }
 
 function updateLocalCardSettings(cardId, updatedMetadata) {
+  const updatedSensorData = sensorData.map(row => {
+    if (String(row.device_id).trim() !== String(cardId).trim()) return row;
+
+    let existingMeta = {};
+    try {
+      existingMeta = typeof row.metadata === 'string'
+        ? JSON.parse(row.metadata)
+        : row.metadata || {};
+    } catch (e) {
+      console.warn('⚠️ Failed to parse metadata for', row.device_id, row.metadata);
+    }
+
+    const mergedMeta = { ...existingMeta, ...updatedMetadata };
+
+    return {
+      ...row,
+      metadata: mergedMeta // ✅ always an object
+    };
+  });
+
+  sensorData = updatedSensorData;
+  renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard, saveCardSettings);
+}
+
+/*
+function updateLocalCardSettings(cardId, updatedMetadata) {
   const updatedSensorData = sensorData.map(row =>
     String(row.device_id).trim() === String(cardId).trim()
       ? { ...row, metadata: { ...row.metadata, ...updatedMetadata } }
@@ -43,7 +69,7 @@ function updateLocalCardSettings(cardId, updatedMetadata) {
 
   renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard, saveCardSettings);
 }
-
+*/
 function deleteCard(cardId) {
   sensorData = sensorData.filter(row => String(row.device_id).trim() !== String(cardId).trim());
   console.log('🗑️ Deleted card:', cardId);
