@@ -169,31 +169,31 @@ export function createGearModal(
 
       // DELETE
       } else if (label === 'Delete') {
-  const confirmDelete = confirm(`Are you sure you want to delete all data for device ${cardId}?`);
-  if (!confirmDelete) return;
+        const confirmDelete = confirm(`Are you sure you want to delete all data for device ${cardId}?`);
+        if (!confirmDelete) return;
 
-  try {
-    const { data, error } = await supabase
-      .from(table)
-      .delete()
-      .eq('device_id', String(cardId).trim())
-      .select(); // optional: returns deleted rows
+        try {
+          const { data, error } = await supabase
+            .from(table)
+            .delete()
+            .eq('device_id', String(cardId).trim())
+            .select(); // optional: returns deleted rows
 
-    if (error) {
-      console.error('❌ Supabase delete error:', error);
-      alert('Failed to delete device data.');
-      return;
-    }
+          if (error) {
+            console.error('❌ Supabase delete error:', error);
+            alert('Failed to delete device data.');
+            return;
+          }
 
-    console.log(`🗑️ Deleted ${data?.length || 0} rows for device_id ${cardId}`);
+          console.log(`🗑️ Deleted ${data?.length || 0} rows for device_id ${cardId}`);
 
-    deleteCard(cardId); // remove from UI
-    modal.remove();     // close modal
-  } catch (err) {
-    console.error('❌ Unexpected error during delete:', err);
-    alert('Unexpected error while deleting.');
-  }
-}
+          deleteCard(cardId); // remove from UI
+          modal.remove();     // close modal
+        } catch (err) {
+          console.error('❌ Unexpected error during delete:', err);
+          alert('Unexpected error while deleting.');
+        }
+      }
 
 
       //document.body.removeChild(modal);
