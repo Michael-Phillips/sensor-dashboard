@@ -168,6 +168,31 @@ export function createGearModal(
         }
 
       } else if (label === 'Delete') {
+        const confirmDelete = confirm(`Are you sure you want to delete all data for device ${cardId}?`);
+        if (!confirmDelete) return;
+
+        try {
+          const { data, error } = await supabase
+            .from(table)
+            .delete()
+            .eq('device_id', String(cardId).trim());
+
+          if (error) {
+            console.error('❌ Supabase delete error:', error);
+            alert('Failed to delete device data.');
+            return;
+          }
+
+          console.log(`🗑️ Deleted ${data?.length || 0} rows for device_id ${cardId}`);
+
+          // Remove card from UI
+          deleteCard(cardId);
+          modal.remove();
+        } catch (err) {
+          console.error('❌ Unexpected error during delete:', err);
+          alert('Unexpected error while deleting.');
+        }
+
         deleteCard(cardId);
       }
 
