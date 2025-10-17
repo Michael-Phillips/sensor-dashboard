@@ -12,6 +12,7 @@ export function createGearModal(
   saveCardSettings,
   updateLocalCardSettings,
   deleteCard,
+  table,
   availableImages = [],
   sensorData = []
 ) {
@@ -189,6 +190,7 @@ export function createGearModal(
   };
 
   // Delete button
+  const table = 'readings';
   const btnDelete = document.createElement('button');
   btnDelete.textContent = 'Delete';
   btnDelete.style.marginRight = '10px';
