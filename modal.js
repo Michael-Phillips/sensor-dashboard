@@ -198,21 +198,21 @@ export function createGearModal(
     const confirmDelete = confirm(`Are you sure you want to delete all data for device ${cardId}?`);
     if (!confirmDelete) return;
 
-const { data, error } = await supabase
-  .from(table)
-  .delete()
-  .eq('device_id', String(cardId).trim())
-  .select();
+
 
 
     try {
-      const { data, error } = await saveCardSettings.deleteDevice(cardId); // Replace with your actual delete logic
+      const { data, error } = await supabase
+        .from(table)
+        .delete()
+        .eq('device_id', String(cardId).trim())
+        .select();
       if (error) {
         console.error('❌ Supabase delete error:', error);
         alert('Failed to delete device data.');
         return;
       }
-
+      console.log(`🗑️ Deleted ${data?.length || 0} rows for device_id ${cardId}`);
       deleteCard(cardId);
       modal.remove();
     } catch (err) {
