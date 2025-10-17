@@ -15,9 +15,6 @@ export function createGearModal(
   availableImages = [],
   sensorData = []
 ) {
-  console.log('🧪 saveCardSettings type:', typeof saveCardSettings);
-  console.log('🧪 saveCardSettings value:', saveCardSettings);
-
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.id = 'settingsModal';
@@ -123,92 +120,7 @@ export function createGearModal(
   const buttonRow = document.createElement('div');
   buttonRow.style.marginTop = '20px';
 
-  ['Done', 'Cancel', 'Delete'].forEach(label => {
-    const btn = document.createElement('button');
-    btn.textContent = label;
-    btn.style.marginRight = '10px';
-
-    btn.onclick = async () => {
-      if (label === 'Done') {
-        console.log('🧪 saveCardSettings type:', typeof saveCardSettings);
-        console.log('🧪 saveCardSettings value:', saveCardSettings);
-        console.log('📦 sensorData contents at Done click:', sensorData);
-        if (!Array.isArray(sensorData)) {
-          console.error('⛔ sensorData is undefined or not an array');
-          return;
-        }
-
-        const currentRow = sensorData.find(r => String(r.device_id).trim() === String(cardId).trim());
-        const fallbackMetadata = currentRow?.metadata || {};
-        const imageSrc = imagePreview.src?.trim();
-        const imagePath = imageSrc?.includes(BASE_PATH) ? imageSrc.replace(BASE_PATH, '') : imageSrc;
-        const finalImage = imagePath || fallbackMetadata.image || 'default-plant.jpg';
-
-        const updatedMetadata = {
-          description: descInput.value.trim(),
-          location: locInput.value.trim(),
-          color: colorSelect.value,
-          image: finalImage
-        };
-
-        console.log('🧠 Metadata before save:', updatedMetadata);
-        try {
-          const result = await saveCardSettings(cardId, updatedMetadata);
-          console.log('🧾 Supabase result:', result);
-
-          if (result?.error || !result?.data?.length) {
-            console.error('❌ Supabase update failed or returned no data');
-            return; // Don't update local state or close modal
-          }
-
-          updateLocalCardSettings(cardId, updatedMetadata);
-          document.body.removeChild(modal);
-        } catch (err) {
-          console.error('❌ Unexpected error during save:', err);
-        }
-
-      // DELETE
-      } else if (label === 'Delete') {
-        const confirmDelete = confirm(`Are you sure you want to delete all data for device ${cardId}?`);
-        if (!confirmDelete) return;
-
-        try {
-          const { data, error } = await supabase
-            .from(table)
-            .delete()
-            .eq('device_id', String(cardId).trim())
-            .select(); // optional: returns deleted rows
-
-          if (error) {
-            console.error('❌ Supabase delete error:', error);
-            alert('Failed to delete device data.');
-            return;
-          }
-
-          console.log(`🗑️ Deleted ${data?.length || 0} rows for device_id ${cardId}`);
-
-          deleteCard(cardId); // remove from UI
-          modal.remove();     // close modal
-        } catch (err) {
-          console.error('❌ Unexpected error during delete:', err);
-          alert('Unexpected error while deleting.');
-        }
-      }
-
-
-      //document.body.removeChild(modal);
-      if (modal && typeof modal.remove === 'function') {
-        modal.remove();
-      } else {
-        console.warn('⚠️ Modal not removable or already detached:', modal);
-      }
-    };
-
-    buttonRow.appendChild(btn);
-  });
-
-  formSection.appendChild(buttonRow);
-
+  // Image preview
   const imageSection = document.createElement('div');
   imageSection.style.flex = '0 0 150px';
 
@@ -230,6 +142,81 @@ export function createGearModal(
   };
 
   imageSection.appendChild(imagePreview);
+
+  // Done button
+  const btnDone = document.createElement('button');
+  btnDone.textContent = 'Done';
+  btnDone.style.marginRight = '10px';
+  btnDone.onclick = async () => {
+    if (!Array.isArray(sensorData)) {
+      console.error('⛔ sensorData is undefined or not an array');
+      return;
+    }
+
+    const currentRow = sensorData.find(r => String(r.device_id).trim() === String(cardId).trim());
+    const fallbackMetadata = currentRow?.metadata || {};
+    const imageSrc = imagePreview.src?.trim();
+    const imagePath = imageSrc?.includes(BASE_PATH) ? imageSrc.replace(BASE_PATH, '') : imageSrc;
+    const finalImage = imagePath || fallbackMetadata.image || 'default-plant.jpg';
+
+    const updatedMetadata = {
+      description: descInput.value.trim(),
+      location: locInput.value.trim(),
+      color: colorSelect.value,
+      image: finalImage
+    };
+
+    try {
+      const result = await saveCardSettings(cardId, updatedMetadata);
+      if (result?.error || !result?.data?.length) {
+        console.error('❌ Supabase update failed or returned no data');
+        return;
+      }
+
+      updateLocalCardSettings(cardId, updatedMetadata);
+      modal.remove();
+    } catch (err) {
+      console.error('❌ Unexpected error during save:', err);
+    }
+  };
+
+  // Cancel button
+  const btnCancel = document.createElement('button');
+  btnCancel.textContent = 'Cancel';
+  btnCancel.style.marginRight = '10px';
+  btnCancel.onclick = () => {
+    modal.remove();
+  };
+
+  // Delete button
+  const btnDelete = document.createElement('button');
+  btnDelete.textContent = 'Delete';
+  btnDelete.style.marginRight = '10px';
+  btnDelete.onclick = async () => {
+    const confirmDelete = confirm(`Are you sure you want to delete all data for device ${cardId}?`);
+    if (!confirmDelete) return;
+
+    try {
+      const { data, error } = await saveCardSettings.deleteDevice(cardId); // Replace with your actual delete logic
+      if (error) {
+        console.error('❌ Supabase delete error:', error);
+        alert('Failed to delete device data.');
+        return;
+      }
+
+      deleteCard(cardId);
+      modal.remove();
+    } catch (err) {
+      console.error('❌ Unexpected error during delete:', err);
+      alert('Unexpected error while deleting.');
+    }
+  };
+
+  buttonRow.appendChild(btnDone);
+  buttonRow.appendChild(btnCancel);
+  buttonRow.appendChild(btnDelete);
+  formSection.appendChild(buttonRow);
+
   modalContent.appendChild(formSection);
   modalContent.appendChild(imageSection);
   modal.appendChild(modalContent);
@@ -282,7 +269,7 @@ export function createGearModal(
 export function closeModal() {
   const modal = document.getElementById('settingsModal');
   if (modal) {
-    document.body.removeChild(modal);
+    modal.remove();
   }
 }
 
