@@ -33,6 +33,7 @@ async function listRepoImages() {
     return [];
   }
 }
+                renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard, saveCardSettings);
 export function renderCards(sensorData, container, saveCardSettings, updateLocalCardSettings, deleteCard) {
   container.innerHTML = '';
 
@@ -144,7 +145,7 @@ export function renderCards(sensorData, container, saveCardSettings, updateLocal
       console.log('🖼️ Available images at click:', availableImages);
 
       try {
-        createGearModal(cardId, existingData, saveCardSettings, updateLocalCardSettings, deleteCard, availableImages, sensorData);
+        createGearModal(cardId, existingData, saveCardSettings, updateLocalCardSettings, deleteCard, 'readings', availableImages, sensorData);
       } catch (err) {
         console.error('❌ Modal creation failed:', err);
       }
