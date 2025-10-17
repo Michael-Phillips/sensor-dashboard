@@ -190,13 +190,20 @@ export function createGearModal(
   };
 
   // Delete button
-  const table = 'readings';
+  //const table = 'readings';
   const btnDelete = document.createElement('button');
   btnDelete.textContent = 'Delete';
   btnDelete.style.marginRight = '10px';
   btnDelete.onclick = async () => {
     const confirmDelete = confirm(`Are you sure you want to delete all data for device ${cardId}?`);
     if (!confirmDelete) return;
+
+const { data, error } = await supabase
+  .from(table)
+  .delete()
+  .eq('device_id', String(cardId).trim())
+  .select();
+
 
     try {
       const { data, error } = await saveCardSettings.deleteDevice(cardId); // Replace with your actual delete logic
