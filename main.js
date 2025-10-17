@@ -85,7 +85,7 @@ function deleteCard(cardId) {
   renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, updateLocalCardSettings, deleteCard);
   //renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard, saveCardSettings);
 }
-
+/*
 async function fetchReadings() {
   try {
     const response = await fetch(`${supabaseUrl}/rest/v1/${table}?select=*&order=timestamp.desc`, {
@@ -115,6 +115,27 @@ async function fetchReadings() {
     console.error('❌ Failed to fetch readings:', err);
   }
 }
+*/
+async function fetchReadings() {
+  try {
+    const { data, error } = await supabase
+      .from(table)
+      .select('*')
+      .order('timestamp', { ascending: false });
+
+    if (error) {
+      console.error('❌ Supabase fetch error:', error);
+      document.getElementById('cardContainer').innerHTML = `<div class="card"><h3>API Error</h3><p>${error.message}</p></div>`;
+      return;
+    }
+
+    sensorData = getLatestPerDevice(data);
+    renderCards(sensorData, document.getElementById('cardContainer'), saveCardSettings, updateLocalCardSettings, deleteCard);
+  } catch (err) {
+    console.error('❌ Unexpected error:', err);
+  }
+}
+
 
 document.addEventListener('DOMContentLoaded', () => {
   fetchReadings();
