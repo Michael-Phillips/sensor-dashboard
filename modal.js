@@ -6,8 +6,6 @@ export function getCardSettings(cardId, sensorData) {
   return match ? match.metadata || {} : {};
 }
 
-const table = 'readings';
-
 export function createGearModal(
   cardId,
   existingData,
@@ -125,75 +123,6 @@ export function createGearModal(
   const buttonRow = document.createElement('div');
   buttonRow.style.marginTop = '20px';
 
-  // Done button
-btnDone.onclick = async () => {
-  console.log('🧪 saveCardSettings type:', typeof saveCardSettings);
-  console.log('🧪 saveCardSettings value:', saveCardSettings);
-  console.log('📦 sensorData contents at Done click:', sensorData);
-  if (!Array.isArray(sensorData)) {
-    console.error('⛔ sensorData is undefined or not an array');
-    return;
-  }
-
-  const currentRow = sensorData.find(r => String(r.device_id).trim() === String(cardId).trim());
-  const fallbackMetadata = currentRow?.metadata || {};
-  const imageSrc = imagePreview.src?.trim();
-  const imagePath = imageSrc?.includes(BASE_PATH) ? imageSrc.replace(BASE_PATH, '') : imageSrc;
-  const finalImage = imagePath || fallbackMetadata.image || 'default-plant.jpg';
-
-  const updatedMetadata = {
-    description: descInput.value.trim(),
-    location: locInput.value.trim(),
-    color: colorSelect.value,
-    image: finalImage
-  };
-
-  console.log('🧠 Metadata before save:', updatedMetadata);
-  try {
-    const result = await saveCardSettings(cardId, updatedMetadata);
-    console.log('🧾 Supabase result:', result);
-
-    if (result?.error || !result?.data?.length) {
-      console.error('❌ Supabase update failed or returned no data');
-      return; // Don't update local state or close modal
-    }
-
-    updateLocalCardSettings(cardId, updatedMetadata);
-    document.body.removeChild(modal);
-  } catch (err) {
-    console.error('❌ Unexpected error during save:', err);
-  }
-};
-
-// Delete button
-btnDelete.onclick = async () => {
-  const confirmDelete = confirm(`Are you sure you want to delete all data for device ${cardId}?`);
-  if (!confirmDelete) return;
-
-  try {
-    const { data, error } = await supabase
-      .from(table)
-      .delete()
-      .eq('device_id', String(cardId).trim())
-      .select();
-
-    if (error) {
-      console.error('❌ Supabase delete error:', error);
-      alert('Failed to delete device data.');
-      return;
-    }
-
-    console.log(`🗑️ Deleted ${data?.length || 0} rows for device_id ${cardId}`);
-
-    deleteCard(cardId);
-    modal.remove();
-  } catch (err) {
-    console.error('❌ Unexpected error during delete:', err);
-    alert('Unexpected error while deleting.');
-  }
-};
-
-/*
   ['Done', 'Cancel', 'Delete'].forEach(label => {
     const btn = document.createElement('button');
     btn.textContent = label;
@@ -277,7 +206,7 @@ btnDelete.onclick = async () => {
 
     buttonRow.appendChild(btn);
   });
-*/
+
   formSection.appendChild(buttonRow);
 
   const imageSection = document.createElement('div');
