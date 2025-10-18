@@ -50,7 +50,10 @@ function handleNewSensorData(newRow) {
     sensorData[index] = {
       ...sensorData[index],
       ...newRow,
-      metadata: { ...sensorData[index].metadata },
+      metadata: {
+        ...sensorData[index].metadata,
+        ...newRow.metadata, // ✅ this line ensures meta_type is updated
+      },
     };
   } else {
     // If it's a new device, initialize metadata to empty
