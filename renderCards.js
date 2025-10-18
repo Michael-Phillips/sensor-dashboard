@@ -1,5 +1,5 @@
-import { getRelativeTime } from './utils.js';
-import { getCardSettings, createGearModal } from './utils.js';
+import { getRelativeTime, getCardSettings } from './utils.js';
+import { createGearModal } from './modal.js';
 
 const BASE_PATH = window.BASE_PATH;
 
