@@ -1,15 +1,18 @@
 export function getLatestPerDevice(data) {
-  const seen = new Set();
-  const latest = [];
+  const latestMap = new Map();
+
   data.forEach(row => {
     const id = String(row.device_id).trim();
-    if (!seen.has(id)) {
-      seen.add(id);
-      latest.push(row);
+    const existing = latestMap.get(id);
+
+    if (!existing || new Date(row.created_at) > new Date(existing.created_at)) {
+      latestMap.set(id, row);
     }
   });
-  return latest;
+
+  return Array.from(latestMap.values());
 }
+
 
 export function getCardSettings(cardId, sensorData) {
   const match = sensorData.find(row => String(row.device_id).trim() === String(cardId).trim());
