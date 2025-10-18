@@ -5,13 +5,17 @@ export function getLatestPerDevice(data) {
     const id = String(row.device_id).trim();
     const existing = latestMap.get(id);
 
-    if (!existing || new Date(row.created_at) > new Date(existing.created_at)) {
+    const currentTime = new Date(row.timestamp || row.created_at);
+    const existingTime = existing ? new Date(existing.timestamp || existing.created_at) : null;
+
+    if (!existing || currentTime > existingTime) {
       latestMap.set(id, row);
     }
   });
 
   return Array.from(latestMap.values());
 }
+
 
 
 export function getCardSettings(cardId, sensorData) {

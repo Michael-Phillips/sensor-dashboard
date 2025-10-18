@@ -78,23 +78,48 @@ function saveCardSettingsWrapper(cardId, updatedMetadata) {
 
 async function fetchReadings() {
   try {
-    const response = await fetch(`${supabaseUrl}/rest/v1/${table}?select=*&order=timestamp.desc`, {
+    // Fetch sensor readings
+    const readingsResponse = await fetch(`${supabaseUrl}/rest/v1/${table}?select=*&order=timestamp.desc`, {
       headers: {
         apikey: supabaseKey,
         Authorization: `Bearer ${supabaseKey}`,
       }
     });
 
-    const data = await response.json();
-    if (!Array.isArray(data)) {
-      container.innerHTML = `<div class="card"><h3>API Error</h3><p>${data.message}</p></div>`;
+    const readings = await readingsResponse.json();
+    if (!Array.isArray(readings)) {
+      container.innerHTML = `<div class="card"><h3>API Error</h3><p>${readings.message}</p></div>`;
       return;
     }
 
-    sensorData = getLatestPerDevice(data);
+    // Fetch metadata
+    const metadataResponse = await fetch(`${supabaseUrl}/rest/v1/device_metadata?select=*`, {
+      headers: {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+      }
+    });
+
+    const metadata = await metadataResponse.json();
+    const metadataMap = new Map();
+    metadata.forEach(row => {
+      metadataMap.set(String(row.device_id).trim(), row);
+    });
+
+    // Merge metadata into readings
+    const enrichedReadings = readings.map(reading => {
+      const id = String(reading.device_id).trim();
+      return {
+        ...reading,
+        metadata: metadataMap.get(id) || {},
+      };
+    });
+
+    // Deduplicate and render
+    sensorData = getLatestPerDevice(enrichedReadings);
     renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettingsWrapper);
   } catch (err) {
-    console.error('❌ Failed to fetch readings:', err);
+    console.error('❌ Failed to fetch readings or metadata:', err);
   }
 }
 
