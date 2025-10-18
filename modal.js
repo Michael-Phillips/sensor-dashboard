@@ -161,7 +161,8 @@ export function createGearModal(
     };
 
    try {
-    const result = await saveCardSettings(cardId, updatedMetadata, supabase, window.tableName);
+    //const result = await saveCardSettings(cardId, updatedMetadata, supabase, window.tableName);
+    const result = await saveCardSettings(cardId, updatedMetadata);
 
     if (result?.error) {
       alert('❌ Failed to save settings. Please try again.');

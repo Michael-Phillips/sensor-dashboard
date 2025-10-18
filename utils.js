@@ -40,20 +40,27 @@ export function getRelativeTime(isoString) {
   return then.toLocaleDateString();
 }
 
-export async function saveCardSettings(cardId, updatedMetadata, supabaseClient = window.supabase, tableName = window.tableName) {
+export async function saveCardSettings(
+  cardId,
+  updatedMetadata,
+  supabaseClient = window.supabase
+) {
   console.log('💾 Saving metadata for', cardId, updatedMetadata);
 
   const { error } = await supabaseClient
-    .from(tableName)
-    .update({ metadata: updatedMetadata })
-    .eq('device_id', String(cardId).trim());
+    .from('device_metadata') // ✅ target the new table
+    .upsert({
+      device_id: String(cardId).trim(),
+      ...updatedMetadata,
+    });
 
   if (error) {
-    console.error('❌ Supabase update failed:', error);
+    console.error('❌ Supabase metadata save failed:', error);
     return { error };
   }
 
   return { error: null };
 }
+
 
 
