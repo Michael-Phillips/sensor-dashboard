@@ -49,6 +49,7 @@ export async function saveCardSettings(
     device_id: String(cardId).trim(),
     ...updatedMetadata,
   };
+  console.log('🧪 Payload:', payload);
 
   console.log('🧪 Attempting to insert into device_metadata:', payload);
 
