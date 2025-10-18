@@ -32,9 +32,9 @@ async function listRepoImages() {
     console.error('Error fetching image list:', error);
     return [];
   }
-}
-                renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard, saveCardSettings);
-export function renderCards(sensorData, container, saveCardSettings, updateLocalCardSettings, deleteCard) {
+} 
+
+export function renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettings) {
   container.innerHTML = '';
 
   let availableImages = [];
