@@ -33,18 +33,22 @@ export function getRelativeTime(isoString) {
   return then.toLocaleDateString();
 }
 
-export async function saveCardSettings(cardId, updatedMetadata) {
+export async function saveCardSettings(cardId, updatedMetadata, supabaseClient = window.supabase, tableName = window.tableName) {
   console.log('💾 Saving metadata for', cardId, updatedMetadata);
 
-  const { data, error } = await supabase
-    .from(table)
+  const { data, error } = await supabaseClient
+    .from(tableName)
     .update({ metadata: updatedMetadata })
     .eq('device_id', String(cardId).trim());
 
   if (error) {
     console.error('❌ Supabase update failed:', error);
+    return { error };
   } else {
     console.log('✅ Supabase update succeeded:', data);
   }
+
+  return { data, error };
 }
+
 
