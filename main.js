@@ -7,6 +7,22 @@ const supabaseUrl = window.supabaseUrl;
 const supabaseKey = window.supabaseKey;
 const table       = window.tableName;
 
+supabase
+  .channel('sensor-updates')
+  .on(
+    'postgres_changes',
+    {
+      event: 'INSERT', // or 'UPDATE' if sensors overwrite
+      schema: 'public',
+      table: window.tableName,
+    },
+    (payload) => {
+      console.log('📡 New sensor data received:', payload.new);
+      handleNewSensorData(payload.new);
+    }
+  )
+  .subscribe();
+
 
 let sensorData = []; // ✅ Global reference
 
@@ -22,6 +38,22 @@ function updateLocalCardSettings(cardId, updatedMetadata) {
   console.log('📦 sensorData contents after update:', sensorData);
 
   renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettingsWrapper);
+}
+
+function handleNewSensorData(newRow) {
+  const deviceId = String(newRow.device_id).trim();
+
+  // Replace or append the new row in sensorData
+  const index = sensorData.findIndex(row => String(row.device_id).trim() === deviceId);
+
+  if (index !== -1) {
+    sensorData[index] = newRow;
+  } else {
+    sensorData.push(newRow); // fallback if device wasn't previously rendered
+  }
+
+  // Re-render all cards with updated data
+  renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettings);
 }
 
 function deleteCard(cardId) {
