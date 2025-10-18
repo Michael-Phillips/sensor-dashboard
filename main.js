@@ -22,7 +22,7 @@ supabase
     }
   )
   .subscribe();
-  .then(() => console.log('✅ Realtime subscription active'));
+  
 
 
 let sensorData = []; // ✅ Global reference
