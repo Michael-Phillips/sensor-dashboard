@@ -48,22 +48,25 @@ export async function saveCardSettings(
   const payload = {
     device_id: String(cardId).trim(),
     ...updatedMetadata,
+    meta_type: updatedMetadata.meta_type || 'door' // fallback if missing
   };
-  console.log('🧪 Payload:', payload);
 
-  console.log('🧪 Attempting to insert into device_metadata:', payload);
+  console.log('🧪 Supabase insert payload:', payload);
 
-  const { error } = await supabaseClient
+  const { data, error } = await supabaseClient
     .from('device_metadata')
-    .upsert(payload);
+    .upsert(payload)
+    .select(); // 👈 This returns the inserted row
 
   if (error) {
     console.error('❌ Supabase metadata save failed:', error);
     return { error };
   }
 
+  console.log('✅ Saved metadata:', data);
   return { error: null };
 }
+
 
 
 
