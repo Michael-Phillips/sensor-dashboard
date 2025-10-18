@@ -1,18 +1,13 @@
-import { BASE_PATH } from './main.js';
-import { getRelativeTime } from './utils.js';
+import { saveCardSettings } from './utils.js';
 
-export function getCardSettings(cardId, sensorData) {
-  const match = sensorData.find(row => String(row.device_id).trim() === String(cardId).trim());
-  return match ? match.metadata || {} : {};
-}
+const BASE_PATH = window.BASE_PATH;
 
 export function createGearModal(
   cardId,
   existingData,
-  saveCardSettings,
   updateLocalCardSettings,
   deleteCard,
-  table,
+  supabase,
   availableImages = [],
   sensorData = []
 ) {
@@ -121,7 +116,6 @@ export function createGearModal(
   const buttonRow = document.createElement('div');
   buttonRow.style.marginTop = '20px';
 
-  // Image preview
   const imageSection = document.createElement('div');
   imageSection.style.flex = '0 0 150px';
 
@@ -144,7 +138,6 @@ export function createGearModal(
 
   imageSection.appendChild(imagePreview);
 
-  // Done button
   const btnDone = document.createElement('button');
   btnDone.textContent = 'Done';
   btnDone.style.marginRight = '10px';
@@ -168,7 +161,7 @@ export function createGearModal(
     };
 
     try {
-      const result = await saveCardSettings(cardId, updatedMetadata);
+      const result = await saveCardSettings(cardId, updatedMetadata, supabase, window.tableName);
       if (result?.error || !result?.data?.length) {
         console.error('❌ Supabase update failed or returned no data');
         return;
@@ -181,7 +174,6 @@ export function createGearModal(
     }
   };
 
-  // Cancel button
   const btnCancel = document.createElement('button');
   btnCancel.textContent = 'Cancel';
   btnCancel.style.marginRight = '10px';
@@ -189,36 +181,34 @@ export function createGearModal(
     modal.remove();
   };
 
-  // Delete button
-  //const table = 'readings';
   const btnDelete = document.createElement('button');
   btnDelete.textContent = 'Delete';
   btnDelete.style.marginRight = '10px';
   btnDelete.onclick = async () => {
-  const confirmDelete = confirm(`Are you sure you want to delete all data for device ${cardId}?`);
-  if (!confirmDelete) return;
+    const confirmDelete = confirm(`Are you sure you want to delete all data for device ${cardId}?`);
+    if (!confirmDelete) return;
 
-  try {
-    const { data, error } = await supabase
-      .from(table)
-      .delete()
-      .eq('device_id', String(cardId).trim())
-      .select();
+    try {
+      const { data, error } = await supabase
+        .from(window.tableName)
+        .delete()
+        .eq('device_id', String(cardId).trim())
+        .select();
 
-    if (error) {
-      console.error('❌ Supabase delete error:', error);
-      alert('Failed to delete device data.');
-      return;
+      if (error) {
+        console.error('❌ Supabase delete error:', error);
+        alert('Failed to delete device data.');
+        return;
+      }
+
+      console.log(`🗑️ Deleted ${data?.length || 0} rows for device_id ${cardId}`);
+      deleteCard(cardId);
+      modal.remove();
+    } catch (err) {
+      console.error('❌ Unexpected error during delete:', err);
+      alert('Unexpected error while deleting.');
     }
-
-    console.log(`🗑️ Deleted ${data?.length || 0} rows for device_id ${cardId}`);
-    deleteCard(cardId);
-    modal.remove();
-  } catch (err) {
-    console.error('❌ Unexpected error during delete:', err);
-    alert('Unexpected error while deleting.');
-  }
-};
+  };
 
   buttonRow.appendChild(btnDone);
   buttonRow.appendChild(btnCancel);

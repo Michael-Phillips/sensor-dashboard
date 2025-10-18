@@ -1,49 +1,17 @@
-import { getLatestPerDevice } from './utils.js';
+import { getLatestPerDevice, saveCardSettings } from './utils.js';
 import { renderCards } from './renderCards.js';
-import { getCardSettings, createGearModal, closeModal } from './modal.js';
-import { updateLocalCardSettings, deleteCard, saveCardSettings } from './modal.js';
-
-
-export const BASE_PATH = 'https://michael-phillips.github.io/sensor-dashboard/';
 
 const container = document.getElementById('cardContainer');
-const supabase = window.supabase;
+const supabase    = window.supabase;
 const supabaseUrl = window.supabaseUrl;
 const supabaseKey = window.supabaseKey;
-const table = 'readings';
+const table       = window.tableName;
 
-window.supabase
-  .from('readings')
-  .select('*')
-  .order('timestamp', { ascending: false })
-  .limit(10)
-  .then(({ data, error }) => {
-    if (error) {
-      console.error('Supabase error:', error);
-    } else {
-      renderCards(data, container, updateLocalCardSettings, deleteCard, saveCardSettings);
-    }
-  });
 
 let sensorData = []; // ✅ Global reference
 
-export async function saveCardSettings(cardId, updatedMetadata) {
-  console.log('💾 Saving metadata for', cardId, updatedMetadata);
-
-  const { data, error } = await supabase
-    .from(table)
-    .update({ metadata: updatedMetadata })
-    .eq('device_id', String(cardId).trim());
-
-  if (error) {
-    console.error('❌ Supabase update failed:', error);
-  } else {
-    console.log('✅ Supabase update succeeded:', data);
-  }
-}
-
 function updateLocalCardSettings(cardId, updatedMetadata) {
-  const updatedSensorData = sensorData.map(row =>
+  sensorData = sensorData.map(row =>
     String(row.device_id).trim() === String(cardId).trim()
       ? { ...row, metadata: { ...row.metadata, ...updatedMetadata } }
       : row
@@ -51,19 +19,21 @@ function updateLocalCardSettings(cardId, updatedMetadata) {
 
   console.log('📦 Updating local card for:', cardId);
   console.log('📦 Metadata being applied:', updatedMetadata);
-
-  sensorData = updatedSensorData; // ✅ update global reference
   console.log('📦 sensorData contents after update:', sensorData);
-  console.log('🔄 Updated metadata for', cardId, updatedMetadata);
 
-  renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard, saveCardSettings);
+  renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettingsWrapper);
 }
 
 function deleteCard(cardId) {
   sensorData = sensorData.filter(row => String(row.device_id).trim() !== String(cardId).trim());
   console.log('🗑️ Deleted card:', cardId);
 
-  renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard, saveCardSettings);
+  renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettingsWrapper);
+}
+
+// ✅ Wrapper to pass supabase + table to utils version
+function saveCardSettingsWrapper(cardId, updatedMetadata) {
+  saveCardSettings(cardId, updatedMetadata, supabase, table);
 }
 
 async function fetchReadings() {
@@ -77,17 +47,15 @@ async function fetchReadings() {
 
     const data = await response.json();
     if (!Array.isArray(data)) {
-      document.getElementById('cardContainer').innerHTML = `<div class="card"><h3>API Error</h3><p>${data.message}</p></div>`;
+      container.innerHTML = `<div class="card"><h3>API Error</h3><p>${data.message}</p></div>`;
       return;
     }
 
     sensorData = getLatestPerDevice(data);
-    renderCards(sensorData, document.getElementById('cardContainer'), updateLocalCardSettings, deleteCard, saveCardSettings);
+    renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettingsWrapper);
   } catch (err) {
     console.error('❌ Failed to fetch readings:', err);
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  fetchReadings();
-});
+document.addEventListener('DOMContentLoaded', fetchReadings);

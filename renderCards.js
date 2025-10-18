@@ -1,6 +1,7 @@
 import { getRelativeTime } from './utils.js';
-import { getCardSettings, createGearModal } from './modal.js';
-import { BASE_PATH } from './main.js';
+import { getCardSettings, createGearModal } from './utils.js';
+
+const BASE_PATH = window.BASE_PATH;
 
 // 🔍 GitHub API image listing
 async function listRepoImages() {
@@ -145,7 +146,8 @@ export function renderCards(sensorData, container, updateLocalCardSettings, dele
       console.log('🖼️ Available images at click:', availableImages);
 
       try {
-        createGearModal(cardId, existingData, saveCardSettings, updateLocalCardSettings, deleteCard, 'readings', availableImages, sensorData);
+        createGearModal(cardId, existingData, updateLocalCardSettings, deleteCard, window.supabase, availableImages, sensorData);
+        //createGearModal(cardId, existingData, saveCardSettings, updateLocalCardSettings, deleteCard, 'readings', availableImages, sensorData);
       } catch (err) {
         console.error('❌ Modal creation failed:', err);
       }

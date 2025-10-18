@@ -11,6 +11,11 @@ export function getLatestPerDevice(data) {
   return latest;
 }
 
+export function getCardSettings(cardId, sensorData) {
+  const match = sensorData.find(row => String(row.device_id).trim() === String(cardId).trim());
+  return match ? match.metadata || {} : {};
+}
+
 export function getRelativeTime(isoString) {
   const now = new Date();
   const then = new Date(isoString);
@@ -27,3 +32,19 @@ export function getRelativeTime(isoString) {
 
   return then.toLocaleDateString();
 }
+
+export async function saveCardSettings(cardId, updatedMetadata) {
+  console.log('💾 Saving metadata for', cardId, updatedMetadata);
+
+  const { data, error } = await supabase
+    .from(table)
+    .update({ metadata: updatedMetadata })
+    .eq('device_id', String(cardId).trim());
+
+  if (error) {
+    console.error('❌ Supabase update failed:', error);
+  } else {
+    console.log('✅ Supabase update succeeded:', data);
+  }
+}
+
