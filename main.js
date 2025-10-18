@@ -43,19 +43,23 @@ function updateLocalCardSettings(cardId, updatedMetadata) {
 
 function handleNewSensorData(newRow) {
   const deviceId = String(newRow.device_id).trim();
-
-  // Replace or append the new row in sensorData
   const index = sensorData.findIndex(row => String(row.device_id).trim() === deviceId);
 
   if (index !== -1) {
-    sensorData[index] = newRow;
+    // Merge new sensor values but preserve existing metadata
+    sensorData[index] = {
+      ...sensorData[index],
+      ...newRow,
+      metadata: { ...sensorData[index].metadata },
+    };
   } else {
-    sensorData.push(newRow); // fallback if device wasn't previously rendered
+    // If it's a new device, initialize metadata to empty
+    sensorData.push({ ...newRow, metadata: {} });
   }
 
-  // Re-render all cards with updated data
   renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettings);
 }
+
 
 function deleteCard(cardId) {
   sensorData = sensorData.filter(row => String(row.device_id).trim() !== String(cardId).trim());
