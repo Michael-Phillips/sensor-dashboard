@@ -36,7 +36,7 @@ export function getRelativeTime(isoString) {
 export async function saveCardSettings(cardId, updatedMetadata, supabaseClient = window.supabase, tableName = window.tableName) {
   console.log('💾 Saving metadata for', cardId, updatedMetadata);
 
-  const { data, error } = await supabaseClient
+  const { error } = await supabaseClient
     .from(tableName)
     .update({ metadata: updatedMetadata })
     .eq('device_id', String(cardId).trim());
@@ -44,11 +44,9 @@ export async function saveCardSettings(cardId, updatedMetadata, supabaseClient =
   if (error) {
     console.error('❌ Supabase update failed:', error);
     return { error };
-  } else {
-    console.log('✅ Supabase update succeeded:', data);
   }
 
-  return { data, error };
+  return { error: null };
 }
 
 

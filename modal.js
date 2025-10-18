@@ -160,20 +160,20 @@ export function createGearModal(
       image: finalImage
     };
 
-    try {
-      const result = await saveCardSettings(cardId, updatedMetadata, supabase, window.tableName);
-      if (result?.error || !result?.data?.length) {
-        alert('❌ Failed to save settings. Please try again.');
-        console.error('❌ Supabase update failed or returned no data');
-        console.error('❌ Supabase error:', result?.error);
-        return;
-      }
+   try {
+    const result = await saveCardSettings(cardId, updatedMetadata, supabase, window.tableName);
 
-      updateLocalCardSettings(cardId, updatedMetadata);
-      modal.remove();
-    } catch (err) {
-      console.error('❌ Unexpected error during save:', err.message || err);
+    if (result?.error) {
+      alert('❌ Failed to save settings. Please try again.');
+      console.error('❌ Supabase update failed:', result.error);
+      return;
     }
+
+    updateLocalCardSettings(cardId, updatedMetadata);
+    modal.remove();
+  } catch (err) {
+    console.error('❌ Unexpected error during save:', err.message || err);
+  }
   };
 
   const btnCancel = document.createElement('button');
