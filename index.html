@@ -72,20 +72,6 @@
   <!-- Load dashboard logic -->
   <script type="module" src="main.js"></script>
   <script type="module" src="modal.js"></script>
-<script type="module">
-
-  const supabaseUrl = 'https://qvlluhoxehdpssdebzyi.supabase.co';
-  const supabaseKey = 'your-actual-anon-key';
-
-  const supabase = createClient(supabaseUrl, supabaseKey);
-
-  const { data, error } = await supabase
-    .from('readings')
-    .select('*')
-    .limit(1);
-
-  console.log('Test Supabase response:', data, error);
-</script>
 
   <!-- Optional: Global closeModal fallback -->
   <script>
