@@ -45,14 +45,16 @@ export async function saveCardSettings(
   updatedMetadata,
   supabaseClient = window.supabase
 ) {
-  console.log('💾 Saving metadata for', cardId, updatedMetadata);
+  const payload = {
+    device_id: String(cardId).trim(),
+    ...updatedMetadata,
+  };
+
+  console.log('🧪 Attempting to insert into device_metadata:', payload);
 
   const { error } = await supabaseClient
-    .from('device_metadata') // ✅ target the new table
-    .upsert({
-      device_id: String(cardId).trim(),
-      ...updatedMetadata,
-    });
+    .from('device_metadata')
+    .upsert(payload);
 
   if (error) {
     console.error('❌ Supabase metadata save failed:', error);
@@ -61,6 +63,7 @@ export async function saveCardSettings(
 
   return { error: null };
 }
+
 
 
 
