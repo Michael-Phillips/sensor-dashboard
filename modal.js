@@ -165,14 +165,14 @@ export function createGearModal(
       if (result?.error || !result?.data?.length) {
         alert('❌ Failed to save settings. Please try again.');
         console.error('❌ Supabase update failed or returned no data');
-        console.error('❌ Unexpected error during save:', err.message || err);
+        console.error('❌ Supabase error:', result?.error);
         return;
       }
 
       updateLocalCardSettings(cardId, updatedMetadata);
       modal.remove();
     } catch (err) {
-      console.error('❌ Unexpected error during save:', err);
+      console.error('❌ Unexpected error during save:', err.message || err);
     }
   };
 
