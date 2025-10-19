@@ -161,7 +161,6 @@ export function createGearModal(
     };
 
    try {
-    //const result = await saveCardSettings(cardId, updatedMetadata, supabase, window.tableName);
     const result = await saveCardSettings(cardId, updatedMetadata);
 
     if (result?.error) {
@@ -169,6 +168,12 @@ export function createGearModal(
       console.error('❌ Supabase update failed:', result.error);
       return;
     }
+    
+    // ✅ Log the actual saved row from Supabase
+    console.log('✅ Supabase saved row:', result.data);
+
+    // ✅ Use the returned row to update local state
+    const confirmedRow = result.data?.[0] || updatedMetadata;
 
     updateLocalCardSettings(cardId, updatedMetadata);
     modal.remove();
