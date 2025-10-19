@@ -54,9 +54,9 @@ export async function saveCardSettings(
   console.log('🧪 Supabase insert payload:', payload);
 
   const { data, error } = await supabaseClient
-  .from('device_metadata')
-  .upsert(payload, { onConflict: 'device_id' }) // 👈 Explicit conflict target
-  .select();
+    .from('device_metadata')
+    .upsert(payload, { onConflict: 'device_id' }) // 👈 Explicit conflict target
+    .select();
 
   if (error) {
     console.error('❌ Supabase metadata save failed:', error);
@@ -64,8 +64,9 @@ export async function saveCardSettings(
   }
 
   console.log('✅ Saved metadata:', data);
-  return { error: null };
+  return { error: null, data }; // 👈 Return the saved row here
 }
+
 
 
 
