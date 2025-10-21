@@ -108,7 +108,7 @@ export function createGearModal(
   const createLabeledInput = (parent, labelText, value = '') => {
     const label = document.createElement('label');
     label.textContent = labelText;
-    Object.assign(label.style, { display: 'block', marginBottom: '4px' });
+    Object.assign(label.style, { display: 'block', marginBottom: '4px', fontWeight: 'bold' });
 
     const input = document.createElement('input');
     input.type = 'text';
@@ -158,20 +158,92 @@ export function createGearModal(
   detailsSection.style.flex = '1';
   detailsSection.style.display = 'none';
 
-  const sensorInfo = document.createElement('p');
-  sensorInfo.textContent = `Sensors: ${existingData.sensor_count || 1}`;
-  detailsSection.appendChild(sensorInfo);
-
   const deviceIdInfo = document.createElement('p');
   deviceIdInfo.textContent = `Device ID: ${cardId}`;
+  deviceIdInfo.style.marginBottom = '20px';
+  deviceIdInfo.style.fontWeight = 'bold';
   detailsSection.appendChild(deviceIdInfo);
 
-  // Add more details here as needed
-  const detailsPlaceholder = document.createElement('p');
-  detailsPlaceholder.textContent = 'Additional sensor details will appear here.';
-  detailsPlaceholder.style.color = '#666';
-  detailsPlaceholder.style.fontStyle = 'italic';
-  detailsSection.appendChild(detailsPlaceholder);
+  // Get number of sensors from the data
+  const currentRow = sensorData.find(r => String(r.device_id).trim() === String(cardId).trim());
+  const numSensors = currentRow?.numsens || currentRow?.sensor_count || 1;
+  const maxSensors = Math.min(numSensors, 5); // Cap at 5
+
+  // Create sensor details table
+  const sensorTableTitle = document.createElement('h3');
+  sensorTableTitle.textContent = 'Sensor Configuration';
+  sensorTableTitle.style.marginBottom = '10px';
+  detailsSection.appendChild(sensorTableTitle);
+
+  const sensorTable = document.createElement('div');
+  sensorTable.style.display = 'grid';
+  sensorTable.style.gridTemplateColumns = '60px 1fr 1fr';
+  sensorTable.style.gap = '10px';
+  sensorTable.style.marginBottom = '20px';
+
+  // Headers
+  const headers = ['Sensor', 'Function', 'Units'];
+  headers.forEach(headerText => {
+    const header = document.createElement('div');
+    header.textContent = headerText;
+    header.style.fontWeight = 'bold';
+    header.style.padding = '8px';
+    header.style.backgroundColor = 'rgba(0,0,0,0.1)';
+    header.style.borderRadius = '4px';
+    sensorTable.appendChild(header);
+  });
+
+  // Store input fields for saving later
+  const sensorInputs = [];
+
+  // Create rows for each sensor
+  for (let i = 1; i <= maxSensors; i++) {
+    const sensorKey = `sensor_${i}`;
+    // Read from sensor_config or fallback to top-level (for backward compatibility)
+    const sensorMeta = existingData.sensor_config?.[sensorKey] || existingData[sensorKey] || {};
+
+    // Sensor label
+    const sensorLabel = document.createElement('div');
+    sensorLabel.textContent = `#${i}`;
+    sensorLabel.style.padding = '8px';
+    sensorLabel.style.textAlign = 'center';
+    sensorLabel.style.fontWeight = 'bold';
+    sensorTable.appendChild(sensorLabel);
+
+    // Function input
+    const functionInput = document.createElement('input');
+    functionInput.type = 'text';
+    functionInput.placeholder = 'e.g., Temperature';
+    functionInput.value = sensorMeta.function || sensorMeta.type || '';
+    functionInput.style.padding = '8px';
+    functionInput.style.width = '100%';
+    functionInput.style.boxSizing = 'border-box';
+    sensorTable.appendChild(functionInput);
+
+    // Units input
+    const unitsInput = document.createElement('input');
+    unitsInput.type = 'text';
+    unitsInput.placeholder = 'e.g., °F, %, ppm';
+    unitsInput.value = sensorMeta.unit || '';
+    unitsInput.style.padding = '8px';
+    unitsInput.style.width = '100%';
+    unitsInput.style.boxSizing = 'border-box';
+    sensorTable.appendChild(unitsInput);
+
+    sensorInputs.push({
+      key: sensorKey,
+      functionInput,
+      unitsInput
+    });
+  }
+
+  detailsSection.appendChild(sensorTable);
+
+  const sensorCountInfo = document.createElement('p');
+  sensorCountInfo.textContent = `Total sensors: ${numSensors}`;
+  sensorCountInfo.style.color = '#666';
+  sensorCountInfo.style.fontSize = '0.9rem';
+  detailsSection.appendChild(sensorCountInfo);
 
   // Alerts Tab Content
   const alertsSection = document.createElement('div');
@@ -298,6 +370,15 @@ export function createGearModal(
       color: colorSelect.value,
       image: finalImage
     };
+
+    // Add sensor configuration from Details tab
+    sensorInputs.forEach(({ key, functionInput, unitsInput }) => {
+      updatedMetadata[key] = {
+        function: functionInput.value.trim(),
+        type: functionInput.value.trim(), // Keep 'type' for backward compatibility
+        unit: unitsInput.value.trim()
+      };
+    });
 
     try {
       const result = await saveCardSettings(cardId, updatedMetadata);
