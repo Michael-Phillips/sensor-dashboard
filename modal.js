@@ -33,20 +33,78 @@ export function createGearModal(
     backgroundColor: existingData.color || '#fff',
     padding: '20px',
     borderRadius: '8px',
-    display: 'flex',
-    gap: '20px',
     maxWidth: '800px',
     width: '90%'
   });
 
-  const formSection = document.createElement('div');
-  formSection.style.flex = '1';
-
+  // Title
   const title = document.createElement('h2');
   title.textContent = `Sensor ${cardId} Settings`;
-  formSection.appendChild(title);
+  modalContent.appendChild(title);
 
-  const createLabeledInput = (labelText, value = '') => {
+  // 🔹 Create Tabs
+  const tabContainer = document.createElement('div');
+  tabContainer.className = 'modal-tabs';
+  Object.assign(tabContainer.style, {
+    display: 'flex',
+    borderBottom: '2px solid #e0e0e0',
+    marginBottom: '20px'
+  });
+
+  const tabs = ['Settings', 'Details', 'Alerts'];
+  const tabButtons = [];
+
+  tabs.forEach((tabName, index) => {
+    const tabBtn = document.createElement('button');
+    tabBtn.className = 'tab-btn' + (index === 0 ? ' active' : '');
+    tabBtn.textContent = tabName;
+    tabBtn.dataset.tab = tabName.toLowerCase();
+    Object.assign(tabBtn.style, {
+      flex: '1',
+      padding: '12px 20px',
+      background: 'none',
+      border: 'none',
+      borderBottom: index === 0 ? '3px solid #007bff' : '3px solid transparent',
+      cursor: 'pointer',
+      fontSize: '1rem',
+      fontWeight: '500',
+      color: index === 0 ? '#007bff' : '#666',
+      transition: 'all 0.3s ease'
+    });
+
+    tabBtn.addEventListener('mouseenter', () => {
+      if (!tabBtn.classList.contains('active')) {
+        tabBtn.style.color = '#333';
+        tabBtn.style.backgroundColor = '#f5f5f5';
+      }
+    });
+
+    tabBtn.addEventListener('mouseleave', () => {
+      if (!tabBtn.classList.contains('active')) {
+        tabBtn.style.color = '#666';
+        tabBtn.style.backgroundColor = 'transparent';
+      }
+    });
+
+    tabContainer.appendChild(tabBtn);
+    tabButtons.push(tabBtn);
+  });
+
+  modalContent.appendChild(tabContainer);
+
+  // 🔹 Create Content Sections
+  const contentWrapper = document.createElement('div');
+  contentWrapper.style.display = 'flex';
+  contentWrapper.style.gap = '20px';
+
+  // Settings Tab Content
+  const settingsSection = document.createElement('div');
+  settingsSection.className = 'tab-content active';
+  settingsSection.dataset.tab = 'settings';
+  settingsSection.style.flex = '1';
+  settingsSection.style.display = 'block';
+
+  const createLabeledInput = (parent, labelText, value = '') => {
     const label = document.createElement('label');
     label.textContent = labelText;
     Object.assign(label.style, { display: 'block', marginBottom: '4px' });
@@ -56,13 +114,13 @@ export function createGearModal(
     input.value = value;
     input.style.marginBottom = '16px';
 
-    formSection.appendChild(label);
-    formSection.appendChild(input);
+    parent.appendChild(label);
+    parent.appendChild(input);
     return input;
   };
 
-  const descInput = createLabeledInput('Description', existingData.description || '');
-  const locInput = createLabeledInput('Location', existingData.location || '');
+  const descInput = createLabeledInput(settingsSection, 'Description', existingData.description || '');
+  const locInput = createLabeledInput(settingsSection, 'Location', existingData.location || '');
 
   const colorLabel = document.createElement('label');
   colorLabel.textContent = 'Color';
@@ -89,33 +147,67 @@ export function createGearModal(
   });
 
   colorSelect.style.marginBottom = '16px';
-  formSection.appendChild(colorLabel);
-  formSection.appendChild(colorSelect);
+  settingsSection.appendChild(colorLabel);
+  settingsSection.appendChild(colorSelect);
+
+  // Details Tab Content
+  const detailsSection = document.createElement('div');
+  detailsSection.className = 'tab-content';
+  detailsSection.dataset.tab = 'details';
+  detailsSection.style.flex = '1';
+  detailsSection.style.display = 'none';
+
+  const sensorInfo = document.createElement('p');
+  sensorInfo.textContent = `Sensors: ${existingData.sensor_count || 1}`;
+  detailsSection.appendChild(sensorInfo);
+
+  const deviceIdInfo = document.createElement('p');
+  deviceIdInfo.textContent = `Device ID: ${cardId}`;
+  detailsSection.appendChild(deviceIdInfo);
+
+  // Add more details here as needed
+  const detailsPlaceholder = document.createElement('p');
+  detailsPlaceholder.textContent = 'Additional sensor details will appear here.';
+  detailsPlaceholder.style.color = '#666';
+  detailsPlaceholder.style.fontStyle = 'italic';
+  detailsSection.appendChild(detailsPlaceholder);
+
+  // Alerts Tab Content
+  const alertsSection = document.createElement('div');
+  alertsSection.className = 'tab-content';
+  alertsSection.dataset.tab = 'alerts';
+  alertsSection.style.flex = '1';
+  alertsSection.style.display = 'none';
 
   const failureLabel = document.createElement('label');
   failureLabel.textContent = 'Failure to Report Time';
   Object.assign(failureLabel.style, { display: 'block', marginBottom: '4px' });
 
   const failureContainer = document.createElement('div');
+  failureContainer.style.display = 'flex';
+  failureContainer.style.gap = '10px';
+  
   ['Days', 'Hours', 'Minutes'].forEach(unit => {
     const input = document.createElement('input');
     input.type = 'number';
     input.placeholder = unit;
-    input.style.width = '60px';
+    input.style.width = '80px';
+    input.style.padding = '8px';
     failureContainer.appendChild(input);
   });
 
-  failureLabel.style.marginBottom = '16px';
-  formSection.appendChild(failureLabel);
-  formSection.appendChild(failureContainer);
+  alertsSection.appendChild(failureLabel);
+  alertsSection.appendChild(failureContainer);
 
-  const sensorInfo = document.createElement('p');
-  sensorInfo.textContent = `Sensors: ${existingData.sensor_count || 1}`;
-  formSection.appendChild(sensorInfo);
+  // Add more alert settings here
+  const alertsPlaceholder = document.createElement('p');
+  alertsPlaceholder.textContent = 'Configure alert thresholds and notification settings here.';
+  alertsPlaceholder.style.color = '#666';
+  alertsPlaceholder.style.fontStyle = 'italic';
+  alertsPlaceholder.style.marginTop = '20px';
+  alertsSection.appendChild(alertsPlaceholder);
 
-  const buttonRow = document.createElement('div');
-  buttonRow.style.marginTop = '20px';
-
+  // Image Section (shows on all tabs)
   const imageSection = document.createElement('div');
   imageSection.style.flex = '0 0 150px';
 
@@ -138,9 +230,50 @@ export function createGearModal(
 
   imageSection.appendChild(imagePreview);
 
+  // Add sections to wrapper
+  contentWrapper.appendChild(settingsSection);
+  contentWrapper.appendChild(detailsSection);
+  contentWrapper.appendChild(alertsSection);
+  contentWrapper.appendChild(imageSection);
+  modalContent.appendChild(contentWrapper);
+
+  // Tab Click Handlers
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Remove active class from all tabs
+      tabButtons.forEach(b => {
+        b.classList.remove('active');
+        b.style.color = '#666';
+        b.style.borderBottomColor = 'transparent';
+      });
+      
+      // Hide all content sections
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.style.display = 'none';
+      });
+      
+      // Activate clicked tab
+      btn.classList.add('active');
+      btn.style.color = '#007bff';
+      btn.style.borderBottomColor = '#007bff';
+      
+      // Show corresponding content
+      const tabName = btn.dataset.tab;
+      const targetSection = document.querySelector(`.tab-content[data-tab="${tabName}"]`);
+      if (targetSection) {
+        targetSection.style.display = 'block';
+      }
+    });
+  });
+
+  // Button Row (at bottom, below tabs)
+  const buttonRow = document.createElement('div');
+  buttonRow.style.marginTop = '20px';
+  buttonRow.style.display = 'flex';
+  buttonRow.style.gap = '10px';
+
   const btnDone = document.createElement('button');
   btnDone.textContent = 'Done';
-  btnDone.style.marginRight = '10px';
   btnDone.onclick = async () => {
     if (!Array.isArray(sensorData)) {
       console.error('⛔ sensorData is undefined or not an array');
@@ -160,38 +293,32 @@ export function createGearModal(
       image: finalImage
     };
 
-   try {
-    const result = await saveCardSettings(cardId, updatedMetadata);
+    try {
+      const result = await saveCardSettings(cardId, updatedMetadata);
 
-    if (result?.error) {
-      alert('❌ Failed to save settings. Please try again.');
-      console.error('❌ Supabase update failed:', result.error);
-      return;
+      if (result?.error) {
+        alert('❌ Failed to save settings. Please try again.');
+        console.error('❌ Supabase update failed:', result.error);
+        return;
+      }
+
+      console.log('✅ Supabase saved row:', result.data);
+      const confirmedRow = result.data?.[0] || updatedMetadata;
+      updateLocalCardSettings(cardId, updatedMetadata);
+      modal.remove();
+    } catch (err) {
+      console.error('❌ Unexpected error during save:', err.message || err);
     }
-    
-    // ✅ Log the actual saved row from Supabase
-    console.log('✅ Supabase saved row:', result.data);
-
-    // ✅ Use the returned row to update local state
-    const confirmedRow = result.data?.[0] || updatedMetadata;
-
-    updateLocalCardSettings(cardId, updatedMetadata);
-    modal.remove();
-  } catch (err) {
-    console.error('❌ Unexpected error during save:', err.message || err);
-  }
   };
 
   const btnCancel = document.createElement('button');
   btnCancel.textContent = 'Cancel';
-  btnCancel.style.marginRight = '10px';
   btnCancel.onclick = () => {
     modal.remove();
   };
 
   const btnDelete = document.createElement('button');
   btnDelete.textContent = 'Delete';
-  btnDelete.style.marginRight = '10px';
   btnDelete.onclick = async () => {
     const confirmDelete = confirm(`Are you sure you want to delete all data for device ${cardId}?`);
     if (!confirmDelete) return;
@@ -221,10 +348,8 @@ export function createGearModal(
   buttonRow.appendChild(btnDone);
   buttonRow.appendChild(btnCancel);
   buttonRow.appendChild(btnDelete);
-  formSection.appendChild(buttonRow);
+  modalContent.appendChild(buttonRow);
 
-  modalContent.appendChild(formSection);
-  modalContent.appendChild(imageSection);
   modal.appendChild(modalContent);
   document.body.appendChild(modal);
 
