@@ -57,6 +57,12 @@ export function renderCards(sensorData, container, updateLocalCardSettings, dele
   // 🎨 Sort data by color before rendering
   const sortedData = sortByColor(sensorData);
 
+  // 🐛 Debug: Check if sorting worked
+console.log('🎨 Sorted colors:', sortedData.map(row => {
+  const meta = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
+  return { id: row.device_id, color: meta.color || '#FFFFFF' };
+}));
+
   sortedData.forEach(row => {
  
     const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
