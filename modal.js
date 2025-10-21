@@ -31,26 +31,24 @@ export function createGearModal(
   modalContent.className = 'modal-content';
   Object.assign(modalContent.style, {
     backgroundColor: existingData.color || '#fff',
-    padding: '20px',
+    padding: '0',
     borderRadius: '8px',
     maxWidth: '800px',
-    width: '90%'
+    width: '90%',
+    overflow: 'hidden'
   });
 
-  // Title
-  const title = document.createElement('h2');
-  title.textContent = `Sensor ${cardId} Settings`;
-  modalContent.appendChild(title);
-
-  // 🔹 Create Tabs
+  // 🔹 Create Tabs (at the very top)
   const tabContainer = document.createElement('div');
   tabContainer.className = 'modal-tabs';
   Object.assign(tabContainer.style, {
     display: 'flex',
     borderBottom: '2px solid #333',
-    marginBottom: '20px',
-    marginTop: '10px',
-    backgroundColor: 'rgba(255,255,255,0.3)'
+    marginBottom: '0',
+    marginTop: '0',
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    borderTopLeftRadius: '8px',
+    borderTopRightRadius: '8px'
   });
 
   const tabs = ['Settings', 'Details', 'Alerts'];
@@ -98,6 +96,7 @@ export function createGearModal(
   const contentWrapper = document.createElement('div');
   contentWrapper.style.display = 'flex';
   contentWrapper.style.gap = '20px';
+  contentWrapper.style.padding = '20px';
 
   // Settings Tab Content
   const settingsSection = document.createElement('div');
@@ -277,6 +276,7 @@ export function createGearModal(
   buttonRow.style.marginTop = '20px';
   buttonRow.style.display = 'flex';
   buttonRow.style.gap = '10px';
+  buttonRow.style.padding = '0 20px 20px 20px';
 
   const btnDone = document.createElement('button');
   btnDone.textContent = 'Done';
