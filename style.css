@@ -73,7 +73,7 @@ body {
 .sensor-reading {
   font-size: 1.25rem;      /* Larger font */
   font-weight: bold;
-  margin: 4px 0;
+  margin: 8px 0;
   text-align: left;
   position: relative;
 }
@@ -82,7 +82,7 @@ body {
   position: absolute;
   right: 0;
   top: 0;
-  font-size: 0.625rem; /* Half of 1.25rem */
+  font-size: 0.725rem; /* Half of 1.25rem */
   color: #666;
 }
 
