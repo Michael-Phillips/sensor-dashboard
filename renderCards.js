@@ -19,7 +19,7 @@ async function listRepoImages() {
   const user = 'michael-phillips';
   const repo = 'sensor-dashboard';
   const folder = 'images';
-  const branch = 'main'; // Change to 'master' if needed
+  const branch = 'main';
 
   const apiUrl = `https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`;
 
@@ -36,14 +36,12 @@ async function listRepoImages() {
       .filter(item => item.path.startsWith(`${folder}/`) && item.type === 'blob')
       .map(item => item.path.replace(`${folder}/`, ''));
 
-    //console.log('📁 Available images in repo:', imageFiles);
     return imageFiles;
   } catch (error) {
     console.error('Error fetching image list:', error);
     return [];
   }
 } 
-
 
 export function renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettings) {
   container.innerHTML = '';
@@ -57,18 +55,10 @@ export function renderCards(sensorData, container, updateLocalCardSettings, dele
   // 🎨 Sort data by color before rendering
   const sortedData = sortByColor(sensorData);
 
-  // 🐛 Debug: Check if sorting worked
-console.log('🎨 Sorted colors:', sortedData.map(row => {
-  const meta = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
-  return { id: row.device_id, color: meta.color || '#FFFFFF' };
-}));
-
   sortedData.forEach(row => {
- 
     const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
-    //console.log('🎨 Rendering card for:', row.device_id);
-    //console.log('🎨 Metadata:', row.metadata);
-    //console.log('🎨 Image:', row.metadata?.image || row.image_url);
+    console.log('🎨 Rendering card for:', row.device_id);
+    console.log('🎨 Image:', row.metadata?.image || row.image_url);
 
     const card = document.createElement('div');
     card.className = 'card';
@@ -93,7 +83,7 @@ console.log('🎨 Sorted colors:', sortedData.map(row => {
     }
 
     img.src = imageUrl.startsWith('http') ? imageUrl : `${BASE_PATH}${imageUrl}`;
-    //console.log('🖼️ Final image URL:', img.src);
+    console.log('🖼️ Final image URL:', img.src);
 
     img.onerror = () => {
       console.warn('Image failed to load:', img.src);
@@ -131,12 +121,20 @@ console.log('🎨 Sorted colors:', sortedData.map(row => {
     const updateSensorDisplay = () => {
       const key = sensorKeys[sensorIndex];
       const meta = metadata[key] || {};
-      const unit = typeof meta.unit === 'string' ? meta.unit.trim() : '';
+      
+      // Get unit from metadata (support both 'unit' and legacy structure)
+      const unit = meta.unit || (typeof meta.unit === 'string' ? meta.unit.trim() : '');
       const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
 
-      sensorValue.textContent = `${row[key]} ${unit}`;
+      // Display value with unit
+      sensorValue.textContent = unit 
+        ? `${row[key]} ${unit}` 
+        : `${row[key]}`;
+      
       sensorIndexDisplay.textContent = indexText;
-      typeDisplay.textContent = meta.type ? ` ${meta.type}` : '';
+      
+      // Display function/type
+      typeDisplay.textContent = meta.function || meta.type || '';
     };
 
     updateSensorDisplay();
@@ -167,7 +165,6 @@ console.log('🎨 Sorted colors:', sortedData.map(row => {
 
       try {
         createGearModal(cardId, existingData, updateLocalCardSettings, deleteCard, window.supabase, availableImages, sensorData);
-        //createGearModal(cardId, existingData, saveCardSettings, updateLocalCardSettings, deleteCard, 'readings', availableImages, sensorData);
       } catch (err) {
         console.error('❌ Modal creation failed:', err);
       }
@@ -177,5 +174,4 @@ console.log('🎨 Sorted colors:', sortedData.map(row => {
 
     container.appendChild(card);
   });
-
 }
