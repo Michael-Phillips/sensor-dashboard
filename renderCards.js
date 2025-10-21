@@ -120,9 +120,10 @@ export function renderCards(sensorData, container, updateLocalCardSettings, dele
 
     const updateSensorDisplay = () => {
       const key = sensorKeys[sensorIndex];
-      const meta = metadata[key] || {};
+      // Read from sensor_config or fallback to top-level
+      const meta = metadata.sensor_config?.[key] || metadata[key] || {};
       
-      // Get unit from metadata (support both 'unit' and legacy structure)
+      // Get unit from metadata
       const unit = meta.unit || (typeof meta.unit === 'string' ? meta.unit.trim() : '');
       const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
 
