@@ -3,6 +3,15 @@ import { createGearModal } from './modal.js';
 
 const BASE_PATH = window.BASE_PATH;
 
+// 🎨 Sort cards by color (hex value)
+function sortByColor(sensorData) {
+  return sensorData.slice().sort((a, b) => {
+    const colorA = (typeof a.metadata === 'string' ? JSON.parse(a.metadata) : a.metadata || {}).color || '#FFFFFF';
+    const colorB = (typeof b.metadata === 'string' ? JSON.parse(b.metadata) : b.metadata || {}).color || '#FFFFFF';
+    return colorA.localeCompare(colorB);
+  });
+}
+
 // 🔍 GitHub API image listing
 async function listRepoImages() {
   console.log('📡 Starting GitHub API image fetch...');
@@ -45,7 +54,11 @@ export function renderCards(sensorData, container, updateLocalCardSettings, dele
     availableImages = images;
   });
 
-  sensorData.forEach(row => {
+  // 🎨 Sort data by color before rendering
+  const sortedData = sortByColor(sensorData);
+
+  sortedData.forEach(row => {
+ 
     const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
     console.log('🎨 Rendering card for:', row.device_id);
     //console.log('🎨 Metadata:', row.metadata);
@@ -158,4 +171,5 @@ export function renderCards(sensorData, container, updateLocalCardSettings, dele
 
     container.appendChild(card);
   });
+
 }
