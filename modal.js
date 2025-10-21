@@ -47,8 +47,10 @@ export function createGearModal(
   tabContainer.className = 'modal-tabs';
   Object.assign(tabContainer.style, {
     display: 'flex',
-    borderBottom: '2px solid #e0e0e0',
-    marginBottom: '20px'
+    borderBottom: '2px solid #333',
+    marginBottom: '20px',
+    marginTop: '10px',
+    backgroundColor: 'rgba(255,255,255,0.3)'
   });
 
   const tabs = ['Settings', 'Details', 'Alerts'];
@@ -62,27 +64,27 @@ export function createGearModal(
     Object.assign(tabBtn.style, {
       flex: '1',
       padding: '12px 20px',
-      background: 'none',
+      background: index === 0 ? 'rgba(255,255,255,0.5)' : 'transparent',
       border: 'none',
-      borderBottom: index === 0 ? '3px solid #007bff' : '3px solid transparent',
+      borderBottom: index === 0 ? '3px solid #000' : '3px solid transparent',
       cursor: 'pointer',
-      fontSize: '1rem',
-      fontWeight: '500',
-      color: index === 0 ? '#007bff' : '#666',
+      fontSize: '1.1rem',
+      fontWeight: index === 0 ? 'bold' : '500',
+      color: index === 0 ? '#000' : '#333',
       transition: 'all 0.3s ease'
     });
 
     tabBtn.addEventListener('mouseenter', () => {
       if (!tabBtn.classList.contains('active')) {
-        tabBtn.style.color = '#333';
-        tabBtn.style.backgroundColor = '#f5f5f5';
+        tabBtn.style.backgroundColor = 'rgba(255,255,255,0.3)';
+        tabBtn.style.fontWeight = 'bold';
       }
     });
 
     tabBtn.addEventListener('mouseleave', () => {
       if (!tabBtn.classList.contains('active')) {
-        tabBtn.style.color = '#666';
         tabBtn.style.backgroundColor = 'transparent';
+        tabBtn.style.fontWeight = '500';
       }
     });
 
@@ -243,8 +245,10 @@ export function createGearModal(
       // Remove active class from all tabs
       tabButtons.forEach(b => {
         b.classList.remove('active');
-        b.style.color = '#666';
+        b.style.color = '#333';
         b.style.borderBottomColor = 'transparent';
+        b.style.backgroundColor = 'transparent';
+        b.style.fontWeight = '500';
       });
       
       // Hide all content sections
@@ -254,8 +258,10 @@ export function createGearModal(
       
       // Activate clicked tab
       btn.classList.add('active');
-      btn.style.color = '#007bff';
-      btn.style.borderBottomColor = '#007bff';
+      btn.style.color = '#000';
+      btn.style.borderBottomColor = '#000';
+      btn.style.backgroundColor = 'rgba(255,255,255,0.5)';
+      btn.style.fontWeight = 'bold';
       
       // Show corresponding content
       const tabName = btn.dataset.tab;
