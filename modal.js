@@ -177,8 +177,8 @@ export function createGearModal(
 
   const sensorTable = document.createElement('div');
   sensorTable.style.display = 'grid';
-  sensorTable.style.gridTemplateColumns = '60px 1fr 1fr';
-  sensorTable.style.gap = '10px';
+  sensorTable.style.gridTemplateColumns = '80px 180px 120px';
+  sensorTable.style.gap = '8px';
   sensorTable.style.marginBottom = '20px';
 
   // Headers
@@ -190,6 +190,7 @@ export function createGearModal(
     header.style.padding = '8px';
     header.style.backgroundColor = 'rgba(0,0,0,0.1)';
     header.style.borderRadius = '4px';
+    header.style.textAlign = 'center';
     sensorTable.appendChild(header);
   });
 
@@ -202,38 +203,107 @@ export function createGearModal(
     // Read from sensor_config or fallback to top-level (for backward compatibility)
     const sensorMeta = existingData.sensor_config?.[sensorKey] || existingData[sensorKey] || {};
 
-    // Sensor label
+    // Sensor label (wider column)
     const sensorLabel = document.createElement('div');
-    sensorLabel.textContent = `#${i}`;
-    sensorLabel.style.padding = '8px';
+    sensorLabel.textContent = `Sensor ${i}`;
+    sensorLabel.style.padding = '8px 4px';
     sensorLabel.style.textAlign = 'center';
     sensorLabel.style.fontWeight = 'bold';
+    sensorLabel.style.fontSize = '0.85rem';
     sensorTable.appendChild(sensorLabel);
 
-    // Function input
+    // Function input (narrower)
     const functionInput = document.createElement('input');
     functionInput.type = 'text';
-    functionInput.placeholder = 'e.g., Temperature';
+    functionInput.placeholder = 'e.g., CO2';
     functionInput.value = sensorMeta.function || sensorMeta.type || '';
-    functionInput.style.padding = '8px';
+    functionInput.style.padding = '6px';
     functionInput.style.width = '100%';
     functionInput.style.boxSizing = 'border-box';
+    functionInput.style.fontSize = '0.85rem';
     sensorTable.appendChild(functionInput);
 
-    // Units input
+    // Value display (read-only, shows current value)
+    const valueDisplay = document.createElement('input');
+    valueDisplay.type = 'text';
+    valueDisplay.value = row[sensorKey] || '--';
+    valueDisplay.readOnly = true;
+    valueDisplay.style.padding = '6px';
+    valueDisplay.style.width = '100%';
+    valueDisplay.style.boxSizing = 'border-box';
+    valueDisplay.style.backgroundColor = '#f0f0f0';
+    valueDisplay.style.textAlign = 'center';
+    valueDisplay.style.fontSize = '0.85rem';
+    sensorTable.appendChild(valueDisplay);
+
+    // Scalar input
+    const scalarInput = document.createElement('input');
+    scalarInput.type = 'number';
+    scalarInput.step = '0.01';
+    scalarInput.placeholder = '1.0';
+    scalarInput.value = sensorMeta.scalar || '';
+    scalarInput.style.padding = '6px';
+    scalarInput.style.width = '100%';
+    scalarInput.style.boxSizing = 'border-box';
+    scalarInput.style.fontSize = '0.85rem';
+    sensorTable.appendChild(scalarInput);
+
+    // Display value (calculated: value * scalar)
+    const displayInput = document.createElement('input');
+    displayInput.type = 'text';
+    displayInput.readOnly = true;
+    displayInput.style.padding = '6px';
+    displayInput.style.width = '100%';
+    displayInput.style.boxSizing = 'border-box';
+    displayInput.style.backgroundColor = '#f0f0f0';
+    displayInput.style.textAlign = 'center';
+    displayInput.style.fontSize = '0.85rem';
+    
+    // Calculate display value
+    const updateDisplay = () => {
+      const val = parseFloat(valueDisplay.value) || 0;
+      const scalar = parseFloat(scalarInput.value) || 1;
+      displayInput.value = (val * scalar).toFixed(2);
+    };
+    updateDisplay();
+    
+    scalarInput.addEventListener('input', updateDisplay);
+    
+    sensorTable.appendChild(displayInput);
+
+    // Units input (narrower)
     const unitsInput = document.createElement('input');
     unitsInput.type = 'text';
-    unitsInput.placeholder = 'e.g., °F, %, ppm';
+    unitsInput.placeholder = '°F, %';
     unitsInput.value = sensorMeta.unit || '';
-    unitsInput.style.padding = '8px';
+    unitsInput.style.padding = '6px';
     unitsInput.style.width = '100%';
     unitsInput.style.boxSizing = 'border-box';
+    unitsInput.style.fontSize = '0.85rem';
     sensorTable.appendChild(unitsInput);
+
+    // Alarm checkbox
+    const alarmCheckbox = document.createElement('input');
+    alarmCheckbox.type = 'checkbox';
+    alarmCheckbox.checked = sensorMeta.alarm || false;
+    alarmCheckbox.style.width = '20px';
+    alarmCheckbox.style.height = '20px';
+    alarmCheckbox.style.margin = 'auto';
+    alarmCheckbox.style.cursor = 'pointer';
+    
+    const alarmContainer = document.createElement('div');
+    alarmContainer.style.display = 'flex';
+    alarmContainer.style.justifyContent = 'center';
+    alarmContainer.style.alignItems = 'center';
+    alarmContainer.appendChild(alarmCheckbox);
+    sensorTable.appendChild(alarmContainer);
 
     sensorInputs.push({
       key: sensorKey,
       functionInput,
-      unitsInput
+      unitsInput,
+      scalarInput,
+      alarmCheckbox
     });
   }
 
@@ -372,11 +442,13 @@ export function createGearModal(
     };
 
     // Add sensor configuration from Details tab
-    sensorInputs.forEach(({ key, functionInput, unitsInput }) => {
+    sensorInputs.forEach(({ key, functionInput, unitsInput, scalarInput, alarmCheckbox }) => {
       updatedMetadata[key] = {
         function: functionInput.value.trim(),
         type: functionInput.value.trim(), // Keep 'type' for backward compatibility
-        unit: unitsInput.value.trim()
+        unit: unitsInput.value.trim(),
+        scalar: parseFloat(scalarInput.value) || 1.0,
+        alarm: alarmCheckbox.checked
       };
     });
 
