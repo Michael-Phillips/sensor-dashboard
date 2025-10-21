@@ -66,9 +66,9 @@ console.log('🎨 Sorted colors:', sortedData.map(row => {
   sortedData.forEach(row => {
  
     const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
-    console.log('🎨 Rendering card for:', row.device_id);
+    //console.log('🎨 Rendering card for:', row.device_id);
     //console.log('🎨 Metadata:', row.metadata);
-    console.log('🎨 Image:', row.metadata?.image || row.image_url);
+    //console.log('🎨 Image:', row.metadata?.image || row.image_url);
 
     const card = document.createElement('div');
     card.className = 'card';
@@ -93,7 +93,7 @@ console.log('🎨 Sorted colors:', sortedData.map(row => {
     }
 
     img.src = imageUrl.startsWith('http') ? imageUrl : `${BASE_PATH}${imageUrl}`;
-    console.log('🖼️ Final image URL:', img.src);
+    //console.log('🖼️ Final image URL:', img.src);
 
     img.onerror = () => {
       console.warn('Image failed to load:', img.src);
