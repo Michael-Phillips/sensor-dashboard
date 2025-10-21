@@ -23,7 +23,7 @@ body {
   vertical-align: top;
   text-align: left;
   overflow: hidden;
-  padding: 0;
+  padding: 15px;
   transition: transform 0.2s cubic-bezier(0.33, 0, 0, 1) /* updated timing function */
 }
 
