@@ -269,6 +269,10 @@ export function createGearModal(
   batteryLabel.style.marginBottom = '8px';
   batteryLabel.style.fontWeight = 'bold';
 
+  const batteryValueContainer = document.createElement('div');
+  batteryValueContainer.style.display = 'flex';
+  batteryValueContainer.style.alignItems = 'center';
+
   const batteryValue = document.createElement('span');
   batteryValue.textContent = '—'; // default placeholder
   batteryValue.style.padding = '8px';
@@ -285,9 +289,11 @@ export function createGearModal(
   batteryUnit.style.marginLeft = '5px';
   batteryUnit.style.fontWeight = 'bold';
 
+  batteryValueContainer.appendChild(batteryValue);
+  batteryValueContainer.appendChild(batteryUnit);
+
   batterySection.appendChild(batteryLabel);
-  batterySection.appendChild(batteryValue);
-  batterySection.appendChild(batteryUnit);
+  batterySection.appendChild(batteryValueContainer);
   detailsSection.appendChild(batterySection);
 
   // Fetch and display battery voltage
