@@ -2,6 +2,22 @@ import { saveCardSettings } from './utils.js';
 
 const BASE_PATH = window.BASE_PATH;
 
+async function fetchLatestBattery(deviceId) {
+  const { data, error } = await supabase
+    .from('readings')
+    .select('battery')
+    .eq('device_id', deviceId)
+    .order('timestamp', { ascending: false }) // or 'created_at'
+    .limit(1);
+
+  if (error) {
+    console.error('Battery fetch error:', error);
+    return null;
+  }
+
+  return data?.[0]?.battery ?? null;
+}
+
 export function createGearModal(
   cardId,
   existingData,
@@ -253,7 +269,7 @@ export function createGearModal(
   batteryLabel.style.display = 'block';
   batteryLabel.style.marginBottom = '8px';
   batteryLabel.style.fontWeight = 'bold';
-
+/*
   batteryInput = document.createElement('input');
   batteryInput.type = 'number';
   batteryInput.step = '0.01';
@@ -270,8 +286,31 @@ export function createGearModal(
 
   batterySection.appendChild(batteryLabel);
   batterySection.appendChild(batteryInput);
+  */
+
+  const batteryValue = document.createElement('span');
+batteryValue.textContent = '—'; // default placeholder
+batteryValue.style.padding = '8px';
+batteryValue.style.fontSize = '1rem';
+batteryValue.style.backgroundColor = '#fff';
+batteryValue.style.border = '1px solid #ccc';
+batteryValue.style.borderRadius = '4px';
+batteryValue.style.display = 'inline-block';
+batteryValue.style.minWidth = '80px';
+batteryValue.style.textAlign = 'center';
+
+batterySection.appendChild(batteryValue);
+
   batterySection.appendChild(batteryUnit);
   detailsSection.appendChild(batterySection);
+
+  fetchLatestBattery(deviceId).then(voltage => {
+  if (voltage !== null) {
+    batteryValue.textContent = voltage.toFixed(2);
+  } else {
+    batteryValue.textContent = '—';
+  }
+});
 
   const sensorCountInfo = document.createElement('p');
   sensorCountInfo.textContent = `Total sensors: ${numSensors}`;
