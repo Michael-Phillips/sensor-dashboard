@@ -12,7 +12,7 @@ supabase
   .on(
     'postgres_changes',
     {
-      event: 'INSERT', // or 'UPDATE' if sensors overwrite
+      event: 'INSERT',
       schema: 'public',
       table: window.tableName,
     },
@@ -22,10 +22,15 @@ supabase
     }
   )
   .subscribe();
-  
 
+let sensorData = [];
 
-let sensorData = []; // ✅ Global reference
+// Make sensorData available globally for debugging
+window.debugSensorData = () => {
+  console.log('Current sensorData:', sensorData);
+  console.log('Device IDs:', sensorData.map(s => s.device_id));
+  return sensorData;
+};
 
 function updateLocalCardSettings(cardId, updatedMetadata) {
   sensorData = sensorData.map(row =>
@@ -46,23 +51,20 @@ function handleNewSensorData(newRow) {
   const index = sensorData.findIndex(row => String(row.device_id).trim() === deviceId);
 
   if (index !== -1) {
-    // Merge new sensor values but preserve existing metadata
     sensorData[index] = {
       ...sensorData[index],
       ...newRow,
       metadata: {
         ...sensorData[index].metadata,
-        ...newRow.metadata, // ✅ this line ensures meta_type is updated
+        ...newRow.metadata,
       },
     };
   } else {
-    // If it's a new device, initialize metadata to empty
     sensorData.push({ ...newRow, metadata: {} });
   }
 
   renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettings);
 }
-
 
 function deleteCard(cardId) {
   sensorData = sensorData.filter(row => String(row.device_id).trim() !== String(cardId).trim());
@@ -71,7 +73,6 @@ function deleteCard(cardId) {
   renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettingsWrapper);
 }
 
-// ✅ Wrapper to pass supabase + table to utils version
 function saveCardSettingsWrapper(cardId, updatedMetadata) {
   saveCardSettings(cardId, updatedMetadata, supabase, table);
 }
@@ -79,6 +80,7 @@ function saveCardSettingsWrapper(cardId, updatedMetadata) {
 async function fetchReadings() {
   try {
     // Fetch sensor readings
+    console.log('🔍 Fetching readings from table:', table);
     const readingsResponse = await fetch(`${supabaseUrl}/rest/v1/${table}?select=*&order=timestamp.desc`, {
       headers: {
         apikey: supabaseKey,
@@ -92,6 +94,13 @@ async function fetchReadings() {
       return;
     }
 
+    console.log('📊 Total readings fetched:', readings.length);
+    
+    // Get unique device IDs from readings
+    const uniqueDeviceIds = [...new Set(readings.map(r => String(r.device_id).trim()))];
+    console.log('🔢 Unique device_ids in readings:', uniqueDeviceIds);
+    console.log('🔢 Total unique devices:', uniqueDeviceIds.length);
+
     // Fetch metadata
     const metadataResponse = await fetch(`${supabaseUrl}/rest/v1/device_metadata?select=*`, {
       headers: {
@@ -101,6 +110,8 @@ async function fetchReadings() {
     });
 
     const metadata = await metadataResponse.json();
+    console.log('📋 Metadata entries fetched:', metadata.length);
+    
     const metadataMap = new Map();
     metadata.forEach(row => {
       metadataMap.set(String(row.device_id).trim(), row);
@@ -115,8 +126,25 @@ async function fetchReadings() {
       };
     });
 
+    console.log('✨ Enriched readings count:', enrichedReadings.length);
+
     // Deduplicate and render
     sensorData = getLatestPerDevice(enrichedReadings);
+    
+    console.log('🎯 Final sensorData count:', sensorData.length);
+    console.log('🎯 Final device_ids:', sensorData.map(s => s.device_id));
+    
+    // Verify all devices made it through
+    const finalDeviceIds = sensorData.map(s => String(s.device_id).trim());
+    const missingDevices = uniqueDeviceIds.filter(id => !finalDeviceIds.includes(id));
+    
+    if (missingDevices.length > 0) {
+      console.warn('⚠️ MISSING DEVICES:', missingDevices);
+      console.warn('⚠️ These device_ids are in readings but not in final sensorData!');
+    } else {
+      console.log('✅ All devices accounted for!');
+    }
+
     renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettingsWrapper);
   } catch (err) {
     console.error('❌ Failed to fetch readings or metadata:', err);
