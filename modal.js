@@ -277,8 +277,8 @@ export function createGearModal(
   batteryValue.textContent = '—'; // default placeholder
   batteryValue.style.padding = '8px';
   batteryValue.style.fontSize = '1rem';
-  batteryValue.style.backgroundColor = '#fff';
-  batteryValue.style.border = '1px solid #ccc';
+  batteryValue.style.backgroundColor = 'transparent';
+  batteryValue.style.border = '1px solid rgba(0,0,0,0.2)';
   batteryValue.style.borderRadius = '4px';
   batteryValue.style.display = 'inline-block';
   batteryValue.style.minWidth = '80px';
