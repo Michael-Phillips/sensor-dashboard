@@ -1,3 +1,4 @@
+// modal.js
 import { saveCardSettings } from './utils.js';
 
 const BASE_PATH = window.BASE_PATH;
@@ -277,7 +278,7 @@ export function createGearModal(
   batteryValue.textContent = '—'; // default placeholder
   batteryValue.style.padding = '8px';
   batteryValue.style.fontSize = '1rem';
-  batteryValue.style.backgroundColor = 'transparent';
+  batteryValue.style.backgroundColor = 'rgba(0,0,0,0.05)';
   batteryValue.style.border = '1px solid rgba(0,0,0,0.2)';
   batteryValue.style.borderRadius = '4px';
   batteryValue.style.display = 'inline-block';
