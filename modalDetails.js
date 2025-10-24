@@ -124,7 +124,7 @@ export function createDetailsTab(cardId, existingData, sensorData) {
     booleanCheckbox.style.cursor = 'pointer';
     
     checkboxCell.appendChild(booleanCheckbox);
-    checkboxCell.appendChild(document.createTextNode(' TEST'));
+    //checkboxCell.appendChild(document.createTextNode(' TEST'));
     sensorTable.appendChild(checkboxCell);
     console.log('🔵 Checkbox appended for sensor', i);
 
