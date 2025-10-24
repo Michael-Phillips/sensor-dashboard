@@ -88,7 +88,7 @@ function saveCardSettingsWrapper(cardId, updatedMetadata) {
 
 async function fetchReadings() {
   try {
-    console.log('🔍 Fetching readings from table:', table);
+    //console.log('🔍 Fetching readings from table:', table);
 
     // Fetch all readings
     const readingsResponse = await fetch(`${supabaseUrl}/rest/v1/${table}?select=*&order=timestamp.desc`, {
