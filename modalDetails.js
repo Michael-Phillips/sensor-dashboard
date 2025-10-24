@@ -1,7 +1,9 @@
-// modalDetails.js v11
+// modalDetails.js v1.2
+
+console.log('🔵 modalDetails.js is loading...');
 
 async function fetchLatestBattery(deviceId) {
-  const { data, error } = await supabase
+  const { data, error } = await window.supabase
     .from('readings')
     .select('battery')
     .eq('device_id', deviceId)
@@ -17,6 +19,8 @@ async function fetchLatestBattery(deviceId) {
 }
 
 export function createDetailsTab(cardId, existingData, sensorData) {
+  console.log('🔵 createDetailsTab called for device:', cardId);
+  
   const detailsSection = document.createElement('div');
   detailsSection.className = 'tab-content';
   detailsSection.dataset.tab = 'details';
@@ -33,6 +37,8 @@ export function createDetailsTab(cardId, existingData, sensorData) {
   const currentRow = sensorData.find(r => String(r.device_id).trim() === String(cardId).trim());
   const numSensors = currentRow?.numsens || currentRow?.sensor_count || 1;
   const maxSensors = Math.min(numSensors, 5);
+
+  console.log('🔵 Number of sensors:', numSensors);
 
   // Create sensor details table
   const sensorTableTitle = document.createElement('h3');
@@ -60,11 +66,15 @@ export function createDetailsTab(cardId, existingData, sensorData) {
     sensorTable.appendChild(header);
   });
 
+  console.log('🔵 Headers created');
+
   // Store input fields for saving later
   const sensorInputs = [];
 
   // Create rows for each sensor
   for (let i = 1; i <= maxSensors; i++) {
+    console.log('🔵 Creating row for sensor', i);
+    
     const sensorKey = `sensor_${i}`;
     const sensorMeta = existingData.sensor_config?.[sensorKey] || existingData[sensorKey] || {};
 
@@ -79,30 +89,105 @@ export function createDetailsTab(cardId, existingData, sensorData) {
     // Function input
     const functionInput = document.createElement('input');
     functionInput.type = 'text';
-    functionInput.placeholder = 'e.g., Temperature, CO2';
+    functionInput.placeholder = 'e.g., Door, Light';
     functionInput.value = sensorMeta.function || sensorMeta.type || '';
     functionInput.style.padding = '8px';
     functionInput.style.width = '100%';
     functionInput.style.boxSizing = 'border-box';
+    functionInput.style.fontSize = '0.9rem';
     sensorTable.appendChild(functionInput);
 
     // Units input
     const unitsInput = document.createElement('input');
     unitsInput.type = 'text';
-    unitsInput.placeholder = 'e.g., °F, %, ppm';
+    unitsInput.placeholder = 'e.g., °F, %';
     unitsInput.value = sensorMeta.unit || '';
     unitsInput.style.padding = '8px';
     unitsInput.style.width = '100%';
     unitsInput.style.boxSizing = 'border-box';
+    unitsInput.style.fontSize = '0.9rem';
     sensorTable.appendChild(unitsInput);
+
+    // Boolean checkbox - SIMPLIFIED
+    console.log('🔵 Creating checkbox for sensor', i);
+    const checkboxCell = document.createElement('div');
+    checkboxCell.style.textAlign = 'center';
+    checkboxCell.style.padding = '8px';
+    checkboxCell.style.backgroundColor = 'yellow'; // Make it VERY visible
+    
+    const booleanCheckbox = document.createElement('input');
+    booleanCheckbox.type = 'checkbox';
+    booleanCheckbox.id = 'bool_' + i;
+    booleanCheckbox.checked = sensorMeta.is_boolean || false;
+    booleanCheckbox.style.width = '25px';
+    booleanCheckbox.style.height = '25px';
+    booleanCheckbox.style.cursor = 'pointer';
+    
+    checkboxCell.appendChild(booleanCheckbox);
+    checkboxCell.appendChild(document.createTextNode(' TEST'));
+    sensorTable.appendChild(checkboxCell);
+    console.log('🔵 Checkbox appended for sensor', i);
+
+    // Boolean labels container
+    const labelsContainer = document.createElement('div');
+    labelsContainer.style.display = 'flex';
+    labelsContainer.style.flexDirection = 'column';
+    labelsContainer.style.gap = '4px';
+    
+    const trueLabel = document.createElement('input');
+    trueLabel.type = 'text';
+    trueLabel.placeholder = 'True';
+    trueLabel.value = sensorMeta.true_label || 'On';
+    trueLabel.style.padding = '4px';
+    trueLabel.style.width = '100%';
+    trueLabel.style.boxSizing = 'border-box';
+    trueLabel.style.fontSize = '0.8rem';
+    trueLabel.disabled = !booleanCheckbox.checked;
+    
+    const falseLabel = document.createElement('input');
+    falseLabel.type = 'text';
+    falseLabel.placeholder = 'False';
+    falseLabel.value = sensorMeta.false_label || 'Off';
+    falseLabel.style.padding = '4px';
+    falseLabel.style.width = '100%';
+    falseLabel.style.boxSizing = 'border-box';
+    falseLabel.style.fontSize = '0.8rem';
+    falseLabel.disabled = !booleanCheckbox.checked;
+    
+    // Enable/disable labels based on checkbox
+    booleanCheckbox.addEventListener('change', () => {
+      trueLabel.disabled = !booleanCheckbox.checked;
+      falseLabel.disabled = !booleanCheckbox.checked;
+      if (booleanCheckbox.checked) {
+        unitsInput.disabled = true;
+        unitsInput.style.backgroundColor = '#f0f0f0';
+      } else {
+        unitsInput.disabled = false;
+        unitsInput.style.backgroundColor = 'white';
+      }
+    });
+    
+    // Initial state
+    if (booleanCheckbox.checked) {
+      unitsInput.disabled = true;
+      unitsInput.style.backgroundColor = '#f0f0f0';
+    }
+    
+    labelsContainer.appendChild(trueLabel);
+    labelsContainer.appendChild(falseLabel);
+    sensorTable.appendChild(labelsContainer);
 
     sensorInputs.push({
       key: sensorKey,
       functionInput,
-      unitsInput
+      unitsInput,
+      booleanCheckbox,
+      trueLabel,
+      falseLabel
     });
   }
 
+  console.log('🔵 All sensor rows created');
   detailsSection.appendChild(sensorTable);
 
   // Battery voltage section
@@ -161,5 +246,8 @@ export function createDetailsTab(cardId, existingData, sensorData) {
   sensorCountInfo.style.marginTop = '15px';
   detailsSection.appendChild(sensorCountInfo);
 
+  console.log('🔵 createDetailsTab complete, returning data');
   return { detailsSection, sensorInputs };
 }
+
+console.log('🔵 modalDetails.js loaded successfully');
