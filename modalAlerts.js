@@ -1,4 +1,4 @@
-// modalAlerts.js
+// modalAlerts.js v1.0
 
 export function createAlertsTab() {
   const alertsSection = document.createElement('div');

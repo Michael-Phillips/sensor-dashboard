@@ -1,4 +1,4 @@
-// modalSettings.js
+// modalSettings.js v1.0
 
 export function createSettingsTab(existingData) {
   const settingsSection = document.createElement('div');

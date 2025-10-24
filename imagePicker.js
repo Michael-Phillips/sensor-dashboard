@@ -1,4 +1,4 @@
-// imagePicker.js
+// imagePicker.js v1.0
 
 export function openImagePicker(availableImages, imagePreview, BASE_PATH) {
   // Create backdrop overlay
