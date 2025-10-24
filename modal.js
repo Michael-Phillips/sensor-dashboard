@@ -1,4 +1,4 @@
-// modal.js
+// modal.js v1.1
 import { saveCardSettings } from './utils.js';
 import { createTabs } from './modalTabs.js';
 import { createSettingsTab } from './modalSettings.js';
