@@ -151,11 +151,14 @@ export function createGearModal(
     };
 
     // Add sensor configuration from Details tab
-    sensorInputs.forEach(({ key, functionInput, unitsInput }) => {
+    sensorInputs.forEach(({ key, functionInput, unitsInput, booleanCheckbox, trueLabel, falseLabel }) => {
       updatedMetadata[key] = {
         function: functionInput.value.trim(),
         type: functionInput.value.trim(),
-        unit: unitsInput.value.trim()
+        unit: unitsInput.value.trim(),
+        is_boolean: booleanCheckbox.checked,
+        true_label: booleanCheckbox.checked ? trueLabel.value.trim() : null,
+        false_label: booleanCheckbox.checked ? falseLabel.value.trim() : null
       };
     });
 

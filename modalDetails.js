@@ -42,12 +42,12 @@ export function createDetailsTab(cardId, existingData, sensorData) {
 
   const sensorTable = document.createElement('div');
   sensorTable.style.display = 'grid';
-  sensorTable.style.gridTemplateColumns = '80px 180px 120px';
+  sensorTable.style.gridTemplateColumns = '60px 140px 90px 80px 80px';
   sensorTable.style.gap = '8px';
   sensorTable.style.marginBottom = '20px';
 
   // Headers
-  const headers = ['Sensor', 'Function', 'Units'];
+  const headers = ['Sensor', 'Function', 'Units', 'Boolean', 'Labels'];
   headers.forEach(headerText => {
     const header = document.createElement('div');
     header.textContent = headerText;
@@ -56,6 +56,7 @@ export function createDetailsTab(cardId, existingData, sensorData) {
     header.style.backgroundColor = 'rgba(0,0,0,0.1)';
     header.style.borderRadius = '4px';
     header.style.textAlign = 'center';
+    header.style.fontSize = '0.9rem';
     sensorTable.appendChild(header);
   });
 

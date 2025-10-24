@@ -1,3 +1,4 @@
+// renderCards.js
 import { getRelativeTime, getCardSettings } from './utils.js';
 import { createGearModal } from './modal.js';
 
@@ -123,14 +124,25 @@ export function renderCards(sensorData, container, updateLocalCardSettings, dele
       // Read from sensor_config or fallback to top-level
       const meta = metadata.sensor_config?.[key] || metadata[key] || {};
       
-      // Get unit from metadata
-      const unit = meta.unit || (typeof meta.unit === 'string' ? meta.unit.trim() : '');
+      const rawValue = row[key];
       const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
 
-      // Display value with unit
-      sensorValue.textContent = unit 
-        ? `${row[key]} ${unit}` 
-        : `${row[key]}`;
+      // Check if this is a boolean sensor
+      if (meta.is_boolean) {
+        // Convert to boolean (0 = false, non-zero = true)
+        const boolValue = rawValue !== 0;
+        const displayLabel = boolValue 
+          ? (meta.true_label || 'On') 
+          : (meta.false_label || 'Off');
+        
+        sensorValue.textContent = displayLabel;
+      } else {
+        // Regular numeric display
+        const unit = meta.unit || (typeof meta.unit === 'string' ? meta.unit.trim() : '');
+        sensorValue.textContent = unit 
+          ? `${rawValue} ${unit}` 
+          : `${rawValue}`;
+      }
       
       sensorIndexDisplay.textContent = indexText;
       
