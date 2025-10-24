@@ -1,12 +1,14 @@
+// main.js
 import { getLatestPerDevice, saveCardSettings } from './utils.js';
 import { renderCards } from './renderCards.js';
 
 const container = document.getElementById('cardContainer');
-const supabase    = window.supabase;
+const supabase = window.supabase;
 const supabaseUrl = window.supabaseUrl;
 const supabaseKey = window.supabaseKey;
-const table       = window.tableName;
+const table = window.tableName;
 
+// Subscribe to new sensor readings
 supabase
   .channel('sensor-updates')
   .on(
@@ -24,52 +26,59 @@ supabase
   .subscribe();
 
 let sensorData = [];
-
-// Make sensorData available globally for debugging
-window.debugSensorData = () => {
-  console.log('Current sensorData:', sensorData);
-  console.log('Device IDs:', sensorData.map(s => s.device_id));
-  return sensorData;
-};
+let metadataMap = new Map();
 
 function updateLocalCardSettings(cardId, updatedMetadata) {
-  sensorData = sensorData.map(row =>
-    String(row.device_id).trim() === String(cardId).trim()
-      ? { ...row, metadata: { ...row.metadata, ...updatedMetadata } }
-      : row
-  );
+  // Update the metadata map
+  const deviceId = String(cardId).trim();
+  metadataMap.set(deviceId, updatedMetadata);
 
-  console.log('📦 Updating local card for:', cardId);
-  console.log('📦 Metadata being applied:', updatedMetadata);
-  console.log('📦 sensorData contents after update:', sensorData);
+  // Update sensorData with new metadata
+  sensorData = sensorData.map(row => {
+    if (String(row.device_id).trim() === deviceId) {
+      return { ...row, metadata: updatedMetadata };
+    }
+    return row;
+  });
+
+  console.log('📦 Updated metadata for device:', cardId);
+  renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettingsWrapper);
+}
+
+function handleNewSensorData(newReading) {
+  const deviceId = String(newReading.device_id).trim();
+  const index = sensorData.findIndex(row => String(row.device_id).trim() === deviceId);
+
+  // Get existing metadata for this device
+  const existingMetadata = metadataMap.get(deviceId) || {};
+
+  if (index !== -1) {
+    // Update existing device with new reading data, preserve metadata
+    sensorData[index] = {
+      ...newReading,
+      metadata: existingMetadata
+    };
+  } else {
+    // New device - add with empty/existing metadata
+    sensorData.push({
+      ...newReading,
+      metadata: existingMetadata
+    });
+  }
 
   renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettingsWrapper);
 }
 
-function handleNewSensorData(newRow) {
-  const deviceId = String(newRow.device_id).trim();
-  const index = sensorData.findIndex(row => String(row.device_id).trim() === deviceId);
-
-  if (index !== -1) {
-    sensorData[index] = {
-      ...sensorData[index],
-      ...newRow,
-      metadata: {
-        ...sensorData[index].metadata,
-        ...newRow.metadata,
-      },
-    };
-  } else {
-    sensorData.push({ ...newRow, metadata: {} });
-  }
-
-  renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettings);
-}
-
 function deleteCard(cardId) {
-  sensorData = sensorData.filter(row => String(row.device_id).trim() !== String(cardId).trim());
+  const deviceId = String(cardId).trim();
+  
+  // Remove from sensorData
+  sensorData = sensorData.filter(row => String(row.device_id).trim() !== deviceId);
+  
+  // Remove from metadata map
+  metadataMap.delete(deviceId);
+  
   console.log('🗑️ Deleted card:', cardId);
-
   renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettingsWrapper);
 }
 
@@ -79,8 +88,9 @@ function saveCardSettingsWrapper(cardId, updatedMetadata) {
 
 async function fetchReadings() {
   try {
-    // Fetch sensor readings
     console.log('🔍 Fetching readings from table:', table);
+
+    // Fetch all readings
     const readingsResponse = await fetch(`${supabaseUrl}/rest/v1/${table}?select=*&order=timestamp.desc`, {
       headers: {
         apikey: supabaseKey,
@@ -95,13 +105,8 @@ async function fetchReadings() {
     }
 
     console.log('📊 Total readings fetched:', readings.length);
-    
-    // Get unique device IDs from readings
-    const uniqueDeviceIds = [...new Set(readings.map(r => String(r.device_id).trim()))];
-    console.log('🔢 Unique device_ids in readings:', uniqueDeviceIds);
-    console.log('🔢 Total unique devices:', uniqueDeviceIds.length);
 
-    // Fetch metadata
+    // Fetch device metadata
     const metadataResponse = await fetch(`${supabaseUrl}/rest/v1/device_metadata?select=*`, {
       headers: {
         apikey: supabaseKey,
@@ -109,46 +114,37 @@ async function fetchReadings() {
       }
     });
 
-    const metadata = await metadataResponse.json();
-    console.log('📋 Metadata entries fetched:', metadata.length);
-    
-    const metadataMap = new Map();
-    metadata.forEach(row => {
-      metadataMap.set(String(row.device_id).trim(), row);
+    const metadataArray = await metadataResponse.json();
+    console.log('📋 Metadata entries fetched:', metadataArray.length);
+
+    // Build metadata map
+    metadataMap.clear();
+    metadataArray.forEach(row => {
+      const deviceId = String(row.device_id).trim();
+      metadataMap.set(deviceId, row);
     });
 
-    // Merge metadata into readings
-    const enrichedReadings = readings.map(reading => {
-      const id = String(reading.device_id).trim();
+    // Get latest reading per device
+    const latestReadings = getLatestPerDevice(readings);
+    console.log('🎯 Unique devices found:', latestReadings.length);
+
+    // Attach metadata to each reading
+    sensorData = latestReadings.map(reading => {
+      const deviceId = String(reading.device_id).trim();
       return {
         ...reading,
-        metadata: metadataMap.get(id) || {},
+        metadata: metadataMap.get(deviceId) || {}
       };
     });
 
-    console.log('✨ Enriched readings count:', enrichedReadings.length);
-
-    // Deduplicate and render
-    sensorData = getLatestPerDevice(enrichedReadings);
-    
-    console.log('🎯 Final sensorData count:', sensorData.length);
-    console.log('🎯 Final device_ids:', sensorData.map(s => s.device_id));
-    
-    // Verify all devices made it through
-    const finalDeviceIds = sensorData.map(s => String(s.device_id).trim());
-    const missingDevices = uniqueDeviceIds.filter(id => !finalDeviceIds.includes(id));
-    
-    if (missingDevices.length > 0) {
-      console.warn('⚠️ MISSING DEVICES:', missingDevices);
-      console.warn('⚠️ These device_ids are in readings but not in final sensorData!');
-    } else {
-      console.log('✅ All devices accounted for!');
-    }
-
+    console.log('✅ SensorData prepared with', sensorData.length, 'devices');
     renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettingsWrapper);
+
   } catch (err) {
     console.error('❌ Failed to fetch readings or metadata:', err);
+    container.innerHTML = `<div class="card"><h3>Error</h3><p>Failed to load sensor data</p></div>`;
   }
 }
 
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', fetchReadings);
