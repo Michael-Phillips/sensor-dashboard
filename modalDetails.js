@@ -1,4 +1,4 @@
-// modalDetails.js v10
+// modalDetails.js v11
 
 async function fetchLatestBattery(deviceId) {
   const { data, error } = await supabase
