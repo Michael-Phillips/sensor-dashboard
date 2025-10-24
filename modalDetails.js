@@ -113,7 +113,7 @@ export function createDetailsTab(cardId, existingData, sensorData) {
     const checkboxCell = document.createElement('div');
     checkboxCell.style.textAlign = 'center';
     checkboxCell.style.padding = '8px';
-    checkboxCell.style.backgroundColor = 'yellow'; // Make it VERY visible
+    //checkboxCell.style.backgroundColor = 'yellow'; // Make it VERY visible
     
     const booleanCheckbox = document.createElement('input');
     booleanCheckbox.type = 'checkbox';
