@@ -42,7 +42,7 @@ export function createDetailsTab(cardId, existingData, sensorData) {
 
   const sensorTable = document.createElement('div');
   sensorTable.style.display = 'grid';
-  sensorTable.style.gridTemplateColumns = '60px 140px 90px 80px 80px';
+  sensorTable.style.gridTemplateColumns = '80px 140px 90px 80px 140px';
   sensorTable.style.gap = '8px';
   sensorTable.style.marginBottom = '20px';
 
@@ -70,7 +70,7 @@ export function createDetailsTab(cardId, existingData, sensorData) {
 
     // Sensor label
     const sensorLabel = document.createElement('div');
-    sensorLabel.textContent = `Sensor ${i}`;
+    sensorLabel.textContent = `${i}`;
     sensorLabel.style.padding = '8px';
     sensorLabel.style.textAlign = 'center';
     sensorLabel.style.fontWeight = 'bold';
