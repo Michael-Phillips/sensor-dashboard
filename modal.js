@@ -2,7 +2,7 @@
 import { saveCardSettings } from './utils.js';
 import { createTabs } from './modalTabs.js';
 import { createSettingsTab } from './modalSettings.js';
-import { createDetailsTab } from './modalDetails.js';
+import { createDetailsTab } from './modalDetails.js?v=1.2';
 import { createAlertsTab } from './modalAlerts.js';
 import { openImagePicker } from './imagePicker.js';
 
