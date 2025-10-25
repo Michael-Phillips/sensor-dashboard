@@ -57,7 +57,7 @@ export function createGearModal(
   // Create tab contents
   const { settingsSection, descInput, locInput, colorSelect } = createSettingsTab(existingData);
   const { detailsSection, sensorInputs } = createDetailsTab(cardId, existingData, sensorData);
-  const { alertsSection, emailInput, phoneInput, alertRules } = createAlertsTab(cardId, existingData, sensorData);
+  const { alertsSection, emailInput, alertRules } = createAlertsTab(cardId, existingData, sensorData);
 
   // Image Section (shows on all tabs)
   const imageSection = document.createElement('div');
@@ -148,8 +148,7 @@ export function createGearModal(
       location: locInput.value.trim(),
       color: colorSelect.value,
       image: finalImage,
-      alert_email: emailInput.value.trim(),
-      alert_phone: phoneInput.value.trim()
+      alert_email: emailInput.value.trim()
     };
 
     // Add sensor configuration from Details tab
