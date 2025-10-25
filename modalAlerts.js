@@ -42,32 +42,8 @@ export function createAlertsTab(cardId, existingData, sensorData) {
   emailInput.style.marginBottom = '12px';
   emailInput.style.boxSizing = 'border-box';
 
-  // Phone input
-  const phoneLabel = document.createElement('label');
-  phoneLabel.textContent = 'Phone Number (SMS via AT&T)';
-  phoneLabel.style.display = 'block';
-  phoneLabel.style.marginBottom = '4px';
-  phoneLabel.style.fontWeight = 'bold';
-  
-  const phoneInput = document.createElement('input');
-  phoneInput.type = 'tel';
-  phoneInput.placeholder = '5551234567';
-  phoneInput.value = existingData.alert_phone || '';
-  phoneInput.style.width = '100%';
-  phoneInput.style.padding = '8px';
-  phoneInput.style.boxSizing = 'border-box';
-
-  const phoneNote = document.createElement('p');
-  phoneNote.textContent = 'SMS will be sent to: [number]@txt.att.net';
-  phoneNote.style.fontSize = '0.8rem';
-  phoneNote.style.color = '#666';
-  phoneNote.style.marginTop = '4px';
-
   contactsSection.appendChild(emailLabel);
   contactsSection.appendChild(emailInput);
-  contactsSection.appendChild(phoneLabel);
-  contactsSection.appendChild(phoneInput);
-  contactsSection.appendChild(phoneNote);
   alertsSection.appendChild(contactsSection);
 
   // Sensor Alerts Section
@@ -277,8 +253,7 @@ export function createAlertsTab(cardId, existingData, sensorData) {
 
   return { 
     alertsSection, 
-    emailInput, 
-    phoneInput, 
+    emailInput,
     alertRules 
   };
 }
