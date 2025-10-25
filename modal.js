@@ -2,7 +2,7 @@
 import { saveCardSettings } from './utils.js';
 import { createTabs } from './modalTabs.js';
 import { createSettingsTab } from './modalSettings.js';
-import { createDetailsTab } from './modalDetails.js?v=1.2';
+import { createDetailsTab } from './modalDetails.js';
 import { createAlertsTab } from './modalAlerts.js';
 import { openImagePicker } from './imagePicker.js';
 
@@ -57,7 +57,7 @@ export function createGearModal(
   // Create tab contents
   const { settingsSection, descInput, locInput, colorSelect } = createSettingsTab(existingData);
   const { detailsSection, sensorInputs } = createDetailsTab(cardId, existingData, sensorData);
-  const alertsSection = createAlertsTab();
+  const { alertsSection, emailInput, phoneInput, alertRules } = createAlertsTab(cardId, existingData, sensorData);
 
   // Image Section (shows on all tabs)
   const imageSection = document.createElement('div');
@@ -147,7 +147,9 @@ export function createGearModal(
       description: descInput.value.trim(),
       location: locInput.value.trim(),
       color: colorSelect.value,
-      image: finalImage
+      image: finalImage,
+      alert_email: emailInput.value.trim(),
+      alert_phone: phoneInput.value.trim()
     };
 
     // Add sensor configuration from Details tab
@@ -160,6 +162,27 @@ export function createGearModal(
         true_label: booleanCheckbox.checked ? trueLabel.value.trim() : null,
         false_label: booleanCheckbox.checked ? falseLabel.value.trim() : null
       };
+    });
+
+    // Add alert configuration from Alerts tab
+    updatedMetadata.alerts = {};
+    alertRules.forEach(rule => {
+      if (rule.type === 'boolean') {
+        updatedMetadata.alerts[rule.key] = {
+          enabled: rule.enabled.checked,
+          type: 'boolean',
+          condition: rule.condition.value,
+          frequency: rule.frequency.value
+        };
+      } else {
+        updatedMetadata.alerts[rule.key] = {
+          enabled: rule.enabled.checked,
+          type: rule.alertType.value,
+          min: parseFloat(rule.min.value) || null,
+          max: parseFloat(rule.max.value) || null,
+          frequency: rule.frequency.value
+        };
+      }
     });
 
     try {
