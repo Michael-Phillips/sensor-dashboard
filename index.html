@@ -13,6 +13,31 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="top-controls">
+    <button
+      id="locationFilterButton"
+      class="filter-toggle"
+      type="button"
+      aria-label="Filter cards by location"
+      aria-expanded="false"
+      aria-haspopup="true"
+    >
+      <i class="fas fa-filter"></i>
+    </button>
+    <button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle color theme">
+      <svg class="theme-icon theme-icon--sun" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24">
+        <use href="assets/sun.svg#icon-sun"></use>
+      </svg>
+      <svg class="theme-icon theme-icon--moon" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24">
+        <use href="assets/moon.svg#icon-moon"></use>
+      </svg>
+    </button>
+  </div>
+  <div id="locationFilterMenu" class="filter-menu" hidden></div>
+  <button id="activeFilterChip" class="filter-chip" type="button" aria-label="Clear location filter" hidden>
+    <span id="activeFilterLabel"></span>
+    <span aria-hidden="true">&times;</span>
+  </button>
   <h1>Sensor Dashboard</h1>
 
   <!-- Supabase client setup -->
