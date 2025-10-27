@@ -1,8 +1,11 @@
 // renderCards.js
 import { getRelativeTime, getCardSettings } from './utils.js';
 import { createGearModal } from './modal.js';
+import { resolveColorToken, COLOR_OPTIONS } from './modalSettings.js';
 
 const BASE_PATH = window.BASE_PATH;
+const COLOR_TOKENS = new Set(['white', 'green', 'yellow', 'aqua', 'blue', 'red', 'orange', 'purple', 'gray']);
+const COLOR_FALLBACK_MAP = new Map(COLOR_OPTIONS.map(({ token, fallback }) => [token, fallback]));
 
 // 🎨 Sort cards by color (hex value)
 function sortByColor(sensorData) {
@@ -65,8 +68,18 @@ export function renderCards(sensorData, container, updateLocalCardSettings, dele
     card.className = 'card';
     card.dataset.cardId = row.device_id;
 
-    const color = metadata.color || 'white';
-    card.style.backgroundColor = color;
+    const rawColor = (metadata.color || '').trim();
+    const resolvedToken = resolveColorToken(rawColor) || (rawColor ? rawColor.toLowerCase() : '');
+    const colorToken = COLOR_TOKENS.has(resolvedToken) ? resolvedToken : null;
+
+    if (colorToken) {
+      const fallbackColor = COLOR_FALLBACK_MAP.get(colorToken) || '';
+      card.dataset.colorToken = colorToken;
+      card.style.backgroundColor = `var(--card-color-${colorToken}${fallbackColor ? `, ${fallbackColor}` : ''})`;
+    } else {
+      delete card.dataset.colorToken;
+      card.style.backgroundColor = rawColor || '';
+    }
 
     const gear = document.createElement('div');
     gear.className = 'gear-icon';

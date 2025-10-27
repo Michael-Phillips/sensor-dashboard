@@ -8,6 +8,46 @@ const supabaseUrl = window.supabaseUrl;
 const supabaseKey = window.supabaseKey;
 const table = window.tableName;
 
+const themeToggleButton = document.getElementById('themeToggle');
+const THEME_STORAGE_KEY = 'dashboard-theme';
+
+function applyTheme(theme) {
+  const isDark = theme === 'dark';
+  document.body.classList.toggle('dark-theme', isDark);
+  if (themeToggleButton) {
+    themeToggleButton.setAttribute('aria-pressed', String(isDark));
+  }
+}
+
+function getPreferredTheme() {
+  const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+  if (storedTheme === 'dark' || storedTheme === 'light') {
+    return storedTheme;
+  }
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+const initialTheme = getPreferredTheme();
+applyTheme(initialTheme);
+
+if (themeToggleButton) {
+  themeToggleButton.addEventListener('click', () => {
+    const nextTheme = document.body.classList.contains('dark-theme') ? 'light' : 'dark';
+    localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+    applyTheme(nextTheme);
+  });
+
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+  if (prefersDark && typeof prefersDark.addEventListener === 'function') {
+    prefersDark.addEventListener('change', (event) => {
+      if (localStorage.getItem(THEME_STORAGE_KEY)) {
+        return;
+      }
+      applyTheme(event.matches ? 'dark' : 'light');
+    });
+  }
+}
+
 // Subscribe to new sensor readings
 supabase
   .channel('sensor-updates')

@@ -9,6 +9,24 @@
   --toggle-bg: rgba(0, 0, 0, 0.05);
   --toggle-text-color: #1a1a1a;
   --toggle-border-color: rgba(0, 0, 0, 0.2);
+  --card-color-white: var(--card-bg-color);
+  --card-color-light-green: #d1fae5;
+  --card-color-light-yellow: #fef3c7;
+  --card-color-light-aqua: #cffafe;
+  --card-color-light-blue: #bfdbfe;
+  --card-color-light-red: #fecaca;
+  --card-color-light-orange: #ffedd5;
+  --card-color-light-purple: #e9d5ff;
+  --card-color-light-gray: #e5e7eb;
+  /* backup colors */
+  --card-color-green: #CBE66E;
+  --card-color-yellow: #F2F187;
+  --card-color-aqua: #A1CBCD;
+  --card-color-blue: #97D1E6;
+  --card-color-red: #F3797A;
+  --card-color-orange: #F8C274;
+  --card-color-purple: #B185BA;
+  --card-color-gray: #B7B7B7;
 }
 
 body.dark-theme {
@@ -22,6 +40,15 @@ body.dark-theme {
   --toggle-bg: rgba(255, 255, 255, 0.08);
   --toggle-text-color: #f5f5f5;
   --toggle-border-color: rgba(255, 255, 255, 0.3);
+  --card-color-white: #262626;
+  --card-color-green: #14532d;
+  --card-color-yellow: #854d0e;
+  --card-color-aqua: #0e7490;
+  --card-color-blue: #1d4ed8;
+  --card-color-red: #b91c1c;
+  --card-color-orange: #9a3412;
+  --card-color-purple: #6d28d9;
+  --card-color-gray: #4b5563;
 }
 
 body {
@@ -30,6 +57,25 @@ body {
   color: var(--text-color);
   margin: 0;
   padding: 20px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body {
+    transition: background-color 0.35s ease, color 0.35s ease;
+  }
+
+  .card {
+    transition: background-color 0.35s ease, color 0.35s ease, box-shadow 0.35s ease;
+  }
+
+  .theme-toggle {
+    transition:
+      background 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
 }
 
 .theme-toggle {
@@ -102,6 +148,42 @@ body.dark-theme .theme-toggle .theme-icon--sun {
   padding: 15px 15px 15px 20px; /* top right bottom left */
   box-sizing: border-box;
   transition: transform 0.2s cubic-bezier(0.33, 0, 0, 1) /* updated timing function */
+}
+
+.card[data-color-token="white"] {
+  background-color: var(--card-color-white);
+}
+
+.card[data-color-token="green"] {
+  background-color: var(--card-color-green);
+}
+
+.card[data-color-token="yellow"] {
+  background-color: var(--card-color-yellow);
+}
+
+.card[data-color-token="aqua"] {
+  background-color: var(--card-color-aqua);
+}
+
+.card[data-color-token="blue"] {
+  background-color: var(--card-color-blue);
+}
+
+.card[data-color-token="red"] {
+  background-color: var(--card-color-red);
+}
+
+.card[data-color-token="orange"] {
+  background-color: var(--card-color-orange);
+}
+
+.card[data-color-token="purple"] {
+  background-color: var(--card-color-purple);
+}
+
+.card[data-color-token="gray"] {
+  background-color: var(--card-color-gray);
 }
 
 .card:hover {
