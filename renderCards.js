@@ -1,16 +1,26 @@
-import { getRelativeTime } from './utils.js';
-import { getCardSettings, createGearModal } from './modal.js';
+// renderCards.js
+import { getRelativeTime, getCardSettings } from './utils.js';
+import { createGearModal } from './modal.js';
 
-import { BASE_PATH } from './main.js';
+const BASE_PATH = window.BASE_PATH;
+
+// 🎨 Sort cards by color (hex value)
+function sortByColor(sensorData) {
+  return sensorData.slice().sort((a, b) => {
+    const colorA = (typeof a.metadata === 'string' ? JSON.parse(a.metadata) : a.metadata || {}).color || '#FFFFFF';
+    const colorB = (typeof b.metadata === 'string' ? JSON.parse(b.metadata) : b.metadata || {}).color || '#FFFFFF';
+    return colorA.localeCompare(colorB);
+  });
+}
 
 // 🔍 GitHub API image listing
 async function listRepoImages() {
-console.log('📡 Starting GitHub API image fetch...');
+  console.log('📡 Starting GitHub API image fetch...');
 
   const user = 'michael-phillips';
   const repo = 'sensor-dashboard';
   const folder = 'images';
-  const branch = 'main'; // Change to 'master' if needed
+  const branch = 'main';
 
   const apiUrl = `https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`;
 
@@ -27,53 +37,44 @@ console.log('📡 Starting GitHub API image fetch...');
       .filter(item => item.path.startsWith(`${folder}/`) && item.type === 'blob')
       .map(item => item.path.replace(`${folder}/`, ''));
 
-    console.log('📁 Available images in repo:', imageFiles);
     return imageFiles;
   } catch (error) {
     console.error('Error fetching image list:', error);
     return [];
   }
-}
+} 
 
-export function renderCards(data, container, updateLocalCardSettings, deleteCard, saveCardSettings, sensorData){
+export function renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettings) {
   container.innerHTML = '';
 
-  // 🔍 Log available images once at render
-  //listRepoImages();
   let availableImages = [];
 
   listRepoImages().then(images => {
     availableImages = images;
   });
 
-console.log('🎨 Rendering card for:', row.device_id, metadata);
+  // 🎨 Sort data by color before rendering
+  const sortedData = sortByColor(sensorData);
 
-  data.forEach(row => {
+  sortedData.forEach(row => {
     const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
-console.log('🎨 Rendering card for:', row.device_id);
-console.log('🎨 Metadata:', row.metadata);
-console.log('🎨 Image:', row.metadata?.image || row.image_url);
+    //console.log('🎨 Rendering card for:', row.device_id);
+    //console.log('🎨 Image:', row.metadata?.image || row.image_url);
 
     const card = document.createElement('div');
     card.className = 'card';
     card.dataset.cardId = row.device_id;
 
-    // Apply background color from metadata
-    if (metadata.color) {
-      card.style.backgroundColor = metadata.color;
-    } else {
-      card.style.removeProperty('background-color');
-    }
+    const color = metadata.color || 'white';
+    card.style.backgroundColor = color;
 
     const gear = document.createElement('div');
     gear.className = 'gear-icon';
     gear.dataset.id = row.device_id;
     gear.innerHTML = '<i class="fas fa-cog"></i>';
-    //console.log('🔧 Gear element created for', row.device_id, gear);
     card.appendChild(gear);
 
     const img = document.createElement('img');
-
     let imageUrl = metadata.image?.trim() || row.image_url?.trim();
 
     if (!imageUrl || imageUrl === 'undefined' || imageUrl.length === 0) {
@@ -83,8 +84,7 @@ console.log('🎨 Image:', row.metadata?.image || row.image_url);
     }
 
     img.src = imageUrl.startsWith('http') ? imageUrl : `${BASE_PATH}${imageUrl}`;
-    console.log('🖼️ Final image URL:', img.src);
-
+    //console.log('🖼️ Final image URL:', img.src);
 
     img.onerror = () => {
       console.warn('Image failed to load:', img.src);
@@ -121,13 +121,33 @@ console.log('🎨 Image:', row.metadata?.image || row.image_url);
 
     const updateSensorDisplay = () => {
       const key = sensorKeys[sensorIndex];
-      const meta = metadata[key] || {};
-      const unit = typeof meta.unit === 'string' ? meta.unit.trim() : '';
+      // Read from sensor_config or fallback to top-level
+      const meta = metadata.sensor_config?.[key] || metadata[key] || {};
+      
+      const rawValue = row[key];
       const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
 
-      sensorValue.textContent = `${row[key]} ${unit}`;
+      // Check if this is a boolean sensor
+      if (meta.is_boolean) {
+        // Convert to boolean (0 = false, non-zero = true)
+        const boolValue = rawValue !== 0;
+        const displayLabel = boolValue 
+          ? (meta.true_label || 'On') 
+          : (meta.false_label || 'Off');
+        
+        sensorValue.textContent = displayLabel;
+      } else {
+        // Regular numeric display
+        const unit = meta.unit || (typeof meta.unit === 'string' ? meta.unit.trim() : '');
+        sensorValue.textContent = unit 
+          ? `${rawValue} ${unit}` 
+          : `${rawValue}`;
+      }
+      
       sensorIndexDisplay.textContent = indexText;
-      typeDisplay.textContent = meta.type ? ` ${meta.type}` : '';
+      
+      // Display function/type
+      typeDisplay.textContent = meta.function || meta.type || '';
     };
 
     updateSensorDisplay();
@@ -147,16 +167,17 @@ console.log('🎨 Image:', row.metadata?.image || row.image_url);
     gear.addEventListener('click', (event) => {
       event.stopPropagation();
       console.log('📎 Gear listener attached for', row.device_id);
-      const cardId = gear.dataset.id; // ✅ gear.dataset.id is also set correctly
+      const cardId = gear.dataset.id;
 
       const testDiv = document.createElement('div');
-      
+
       console.log('Gear clicked for', cardId);
-      const existingData = getCardSettings(cardId, data);
+      const existingData = getCardSettings(cardId, sensorData);
       console.log('📦 Existing metadata:', existingData);
       console.log('🖼️ Available images at click:', availableImages);
+
       try {
-        createGearModal(cardId, existingData, saveCardSettings, updateLocalCardSettings, deleteCard, availableImages);
+        createGearModal(cardId, existingData, updateLocalCardSettings, deleteCard, window.supabase, availableImages, sensorData);
       } catch (err) {
         console.error('❌ Modal creation failed:', err);
       }
