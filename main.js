@@ -4,12 +4,21 @@ import { renderCards } from './renderCards.js';
 
 const container = document.getElementById('cardContainer');
 const supabase = window.supabase;
-const supabaseUrl = window.supabaseUrl;
-const supabaseKey = window.supabaseKey;
 const table = window.tableName;
 
 const themeToggleButton = document.getElementById('themeToggle');
+const locationFilterButton = document.getElementById('locationFilterButton');
+const locationFilterMenu = document.getElementById('locationFilterMenu');
+const activeFilterChip = document.getElementById('activeFilterChip');
+const activeFilterLabel = document.getElementById('activeFilterLabel');
+
 const THEME_STORAGE_KEY = 'dashboard-theme';
+const UNASSIGNED_LOCATION_KEY = '__unassigned__';
+
+let sensorData = [];
+let metadataMap = new Map();
+let activeLocationFilter = null;
+let filterMenuOpen = false;
 
 function applyTheme(theme) {
   const isDark = theme === 'dark';
@@ -47,6 +56,39 @@ if (themeToggleButton) {
     });
   }
 }
+
+if (locationFilterButton) {
+  locationFilterButton.addEventListener('click', (event) => {
+    event.stopPropagation();
+    toggleFilterMenu();
+  });
+}
+
+if (activeFilterChip) {
+  activeFilterChip.addEventListener('click', () => {
+    applyLocationFilter(null);
+    closeFilterMenu();
+  });
+}
+
+document.addEventListener('click', (event) => {
+  if (
+    filterMenuOpen &&
+    locationFilterMenu &&
+    locationFilterButton &&
+    !locationFilterMenu.contains(event.target) &&
+    !locationFilterButton.contains(event.target)
+  ) {
+    closeFilterMenu();
+  }
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && filterMenuOpen) {
+    closeFilterMenu();
+    locationFilterButton?.focus();
+  }
+});
 
 // Subscribe to new sensor readings
 supabase
@@ -117,38 +159,38 @@ function saveCardSettingsWrapper(cardId, updatedMetadata) {
 
 async function fetchReadings() {
   try {
-    const readingsResponse = await fetch(`${supabaseUrl}/rest/v1/${table}?select=*&order=timestamp.desc`, {
-      headers: {
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
-      }
-    });
+    if (!supabase) {
+      throw new Error('Supabase client is not available.');
+    }
 
-    const readings = await readingsResponse.json();
-    if (!Array.isArray(readings)) {
-      container.innerHTML = `<div class="card"><h3>API Error</h3><p>${readings.message}</p></div>`;
-      return;
+    const { data: readings, error: readingsError } = await supabase
+      .from(table)
+      .select('*')
+      .order('timestamp', { ascending: false });
+
+    if (readingsError) {
+      throw readingsError;
     }
 
     console.log('📊 Total readings fetched:', readings.length);
 
-    const metadataResponse = await fetch(`${supabaseUrl}/rest/v1/device_metadata?select=*`, {
-      headers: {
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
-      }
-    });
+    const { data: metadataArray, error: metadataError } = await supabase
+      .from('device_metadata')
+      .select('*');
 
-    const metadataArray = await metadataResponse.json();
-    console.log('📋 Metadata entries fetched:', metadataArray.length);
+    if (metadataError) {
+      throw metadataError;
+    }
+
+    console.log('📋 Metadata entries fetched:', metadataArray?.length ?? 0);
 
     metadataMap.clear();
-    metadataArray.forEach(row => {
+    (metadataArray || []).forEach(row => {
       const deviceId = String(row.device_id).trim();
       metadataMap.set(deviceId, row);
     });
 
-    const latestReadings = getLatestPerDevice(readings);
+    const latestReadings = getLatestPerDevice(readings || []);
     console.log('🎯 Unique devices found:', latestReadings.length);
 
     sensorData = latestReadings.map(reading => {
@@ -163,7 +205,8 @@ async function fetchReadings() {
     renderDashboard();
   } catch (err) {
     console.error('❌ Failed to fetch readings or metadata:', err);
-    container.innerHTML = `<div class="card"><h3>Error</h3><p>Failed to load sensor data</p></div>`;
+    const message = err?.message || 'Failed to load sensor data';
+    container.innerHTML = `<div class="card"><h3>Error</h3><p>${message}</p></div>`;
   }
 }
 
