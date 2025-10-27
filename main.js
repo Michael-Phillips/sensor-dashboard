@@ -9,18 +9,7 @@ const supabaseKey = window.supabaseKey;
 const table = window.tableName;
 
 const themeToggleButton = document.getElementById('themeToggle');
-const locationFilterButton = document.getElementById('locationFilterButton');
-const locationFilterMenu = document.getElementById('locationFilterMenu');
-const activeFilterChip = document.getElementById('activeFilterChip');
-const activeFilterLabel = document.getElementById('activeFilterLabel');
-
 const THEME_STORAGE_KEY = 'dashboard-theme';
-const UNASSIGNED_LOCATION_KEY = '__unassigned__';
-
-let sensorData = [];
-let metadataMap = new Map();
-let activeLocationFilter = null;
-let filterMenuOpen = false;
 
 function applyTheme(theme) {
   const isDark = theme === 'dark';
@@ -35,7 +24,6 @@ function getPreferredTheme() {
   if (storedTheme === 'dark' || storedTheme === 'light') {
     return storedTheme;
   }
-
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
@@ -60,39 +48,7 @@ if (themeToggleButton) {
   }
 }
 
-if (locationFilterButton) {
-  locationFilterButton.addEventListener('click', (event) => {
-    event.stopPropagation();
-    toggleFilterMenu();
-  });
-}
-
-if (activeFilterChip) {
-  activeFilterChip.addEventListener('click', () => {
-    applyLocationFilter(null);
-    closeFilterMenu();
-  });
-}
-
-document.addEventListener('click', (event) => {
-  if (
-    filterMenuOpen &&
-    locationFilterMenu &&
-    locationFilterButton &&
-    !locationFilterMenu.contains(event.target) &&
-    !locationFilterButton.contains(event.target)
-  ) {
-    closeFilterMenu();
-  }
-});
-
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape' && filterMenuOpen) {
-    closeFilterMenu();
-    locationFilterButton?.focus();
-  }
-});
-
+// Subscribe to new sensor readings
 supabase
   .channel('sensor-updates')
   .on(

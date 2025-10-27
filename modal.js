@@ -1,22 +1,29 @@
 // modal.js v1.1
 import { saveCardSettings } from './utils.js';
 import { createTabs } from './modalTabs.js';
-import { createSettingsTab } from './modalSettings.js';
+import { createSettingsTab, resolveColorToken, COLOR_OPTIONS } from './modalSettings.js';
 import { createDetailsTab } from './modalDetails.js';
 import { createAlertsTab } from './modalAlerts.js';
 import { openImagePicker } from './imagePicker.js';
 
 const BASE_PATH = window.BASE_PATH;
 
+const COLOR_FALLBACK_MAP = new Map(COLOR_OPTIONS.map(({ token, fallback }) => [token, fallback]));
+
 export function createGearModal(
   cardId,
-  existingData,
+  existingData = {},
   updateLocalCardSettings,
   deleteCard,
   supabase,
   availableImages = [],
   sensorData = []
 ) {
+  const colorToken = resolveColorToken(existingData.color);
+  const modalBackgroundColor = colorToken
+    ? `var(--card-color-${colorToken}, ${COLOR_FALLBACK_MAP.get(colorToken) || '#fff'})`
+    : (existingData.color || '#fff');
+
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.id = 'settingsModal';
@@ -36,7 +43,7 @@ export function createGearModal(
   const modalContent = document.createElement('div');
   modalContent.className = 'modal-content';
   Object.assign(modalContent.style, {
-    backgroundColor: existingData.color || '#fff',
+    backgroundColor: modalBackgroundColor,
     padding: '0',
     borderRadius: '8px',
     maxWidth: '800px',
