@@ -1,4 +1,4 @@
-// modal.js v1.2
+// modal.js v1.3 - Added battery alert saving
 import { saveCardSettings } from './utils.js';
 import { createTabs } from './modalTabs.js';
 import { createSettingsTab } from './modalSettings.js';
@@ -57,7 +57,7 @@ export function createGearModal(
   // Create tab contents
   const { settingsSection, descInput, locInput, colorSelect } = createSettingsTab(existingData);
   const { detailsSection, sensorInputs } = createDetailsTab(cardId, existingData, sensorData);
-  const { alertsSection, emailInput, alertRules } = createAlertsTab(cardId, existingData, sensorData);
+  const { alertsSection, emailInput, alertRules, batteryAlert } = createAlertsTab(cardId, existingData, sensorData);
 
   // Image Section (shows on all tabs)
   const imageSection = document.createElement('div');
@@ -92,7 +92,6 @@ export function createGearModal(
   // Tab Click Handlers
   tabButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-      // Remove active class from all tabs
       tabButtons.forEach(b => {
         b.classList.remove('active');
         b.style.color = '#333';
@@ -101,19 +100,16 @@ export function createGearModal(
         b.style.fontWeight = '500';
       });
       
-      // Hide all content sections
       document.querySelectorAll('.tab-content').forEach(content => {
         content.style.display = 'none';
       });
       
-      // Activate clicked tab
       btn.classList.add('active');
       btn.style.color = '#000';
       btn.style.borderBottomColor = '#000';
       btn.style.backgroundColor = 'rgba(255,255,255,0.5)';
       btn.style.fontWeight = 'bold';
       
-      // Show corresponding content
       const tabName = btn.dataset.tab;
       const targetSection = document.querySelector(`.tab-content[data-tab="${tabName}"]`);
       if (targetSection) {
@@ -149,6 +145,12 @@ export function createGearModal(
       color: colorSelect.value,
       image: finalImage,
       alert_email: emailInput.value.trim()
+    };
+
+    // Add battery alert configuration
+    updatedMetadata.battery_alert = {
+      enabled: batteryAlert.enabled.checked,
+      threshold: parseFloat(batteryAlert.threshold.value) || 3.2
     };
 
     // Add sensor configuration from Details tab
