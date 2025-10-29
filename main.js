@@ -1,4 +1,4 @@
-// main.js v2.1 - Added alert deduplication
+// main.js v2.2 - Added real-time event logging
 import { getLatestPerDevice, saveCardSettings } from './utils.js';
 import { renderCards } from './renderCards.js';
 
@@ -23,7 +23,7 @@ supabase
       table: window.tableName,
     },
     (payload) => {
-      //console.log('📡 New sensor data received:', payload.new);
+      console.log('📡 Real-time INSERT event received for device:', payload.new.device_id);
       handleNewSensorData(payload.new);
     }
   )
