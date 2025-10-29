@@ -1,4 +1,4 @@
-// main.js
+// main.js v2.0 - Added alert checking functionality
 import { getLatestPerDevice, saveCardSettings } from './utils.js';
 import { renderCards } from './renderCards.js';
 
@@ -45,7 +45,7 @@ function updateLocalCardSettings(cardId, updatedMetadata) {
   renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettingsWrapper);
 }
 
-function handleNewSensorData(newReading) {
+async function handleNewSensorData(newReading) {
   const deviceId = String(newReading.device_id).trim();
   const index = sensorData.findIndex(row => String(row.device_id).trim() === deviceId);
 
@@ -66,7 +66,41 @@ function handleNewSensorData(newReading) {
     });
   }
 
+  // 🚨 Check alerts after updating sensor data
+  await checkAndSendAlerts(newReading);
+
   renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettingsWrapper);
+}
+
+// 🚨 Function to check alerts and call Edge Function
+async function checkAndSendAlerts(newReading) {
+  try {
+    console.log('🔔 Checking alerts for device:', newReading.device_id);
+    
+    const response = await fetch(`${supabaseUrl}/functions/v1/sensor-alerts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${supabaseKey}`
+      },
+      body: JSON.stringify({
+        type: 'pg_changes',
+        table: 'readings',
+        schema: 'public',
+        record: newReading,  // Match webhook format that Edge Function expects
+        old_record: null
+      })
+    });
+
+    if (response.ok) {
+      console.log('✅ Alert check completed');
+    } else {
+      const errorText = await response.text();
+      console.error('❌ Alert check failed:', response.status, errorText);
+    }
+  } catch (error) {
+    console.error('❌ Error checking alerts:', error);
+  }
 }
 
 function deleteCard(cardId) {
