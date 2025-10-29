@@ -1,4 +1,4 @@
-// renderCards.js v1.1 - Format sensor values to show one decimal place
+// renderCards.js v1.2 - Fixed boolean sensor display
 import { getRelativeTime, getCardSettings } from './utils.js';
 import { createGearModal } from './modal.js';
 
@@ -124,18 +124,27 @@ export function renderCards(sensorData, container, updateLocalCardSettings, dele
       // Read from sensor_config or fallback to top-level
       const meta = metadata.sensor_config?.[key] || metadata[key] || {};
       
-      // Get unit from metadata
-      const unit = meta.unit || (typeof meta.unit === 'string' ? meta.unit.trim() : '');
       const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
 
-      // Format value to always show one decimal place
-      const rawValue = row[key];
-      const formattedValue = typeof rawValue === 'number' ? rawValue.toFixed(1) : rawValue;
+      // Check if this is a boolean sensor
+      if (meta.is_boolean) {
+        // Display true/false label instead of numeric value
+        const boolValue = row[key] !== 0; // 0 = false, anything else = true
+        const displayText = boolValue 
+          ? (meta.true_label || 'On') 
+          : (meta.false_label || 'Off');
+        
+        sensorValue.textContent = displayText;
+      } else {
+        // Numeric sensor - format with one decimal place and unit
+        const unit = meta.unit || (typeof meta.unit === 'string' ? meta.unit.trim() : '');
+        const rawValue = row[key];
+        const formattedValue = typeof rawValue === 'number' ? rawValue.toFixed(1) : rawValue;
 
-      // Display value with unit
-      sensorValue.textContent = unit 
-        ? `${formattedValue} ${unit}` 
-        : formattedValue;
+        sensorValue.textContent = unit 
+          ? `${formattedValue} ${unit}` 
+          : formattedValue;
+      }
       
       sensorIndexDisplay.textContent = indexText;
       
