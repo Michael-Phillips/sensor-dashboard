@@ -1,4 +1,4 @@
-// modal.js v1.1
+// modal.js v1.2
 import { saveCardSettings } from './utils.js';
 import { createTabs } from './modalTabs.js';
 import { createSettingsTab } from './modalSettings.js';
@@ -183,6 +183,8 @@ export function createGearModal(
         };
       }
     });
+
+    console.log('💾 Saving metadata:', updatedMetadata);
 
     try {
       const result = await saveCardSettings(cardId, updatedMetadata);
