@@ -1,4 +1,4 @@
-// main.js v2.0 - Added alert checking functionality
+// main.js v2.1 - Added alert deduplication
 import { getLatestPerDevice, saveCardSettings } from './utils.js';
 import { renderCards } from './renderCards.js';
 
@@ -7,6 +7,10 @@ const supabase = window.supabase;
 const supabaseUrl = window.supabaseUrl;
 const supabaseKey = window.supabaseKey;
 const table = window.tableName;
+
+// Track recent alert checks to prevent duplicates
+const recentAlertChecks = new Map(); // key: deviceId, value: timestamp
+const ALERT_DEBOUNCE_MS = 5000; // 5 seconds
 
 // Subscribe to new sensor readings
 supabase
@@ -75,6 +79,19 @@ async function handleNewSensorData(newReading) {
 // 🚨 Function to check alerts and call Edge Function
 async function checkAndSendAlerts(newReading) {
   try {
+    const deviceId = String(newReading.device_id).trim();
+    const now = Date.now();
+    
+    // Check if we recently checked alerts for this device
+    const lastCheck = recentAlertChecks.get(deviceId);
+    if (lastCheck && (now - lastCheck) < ALERT_DEBOUNCE_MS) {
+      console.log(`⏭️ Skipping duplicate alert check for ${deviceId} (within ${ALERT_DEBOUNCE_MS}ms)`);
+      return;
+    }
+    
+    // Record this check
+    recentAlertChecks.set(deviceId, now);
+    
     console.log('🔔 Checking alerts for device:', newReading.device_id);
     
     const response = await fetch(`${supabaseUrl}/functions/v1/sensor-alerts`, {
