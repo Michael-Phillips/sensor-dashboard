@@ -1,3 +1,5 @@
+// utils.js v1.1
+
 export function getLatestPerDevice(data) {
   const latestMap = new Map();
 
@@ -57,7 +59,9 @@ export async function saveCardSettings(
     description: updatedMetadata.description,
     location: updatedMetadata.location,
     color: updatedMetadata.color,
-    image: updatedMetadata.image
+    image: updatedMetadata.image,
+    alert_email: updatedMetadata.alert_email,  // ADD ALERT EMAIL
+    alerts: updatedMetadata.alerts              // ADD ALERTS CONFIG
   };
 
   // Extract sensor_N configs into sensor_config JSONB column
