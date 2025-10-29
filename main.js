@@ -19,7 +19,7 @@ supabase
       table: window.tableName,
     },
     (payload) => {
-      console.log('📡 New sensor data received:', payload.new);
+      //console.log('📡 New sensor data received:', payload.new);
       handleNewSensorData(payload.new);
     }
   )
