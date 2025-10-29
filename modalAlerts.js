@@ -1,4 +1,4 @@
-// modalAlerts.js v1.2 - Added battery voltage alert
+// modalAlerts.js v1.3 - Moved battery alert after sensor rules
 
 export function createAlertsTab(cardId, existingData, sensorData) {
   const alertsSection = document.createElement('div');
@@ -45,73 +45,6 @@ export function createAlertsTab(cardId, existingData, sensorData) {
   contactsSection.appendChild(emailLabel);
   contactsSection.appendChild(emailInput);
   alertsSection.appendChild(contactsSection);
-
-  // Battery Alert Section
-  const batteryAlertSection = document.createElement('div');
-  batteryAlertSection.style.marginBottom = '25px';
-  batteryAlertSection.style.padding = '15px';
-  batteryAlertSection.style.backgroundColor = 'rgba(255, 200, 100, 0.1)';
-  batteryAlertSection.style.border = '2px solid rgba(255, 150, 0, 0.3)';
-  batteryAlertSection.style.borderRadius = '8px';
-
-  const batteryAlertTitle = document.createElement('h4');
-  batteryAlertTitle.textContent = '🔋 Battery Voltage Alert';
-  batteryAlertTitle.style.marginBottom = '10px';
-  batteryAlertSection.appendChild(batteryAlertTitle);
-
-  // Enable battery alert checkbox
-  const batteryEnableLabel = document.createElement('label');
-  batteryEnableLabel.style.display = 'flex';
-  batteryEnableLabel.style.alignItems = 'center';
-  batteryEnableLabel.style.marginBottom = '10px';
-  batteryEnableLabel.style.cursor = 'pointer';
-
-  const batteryEnableCheck = document.createElement('input');
-  batteryEnableCheck.type = 'checkbox';
-  batteryEnableCheck.checked = existingData.battery_alert?.enabled ?? true; // Default enabled
-  batteryEnableCheck.style.marginRight = '8px';
-  batteryEnableCheck.style.cursor = 'pointer';
-
-  const batteryEnableText = document.createElement('span');
-  batteryEnableText.textContent = 'Enable low battery alerts';
-  batteryEnableText.style.fontWeight = 'bold';
-
-  batteryEnableLabel.appendChild(batteryEnableCheck);
-  batteryEnableLabel.appendChild(batteryEnableText);
-  batteryAlertSection.appendChild(batteryEnableLabel);
-
-  // Battery threshold input
-  const batteryThresholdLabel = document.createElement('label');
-  batteryThresholdLabel.textContent = 'Alert when voltage drops below:';
-  batteryThresholdLabel.style.display = 'block';
-  batteryThresholdLabel.style.marginBottom = '8px';
-  batteryThresholdLabel.style.fontSize = '0.95rem';
-
-  const batteryThresholdContainer = document.createElement('div');
-  batteryThresholdContainer.style.display = 'flex';
-  batteryThresholdContainer.style.alignItems = 'center';
-  batteryThresholdContainer.style.gap = '10px';
-
-  const batteryThresholdInput = document.createElement('input');
-  batteryThresholdInput.type = 'number';
-  batteryThresholdInput.step = '0.1';
-  batteryThresholdInput.min = '0';
-  batteryThresholdInput.max = '5';
-  batteryThresholdInput.value = existingData.battery_alert?.threshold ?? 3.2; // Default 3.2V
-  batteryThresholdInput.style.width = '100px';
-  batteryThresholdInput.style.padding = '8px';
-  batteryThresholdInput.style.fontSize = '1rem';
-
-  const batteryUnit = document.createElement('span');
-  batteryUnit.textContent = 'Volts';
-  batteryUnit.style.fontWeight = 'bold';
-
-  batteryThresholdContainer.appendChild(batteryThresholdInput);
-  batteryThresholdContainer.appendChild(batteryUnit);
-
-  batteryAlertSection.appendChild(batteryThresholdLabel);
-  batteryAlertSection.appendChild(batteryThresholdContainer);
-  alertsSection.appendChild(batteryAlertSection);
 
   // Sensor Alerts Section
   const sensorAlertsTitle = document.createElement('h4');
@@ -317,6 +250,73 @@ export function createAlertsTab(cardId, existingData, sensorData) {
     sensorAlertBox.appendChild(alertConfig);
     alertsSection.appendChild(sensorAlertBox);
   }
+
+  // Battery Alert Section (after sensor alerts)
+  const batteryAlertSection = document.createElement('div');
+  batteryAlertSection.style.marginTop = '25px';
+  batteryAlertSection.style.padding = '15px';
+  batteryAlertSection.style.backgroundColor = 'rgba(255, 200, 100, 0.1)';
+  batteryAlertSection.style.border = '2px solid rgba(255, 150, 0, 0.3)';
+  batteryAlertSection.style.borderRadius = '8px';
+
+  const batteryAlertTitle = document.createElement('h4');
+  batteryAlertTitle.textContent = '🔋 Battery Voltage Alert';
+  batteryAlertTitle.style.marginBottom = '10px';
+  batteryAlertSection.appendChild(batteryAlertTitle);
+
+  // Enable battery alert checkbox
+  const batteryEnableLabel = document.createElement('label');
+  batteryEnableLabel.style.display = 'flex';
+  batteryEnableLabel.style.alignItems = 'center';
+  batteryEnableLabel.style.marginBottom = '10px';
+  batteryEnableLabel.style.cursor = 'pointer';
+
+  const batteryEnableCheck = document.createElement('input');
+  batteryEnableCheck.type = 'checkbox';
+  batteryEnableCheck.checked = existingData.battery_alert?.enabled ?? true; // Default enabled
+  batteryEnableCheck.style.marginRight = '8px';
+  batteryEnableCheck.style.cursor = 'pointer';
+
+  const batteryEnableText = document.createElement('span');
+  batteryEnableText.textContent = 'Enable low battery alerts';
+  batteryEnableText.style.fontWeight = 'bold';
+
+  batteryEnableLabel.appendChild(batteryEnableCheck);
+  batteryEnableLabel.appendChild(batteryEnableText);
+  batteryAlertSection.appendChild(batteryEnableLabel);
+
+  // Battery threshold input
+  const batteryThresholdLabel = document.createElement('label');
+  batteryThresholdLabel.textContent = 'Alert when voltage drops below:';
+  batteryThresholdLabel.style.display = 'block';
+  batteryThresholdLabel.style.marginBottom = '8px';
+  batteryThresholdLabel.style.fontSize = '0.95rem';
+
+  const batteryThresholdContainer = document.createElement('div');
+  batteryThresholdContainer.style.display = 'flex';
+  batteryThresholdContainer.style.alignItems = 'center';
+  batteryThresholdContainer.style.gap = '10px';
+
+  const batteryThresholdInput = document.createElement('input');
+  batteryThresholdInput.type = 'number';
+  batteryThresholdInput.step = '0.1';
+  batteryThresholdInput.min = '0';
+  batteryThresholdInput.max = '5';
+  batteryThresholdInput.value = existingData.battery_alert?.threshold ?? 3.2; // Default 3.2V
+  batteryThresholdInput.style.width = '100px';
+  batteryThresholdInput.style.padding = '8px';
+  batteryThresholdInput.style.fontSize = '1rem';
+
+  const batteryUnit = document.createElement('span');
+  batteryUnit.textContent = 'Volts';
+  batteryUnit.style.fontWeight = 'bold';
+
+  batteryThresholdContainer.appendChild(batteryThresholdInput);
+  batteryThresholdContainer.appendChild(batteryUnit);
+
+  batteryAlertSection.appendChild(batteryThresholdLabel);
+  batteryAlertSection.appendChild(batteryThresholdContainer);
+  alertsSection.appendChild(batteryAlertSection);
 
   return { 
     alertsSection, 
