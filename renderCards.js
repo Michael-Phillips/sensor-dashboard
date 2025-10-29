@@ -1,4 +1,4 @@
-// renderCards.js
+// renderCards.js v1.1 - Format sensor values to show one decimal place
 import { getRelativeTime, getCardSettings } from './utils.js';
 import { createGearModal } from './modal.js';
 
@@ -58,8 +58,8 @@ export function renderCards(sensorData, container, updateLocalCardSettings, dele
 
   sortedData.forEach(row => {
     const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
-    //console.log('🎨 Rendering card for:', row.device_id);
-    //console.log('🎨 Image:', row.metadata?.image || row.image_url);
+    console.log('🎨 Rendering card for:', row.device_id);
+    console.log('🎨 Image:', row.metadata?.image || row.image_url);
 
     const card = document.createElement('div');
     card.className = 'card';
@@ -84,7 +84,7 @@ export function renderCards(sensorData, container, updateLocalCardSettings, dele
     }
 
     img.src = imageUrl.startsWith('http') ? imageUrl : `${BASE_PATH}${imageUrl}`;
-    //console.log('🖼️ Final image URL:', img.src);
+    console.log('🖼️ Final image URL:', img.src);
 
     img.onerror = () => {
       console.warn('Image failed to load:', img.src);
@@ -124,25 +124,18 @@ export function renderCards(sensorData, container, updateLocalCardSettings, dele
       // Read from sensor_config or fallback to top-level
       const meta = metadata.sensor_config?.[key] || metadata[key] || {};
       
-      const rawValue = row[key];
+      // Get unit from metadata
+      const unit = meta.unit || (typeof meta.unit === 'string' ? meta.unit.trim() : '');
       const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
 
-      // Check if this is a boolean sensor
-      if (meta.is_boolean) {
-        // Convert to boolean (0 = false, non-zero = true)
-        const boolValue = rawValue !== 0;
-        const displayLabel = boolValue 
-          ? (meta.true_label || 'On') 
-          : (meta.false_label || 'Off');
-        
-        sensorValue.textContent = displayLabel;
-      } else {
-        // Regular numeric display
-        const unit = meta.unit || (typeof meta.unit === 'string' ? meta.unit.trim() : '');
-        sensorValue.textContent = unit 
-          ? `${rawValue} ${unit}` 
-          : `${rawValue}`;
-      }
+      // Format value to always show one decimal place
+      const rawValue = row[key];
+      const formattedValue = typeof rawValue === 'number' ? rawValue.toFixed(1) : rawValue;
+
+      // Display value with unit
+      sensorValue.textContent = unit 
+        ? `${formattedValue} ${unit}` 
+        : formattedValue;
       
       sensorIndexDisplay.textContent = indexText;
       
