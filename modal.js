@@ -1,17 +1,19 @@
-import { BASE_PATH } from './main.js';
-import { getRelativeTime } from './utils.js';
+// modal.js v1.3 - Added battery alert saving
+import { saveCardSettings } from './utils.js';
+import { createTabs } from './modalTabs.js';
+import { createSettingsTab } from './modalSettings.js';
+import { createDetailsTab } from './modalDetails.js';
+import { createAlertsTab } from './modalAlerts.js';
+import { openImagePicker } from './imagePicker.js';
 
-export function getCardSettings(cardId, sensorData) {
-  const match = sensorData.find(row => String(row.device_id).trim() === String(cardId).trim());
-  return match ? match.metadata || {} : {};
-}
+const BASE_PATH = window.BASE_PATH;
 
 export function createGearModal(
   cardId,
   existingData,
-  saveCardSettings,
   updateLocalCardSettings,
   deleteCard,
+  supabase,
   availableImages = [],
   sensorData = []
 ) {
@@ -35,132 +37,29 @@ export function createGearModal(
   modalContent.className = 'modal-content';
   Object.assign(modalContent.style, {
     backgroundColor: existingData.color || '#fff',
-    padding: '20px',
+    padding: '0',
     borderRadius: '8px',
-    display: 'flex',
-    gap: '20px',
     maxWidth: '800px',
-    width: '90%'
+    width: '90%',
+    overflow: 'hidden'
   });
 
-  const formSection = document.createElement('div');
-  formSection.style.flex = '1';
+  // Create tabs
+  const { tabContainer, tabButtons } = createTabs();
+  modalContent.appendChild(tabContainer);
 
-  const title = document.createElement('h2');
-  title.textContent = `Sensor ${cardId} Settings`;
-  formSection.appendChild(title);
+  // Create content wrapper
+  const contentWrapper = document.createElement('div');
+  contentWrapper.style.display = 'flex';
+  contentWrapper.style.gap = '20px';
+  contentWrapper.style.padding = '20px';
 
-  const createLabeledInput = (labelText, value = '') => {
-    const label = document.createElement('label');
-    label.textContent = labelText;
-    Object.assign(label.style, { display: 'block', marginBottom: '4px' });
+  // Create tab contents
+  const { settingsSection, descInput, locInput, colorSelect } = createSettingsTab(existingData);
+  const { detailsSection, sensorInputs } = createDetailsTab(cardId, existingData, sensorData);
+  const { alertsSection, emailInput, alertRules, batteryAlert } = createAlertsTab(cardId, existingData, sensorData);
 
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.value = value;
-    input.style.marginBottom = '16px';
-
-    formSection.appendChild(label);
-    formSection.appendChild(input);
-    return input;
-  };
-
-  const descInput = createLabeledInput('Description', existingData.description || '');
-  const locInput = createLabeledInput('Location', existingData.location || '');
-
-  const colorLabel = document.createElement('label');
-  colorLabel.textContent = 'Color';
-  Object.assign(colorLabel.style, { display: 'block', marginBottom: '4px' });
-
-  const colorSelect = document.createElement('select');
-  const colorOptions = {
-    Green: '#CBE66E',
-    Yellow: '#F2F187',
-    Aqua: '#A1CBCD',
-    Blue: '#97D1E6',
-    Red: '#F3797A',
-    Orange: '#F8C274',
-    Purple: '#B185BA',
-    Gray: '#B7B7B7'
-  };
-
-  Object.entries(colorOptions).forEach(([name, hex]) => {
-    const option = document.createElement('option');
-    option.value = hex;
-    option.textContent = name;
-    if (existingData.color === hex) option.selected = true;
-    colorSelect.appendChild(option);
-  });
-
-  colorSelect.style.marginBottom = '16px';
-  formSection.appendChild(colorLabel);
-  formSection.appendChild(colorSelect);
-
-  const failureLabel = document.createElement('label');
-  failureLabel.textContent = 'Failure to Report Time';
-  Object.assign(failureLabel.style, { display: 'block', marginBottom: '4px' });
-
-  const failureContainer = document.createElement('div');
-  ['Days', 'Hours', 'Minutes'].forEach(unit => {
-    const input = document.createElement('input');
-    input.type = 'number';
-    input.placeholder = unit;
-    input.style.width = '60px';
-    failureContainer.appendChild(input);
-  });
-
-  failureLabel.style.marginBottom = '16px';
-  formSection.appendChild(failureLabel);
-  formSection.appendChild(failureContainer);
-
-  const sensorInfo = document.createElement('p');
-  sensorInfo.textContent = `Sensors: ${existingData.sensor_count || 1}`;
-  formSection.appendChild(sensorInfo);
-
-  const buttonRow = document.createElement('div');
-  buttonRow.style.marginTop = '20px';
-
-  ['Done', 'Cancel', 'Delete'].forEach(label => {
-    const btn = document.createElement('button');
-    btn.textContent = label;
-    btn.style.marginRight = '10px';
-
-    btn.onclick = () => {
-      if (label === 'Done') {
-        console.log('📦 sensorData contents at Done click:', sensorData);
-        if (!Array.isArray(sensorData)) {
-          console.error('⛔ sensorData is undefined or not an array');
-          return;
-        }
-
-        const currentRow = sensorData.find(r => String(r.device_id).trim() === String(cardId).trim());
-        const fallbackMetadata = currentRow?.metadata || {};
-        const imageSrc = imagePreview.src?.trim();
-        const imagePath = imageSrc?.includes(BASE_PATH) ? imageSrc.replace(BASE_PATH, '') : imageSrc;
-        const finalImage = imagePath || fallbackMetadata.image || 'default-plant.jpg';
-
-        const updatedMetadata = {
-          description: descInput.value.trim(),
-          location: locInput.value.trim(),
-          color: colorSelect.value,
-          image: finalImage
-        };
-
-        console.log('🧠 Metadata before save:', updatedMetadata);
-        saveCardSettings(cardId, updatedMetadata);
-        updateLocalCardSettings(cardId, updatedMetadata);
-      } else if (label === 'Delete') {
-        deleteCard(cardId);
-      }
-
-      document.body.removeChild(modal);
-    };
-
-    buttonRow.appendChild(btn);
-  });
-
-  formSection.appendChild(buttonRow);
-
+  // Image Section (shows on all tabs)
   const imageSection = document.createElement('div');
   imageSection.style.flex = '0 0 150px';
 
@@ -178,63 +77,181 @@ export function createGearModal(
   });
 
   imagePreview.onclick = () => {
-    openImagePicker();
+    openImagePicker(availableImages, imagePreview, BASE_PATH);
   };
 
   imageSection.appendChild(imagePreview);
-  modalContent.appendChild(formSection);
-  modalContent.appendChild(imageSection);
+
+  // Add sections to wrapper
+  contentWrapper.appendChild(settingsSection);
+  contentWrapper.appendChild(detailsSection);
+  contentWrapper.appendChild(alertsSection);
+  contentWrapper.appendChild(imageSection);
+  modalContent.appendChild(contentWrapper);
+
+  // Tab Click Handlers
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabButtons.forEach(b => {
+        b.classList.remove('active');
+        b.style.color = '#333';
+        b.style.borderBottomColor = 'transparent';
+        b.style.backgroundColor = 'transparent';
+        b.style.fontWeight = '500';
+      });
+      
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.style.display = 'none';
+      });
+      
+      btn.classList.add('active');
+      btn.style.color = '#000';
+      btn.style.borderBottomColor = '#000';
+      btn.style.backgroundColor = 'rgba(255,255,255,0.5)';
+      btn.style.fontWeight = 'bold';
+      
+      const tabName = btn.dataset.tab;
+      const targetSection = document.querySelector(`.tab-content[data-tab="${tabName}"]`);
+      if (targetSection) {
+        targetSection.style.display = 'block';
+      }
+    });
+  });
+
+  // Button Row
+  const buttonRow = document.createElement('div');
+  buttonRow.style.marginTop = '20px';
+  buttonRow.style.display = 'flex';
+  buttonRow.style.gap = '10px';
+  buttonRow.style.padding = '0 20px 20px 20px';
+
+  const btnDone = document.createElement('button');
+  btnDone.textContent = 'Done';
+  btnDone.onclick = async () => {
+    if (!Array.isArray(sensorData)) {
+      console.error('⛔ sensorData is undefined or not an array');
+      return;
+    }
+
+    const currentRow = sensorData.find(r => String(r.device_id).trim() === String(cardId).trim());
+    const fallbackMetadata = currentRow?.metadata || {};
+    const imageSrc = imagePreview.src?.trim();
+    const imagePath = imageSrc?.includes(BASE_PATH) ? imageSrc.replace(BASE_PATH, '') : imageSrc;
+    const finalImage = imagePath || fallbackMetadata.image || 'default-plant.jpg';
+
+    const updatedMetadata = {
+      description: descInput.value.trim(),
+      location: locInput.value.trim(),
+      color: colorSelect.value,
+      image: finalImage,
+      alert_email: emailInput.value.trim()
+    };
+
+    // Add battery alert configuration
+    updatedMetadata.battery_alert = {
+      enabled: batteryAlert.enabled.checked,
+      threshold: parseFloat(batteryAlert.threshold.value) || 3.2
+    };
+
+    // Add sensor configuration from Details tab
+    sensorInputs.forEach(({ key, functionInput, unitsInput, booleanCheckbox, trueLabel, falseLabel }) => {
+      updatedMetadata[key] = {
+        function: functionInput.value.trim(),
+        type: functionInput.value.trim(),
+        unit: unitsInput.value.trim(),
+        is_boolean: booleanCheckbox.checked,
+        true_label: booleanCheckbox.checked ? trueLabel.value.trim() : null,
+        false_label: booleanCheckbox.checked ? falseLabel.value.trim() : null
+      };
+    });
+
+    // Add alert configuration from Alerts tab
+    updatedMetadata.alerts = {};
+    alertRules.forEach(rule => {
+      if (rule.type === 'boolean') {
+        updatedMetadata.alerts[rule.key] = {
+          enabled: rule.enabled.checked,
+          type: 'boolean',
+          condition: rule.condition.value,
+          frequency: rule.frequency.value
+        };
+      } else {
+        updatedMetadata.alerts[rule.key] = {
+          enabled: rule.enabled.checked,
+          type: rule.alertType.value,
+          min: parseFloat(rule.min.value) || null,
+          max: parseFloat(rule.max.value) || null,
+          frequency: rule.frequency.value
+        };
+      }
+    });
+
+    console.log('💾 Saving metadata:', updatedMetadata);
+
+    try {
+      const result = await saveCardSettings(cardId, updatedMetadata);
+
+      if (result?.error) {
+        alert('❌ Failed to save settings. Please try again.');
+        console.error('❌ Supabase update failed:', result.error);
+        return;
+      }
+
+      console.log('✅ Supabase saved row:', result.data);
+      updateLocalCardSettings(cardId, updatedMetadata);
+      modal.remove();
+    } catch (err) {
+      console.error('❌ Unexpected error during save:', err.message || err);
+    }
+  };
+
+  const btnCancel = document.createElement('button');
+  btnCancel.textContent = 'Cancel';
+  btnCancel.onclick = () => {
+    modal.remove();
+  };
+
+  const btnDelete = document.createElement('button');
+  btnDelete.textContent = 'Delete';
+  btnDelete.onclick = async () => {
+    const confirmDelete = confirm(`Are you sure you want to delete all data for device ${cardId}?`);
+    if (!confirmDelete) return;
+
+    try {
+      const { data, error } = await supabase
+        .from(window.tableName)
+        .delete()
+        .eq('device_id', String(cardId).trim())
+        .select();
+
+      if (error) {
+        console.error('❌ Supabase delete error:', error);
+        alert('Failed to delete device data.');
+        return;
+      }
+
+      console.log(`🗑️ Deleted ${data?.length || 0} rows for device_id ${cardId}`);
+      deleteCard(cardId);
+      modal.remove();
+    } catch (err) {
+      console.error('❌ Unexpected error during delete:', err);
+      alert('Unexpected error while deleting.');
+    }
+  };
+
+  buttonRow.appendChild(btnDone);
+  buttonRow.appendChild(btnCancel);
+  buttonRow.appendChild(btnDelete);
+  modalContent.appendChild(buttonRow);
+
   modal.appendChild(modalContent);
   document.body.appendChild(modal);
-
-  function openImagePicker() {
-    const picker = document.createElement('div');
-    picker.className = 'image-picker';
-    Object.assign(picker.style, {
-      position: 'fixed',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      backgroundColor: '#fff',
-      padding: '20px',
-      borderRadius: '8px',
-      boxShadow: '0 0 10px rgba(0,0,0,0.3)',
-      zIndex: '1100',
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, 100px)',
-      gap: '10px',
-      maxHeight: '80vh',
-      overflowY: 'auto'
-    });
-
-    availableImages.forEach(img => {
-      const thumb = document.createElement('img');
-      thumb.src = `${BASE_PATH}images/${img}`;
-      Object.assign(thumb.style, {
-        width: '100px',
-        height: '100px',
-        objectFit: 'cover',
-        borderRadius: '6px',
-        cursor: 'pointer',
-        border: imagePreview.src.includes(img) ? '2px solid #333' : 'none'
-      });
-
-      thumb.onclick = () => {
-        imagePreview.src = thumb.src;
-        document.body.removeChild(picker);
-      };
-
-      picker.appendChild(thumb);
-    });
-
-    document.body.appendChild(picker);
-  }
 }
 
 export function closeModal() {
   const modal = document.getElementById('settingsModal');
   if (modal) {
-    document.body.removeChild(modal);
+    modal.remove();
   }
 }
 

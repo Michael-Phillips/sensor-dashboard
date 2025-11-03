@@ -1,6 +1,17 @@
-import { getRelativeTime } from './utils.js';
-import { getCardSettings, createGearModal } from './modal.js';
-import { BASE_PATH } from './main.js';
+// renderCards.js v1.2 - Fixed boolean sensor display
+import { getRelativeTime, getCardSettings } from './utils.js';
+import { createGearModal } from './modal.js';
+
+const BASE_PATH = window.BASE_PATH;
+
+// 🎨 Sort cards by color (hex value)
+function sortByColor(sensorData) {
+  return sensorData.slice().sort((a, b) => {
+    const colorA = (typeof a.metadata === 'string' ? JSON.parse(a.metadata) : a.metadata || {}).color || '#FFFFFF';
+    const colorB = (typeof b.metadata === 'string' ? JSON.parse(b.metadata) : b.metadata || {}).color || '#FFFFFF';
+    return colorA.localeCompare(colorB);
+  });
+}
 
 // 🔍 GitHub API image listing
 async function listRepoImages() {
@@ -9,7 +20,7 @@ async function listRepoImages() {
   const user = 'michael-phillips';
   const repo = 'sensor-dashboard';
   const folder = 'images';
-  const branch = 'main'; // Change to 'master' if needed
+  const branch = 'main';
 
   const apiUrl = `https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`;
 
@@ -26,14 +37,14 @@ async function listRepoImages() {
       .filter(item => item.path.startsWith(`${folder}/`) && item.type === 'blob')
       .map(item => item.path.replace(`${folder}/`, ''));
 
-    console.log('📁 Available images in repo:', imageFiles);
     return imageFiles;
   } catch (error) {
     console.error('Error fetching image list:', error);
     return [];
   }
-}
-export function renderCards(sensorData, container, saveCardSettings, updateLocalCardSettings, deleteCard) {
+} 
+
+export function renderCards(sensorData, container, updateLocalCardSettings, deleteCard, saveCardSettings) {
   container.innerHTML = '';
 
   let availableImages = [];
@@ -42,10 +53,12 @@ export function renderCards(sensorData, container, saveCardSettings, updateLocal
     availableImages = images;
   });
 
-  sensorData.forEach(row => {
+  // 🎨 Sort data by color before rendering
+  const sortedData = sortByColor(sensorData);
+
+  sortedData.forEach(row => {
     const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {};
     console.log('🎨 Rendering card for:', row.device_id);
-    console.log('🎨 Metadata:', row.metadata);
     console.log('🎨 Image:', row.metadata?.image || row.image_url);
 
     const card = document.createElement('div');
@@ -108,13 +121,35 @@ export function renderCards(sensorData, container, saveCardSettings, updateLocal
 
     const updateSensorDisplay = () => {
       const key = sensorKeys[sensorIndex];
-      const meta = metadata[key] || {};
-      const unit = typeof meta.unit === 'string' ? meta.unit.trim() : '';
+      // Read from sensor_config or fallback to top-level
+      const meta = metadata.sensor_config?.[key] || metadata[key] || {};
+      
       const indexText = `(${sensorIndex + 1}/${sensorKeys.length})`;
 
-      sensorValue.textContent = `${row[key]} ${unit}`;
+      // Check if this is a boolean sensor
+      if (meta.is_boolean) {
+        // Display true/false label instead of numeric value
+        const boolValue = row[key] !== 0; // 0 = false, anything else = true
+        const displayText = boolValue 
+          ? (meta.true_label || 'On') 
+          : (meta.false_label || 'Off');
+        
+        sensorValue.textContent = displayText;
+      } else {
+        // Numeric sensor - format with one decimal place and unit
+        const unit = meta.unit || (typeof meta.unit === 'string' ? meta.unit.trim() : '');
+        const rawValue = row[key];
+        const formattedValue = typeof rawValue === 'number' ? rawValue.toFixed(1) : rawValue;
+
+        sensorValue.textContent = unit 
+          ? `${formattedValue} ${unit}` 
+          : formattedValue;
+      }
+      
       sensorIndexDisplay.textContent = indexText;
-      typeDisplay.textContent = meta.type ? ` ${meta.type}` : '';
+      
+      // Display function/type
+      typeDisplay.textContent = meta.function || meta.type || '';
     };
 
     updateSensorDisplay();
@@ -144,7 +179,7 @@ export function renderCards(sensorData, container, saveCardSettings, updateLocal
       console.log('🖼️ Available images at click:', availableImages);
 
       try {
-        createGearModal(cardId, existingData, saveCardSettings, updateLocalCardSettings, deleteCard, availableImages, sensorData);
+        createGearModal(cardId, existingData, updateLocalCardSettings, deleteCard, window.supabase, availableImages, sensorData);
       } catch (err) {
         console.error('❌ Modal creation failed:', err);
       }
