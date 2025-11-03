@@ -96,6 +96,7 @@ body {
   z-index: 2;
 }
 
+/*
 .chart-icon {
   position: absolute;
   top: 10px;
@@ -106,7 +107,7 @@ body {
   z-index: 10;
   padding: 5px;
 }
-
+*/
 .chart-icon:hover {
   color: #007bff;
   transform: scale(1.1);
