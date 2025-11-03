@@ -1,4 +1,4 @@
-// chartModal.js v1.0 - Timeline chart with zoom/pan capability
+// chartModal.js v1.1 - Added battery voltage to chart
 
 export async function openChartModal(deviceId, deviceName, supabaseUrl, supabaseKey, metadata) {
   // Create modal
@@ -152,11 +152,77 @@ export async function openChartModal(deviceId, deviceName, supabaseUrl, supabase
       const sensorKeys = Object.keys(data[0]).filter(k => k.startsWith('sensor_'));
       const datasets = [];
       const colors = [
-        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
+        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
       ];
 
       legendDiv.innerHTML = ''; // Clear legend
 
+      // Add battery voltage first if it exists
+      if (data[0].battery !== undefined && data[0].battery !== null) {
+        const batteryColor = '#FF6B35'; // Orange-red for battery
+        
+        const batteryDataset = {
+          label: 'Battery Voltage (V)',
+          data: data.map(row => ({
+            x: new Date(row.timestamp),
+            y: row.battery
+          })),
+          borderColor: batteryColor,
+          backgroundColor: batteryColor + '40',
+          borderWidth: 2,
+          pointRadius: 1,
+          pointHoverRadius: 5,
+          tension: 0.1,
+          hidden: false,
+          yAxisID: 'y'
+        };
+
+        datasets.push(batteryDataset);
+
+        // Create battery legend toggle
+        const batteryLegendItem = document.createElement('label');
+        batteryLegendItem.style.display = 'flex';
+        batteryLegendItem.style.alignItems = 'center';
+        batteryLegendItem.style.cursor = 'pointer';
+        batteryLegendItem.style.padding = '8px 12px';
+        batteryLegendItem.style.border = `2px solid ${batteryColor}`;
+        batteryLegendItem.style.borderRadius = '6px';
+        batteryLegendItem.style.backgroundColor = '#fff';
+
+        const batteryCheckbox = document.createElement('input');
+        batteryCheckbox.type = 'checkbox';
+        batteryCheckbox.checked = true;
+        batteryCheckbox.style.marginRight = '8px';
+        batteryCheckbox.style.cursor = 'pointer';
+
+        const batteryColorBox = document.createElement('span');
+        batteryColorBox.style.width = '20px';
+        batteryColorBox.style.height = '20px';
+        batteryColorBox.style.backgroundColor = batteryColor;
+        batteryColorBox.style.marginRight = '8px';
+        batteryColorBox.style.borderRadius = '3px';
+
+        const batteryIcon = document.createElement('span');
+        batteryIcon.textContent = '🔋 ';
+        
+        const batteryLabelText = document.createElement('span');
+        batteryLabelText.textContent = 'Battery Voltage (V)';
+        batteryLabelText.style.fontWeight = 'bold';
+
+        batteryCheckbox.addEventListener('change', () => {
+          const datasetIndex = datasets.indexOf(batteryDataset);
+          chart.setDatasetVisibility(datasetIndex, batteryCheckbox.checked);
+          chart.update();
+        });
+
+        batteryLegendItem.appendChild(batteryCheckbox);
+        batteryLegendItem.appendChild(batteryColorBox);
+        batteryLegendItem.appendChild(batteryIcon);
+        batteryLegendItem.appendChild(batteryLabelText);
+        legendDiv.appendChild(batteryLegendItem);
+      }
+
+      // Add sensor datasets
       sensorKeys.forEach((key, index) => {
         const sensorIndex = key.replace('sensor_', '');
         const sensorConfig = metadata?.sensor_config?.[key] || metadata?.[key] || {};
