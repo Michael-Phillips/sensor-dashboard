@@ -81,13 +81,16 @@ console.log('🔍 Creating chart icon for device:', row.device_id); // ADD THIS
     chartIcon.innerHTML = '<i class="fas fa-chart-line"></i>';
     Object.assign(chartIcon.style, {
       position: 'absolute',
-      top: '10px',
-      right: '40px',
+      bottom: '45px',  // Just above the gear icon
+      left: '10px',    // Left side of the card
       cursor: 'pointer',
-      fontSize: '18px',
-      color: '#333',
+      fontSize: '20px',
+      color: '#007bff',
+      backgroundColor: 'rgba(255, 255, 255, 0.9)',
+      borderRadius: '50%',
+      padding: '8px',
       zIndex: '10',
-      padding: '5px'
+      boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
     });
     card.appendChild(chartIcon);
 console.log('✅ Chart icon created and appended for:', row.device_id); // ADD THIS
