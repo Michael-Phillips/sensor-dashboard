@@ -1,6 +1,7 @@
-// renderCards.js v1.2 - Fixed boolean sensor display
+// renderCards.js v1.3 - Added chart icon
 import { getRelativeTime, getCardSettings } from './utils.js';
 import { createGearModal } from './modal.js';
+import { openChartModal } from './chartModal.js';
 
 const BASE_PATH = window.BASE_PATH;
 
@@ -73,6 +74,22 @@ export function renderCards(sensorData, container, updateLocalCardSettings, dele
     gear.dataset.id = row.device_id;
     gear.innerHTML = '<i class="fas fa-cog"></i>';
     card.appendChild(gear);
+
+    const chartIcon = document.createElement('div');
+    chartIcon.className = 'chart-icon';
+    chartIcon.dataset.id = row.device_id;
+    chartIcon.innerHTML = '<i class="fas fa-chart-line"></i>';
+    Object.assign(chartIcon.style, {
+      position: 'absolute',
+      top: '10px',
+      right: '40px',
+      cursor: 'pointer',
+      fontSize: '18px',
+      color: '#333',
+      zIndex: '10',
+      padding: '5px'
+    });
+    card.appendChild(chartIcon);
 
     const img = document.createElement('img');
     let imageUrl = metadata.image?.trim() || row.image_url?.trim();
@@ -185,6 +202,20 @@ export function renderCards(sensorData, container, updateLocalCardSettings, dele
       }
 
       document.body.appendChild(testDiv);
+    });
+
+    // 📊 Chart modal trigger
+    chartIcon.addEventListener('click', (event) => {
+      event.stopPropagation();
+      console.log('📊 Chart icon clicked for', row.device_id);
+      const cardId = chartIcon.dataset.id;
+      const deviceName = metadata.description || row.label || `Device ${cardId}`;
+      
+      try {
+        openChartModal(cardId, deviceName, window.supabaseUrl, window.supabaseKey, metadata);
+      } catch (err) {
+        console.error('❌ Chart modal creation failed:', err);
+      }
     });
 
     container.appendChild(card);
