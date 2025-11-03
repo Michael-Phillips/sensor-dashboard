@@ -1,4 +1,4 @@
-// chartModal.js v1.1 - Added battery voltage to chart
+// chartModal.js v1.2 - Added boolean sensors as step charts (0=false, 10=true)
 
 export async function openChartModal(deviceId, deviceName, supabaseUrl, supabaseKey, metadata) {
   // Create modal
@@ -230,24 +230,24 @@ export async function openChartModal(deviceId, deviceName, supabaseUrl, supabase
         const unit = sensorConfig.unit || '';
         const isBoolean = sensorConfig.is_boolean || false;
 
-        // Skip boolean sensors for now (could add as step chart later)
-        if (isBoolean) return;
-
-        const color = colors[index % colors.length];
+        const color = colors[(index + 1) % colors.length]; // Offset by 1 since battery uses first color
 
         // Create dataset
         const dataset = {
-          label: `${sensorName}${unit ? ` (${unit})` : ''}`,
+          label: isBoolean 
+            ? `${sensorName} (${sensorConfig.false_label || 'Off'}/${sensorConfig.true_label || 'On'})`
+            : `${sensorName}${unit ? ` (${unit})` : ''}`,
           data: data.map(row => ({
             x: new Date(row.timestamp),
-            y: row[key]
+            y: isBoolean ? (row[key] !== 0 ? 10 : 0) : row[key] // Boolean: 10 for true, 0 for false
           })),
           borderColor: color,
           backgroundColor: color + '40',
           borderWidth: 2,
-          pointRadius: 1,
+          pointRadius: isBoolean ? 0 : 1, // No points for boolean (step chart)
           pointHoverRadius: 5,
           tension: 0.1,
+          stepped: isBoolean ? 'before' : false, // Step chart for boolean
           hidden: false
         };
 
