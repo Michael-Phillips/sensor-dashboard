@@ -99,20 +99,20 @@ body {
 .chart-icon {
   position: absolute;
   bottom: 35px;
-  left: 8px;
+  left: 10px;
   cursor: pointer;
   font-size: 18px;
   color: #333;  /* Dark icon on colored background */
   background-color: inherit;  /* Inherit from card */
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);  /* Stronger shadow for visibility */
-  border: 2px solid rgba(0, 0, 0, 0.1);  /* Subtle border */
+  /*box-shadow: 0 2px 4px rgba(0,0,0,0.3);  /* Stronger shadow for visibility */
+  /*border: 2px solid rgba(0, 0, 0, 0.1);  /* Subtle border */
 }
 
 .chart-icon:hover {
