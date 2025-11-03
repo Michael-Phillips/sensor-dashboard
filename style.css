@@ -98,22 +98,27 @@ body {
 
 .chart-icon {
   position: absolute;
-  bottom: 45px;
+  bottom: 40px;
   left: 10px;
   cursor: pointer;
-  font-size: 20px;
-  color: #007bff;
-  background-color: rgba(255, 255, 255, 0.9);
+  font-size: 18px;
+  color: #333;  /* Dark icon on colored background */
+  background-color: inherit;  /* Inherit from card */
   border-radius: 50%;
-  padding: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 10;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);  /* Stronger shadow for visibility */
+  border: 2px solid rgba(0, 0, 0, 0.1);  /* Subtle border */
 }
 
 .chart-icon:hover {
-  background-color: #007bff;
-  color: white;
-  transform: scale(1.1);
+  color: #007bff;
+  transform: scale(1.15);
+  border-color: #007bff;
   transition: all 0.2s;
 }
 
