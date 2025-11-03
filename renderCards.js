@@ -74,7 +74,7 @@ export function renderCards(sensorData, container, updateLocalCardSettings, dele
     gear.dataset.id = row.device_id;
     gear.innerHTML = '<i class="fas fa-cog"></i>';
     card.appendChild(gear);
-
+console.log('🔍 Creating chart icon for device:', row.device_id); // ADD THIS
     const chartIcon = document.createElement('div');
     chartIcon.className = 'chart-icon';
     chartIcon.dataset.id = row.device_id;
@@ -90,7 +90,7 @@ export function renderCards(sensorData, container, updateLocalCardSettings, dele
       padding: '5px'
     });
     card.appendChild(chartIcon);
-
+console.log('✅ Chart icon created and appended for:', row.device_id); // ADD THIS
     const img = document.createElement('img');
     let imageUrl = metadata.image?.trim() || row.image_url?.trim();
 
