@@ -96,21 +96,25 @@ body {
   z-index: 2;
 }
 
-/*
 .chart-icon {
   position: absolute;
-  top: 10px;
-  right: 40px;
+  bottom: 45px;
+  left: 10px;
   cursor: pointer;
-  font-size: 18px;
-  color: #333;
-  z-index: 10;
-  padding: 5px;
-}
-*/
-.chart-icon:hover {
+  font-size: 20px;
   color: #007bff;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  padding: 8px;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.chart-icon:hover {
+  background-color: #007bff;
+  color: white;
   transform: scale(1.1);
+  transition: all 0.2s;
 }
 
 .modal {
