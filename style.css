@@ -96,6 +96,22 @@ body {
   z-index: 2;
 }
 
+.chart-icon {
+  position: absolute;
+  top: 10px;
+  right: 40px;
+  cursor: pointer;
+  font-size: 18px;
+  color: #333;
+  z-index: 10;
+  padding: 5px;
+}
+
+.chart-icon:hover {
+  color: #007bff;
+  transform: scale(1.1);
+}
+
 .modal {
   display: none;
   position: fixed;
@@ -147,22 +163,6 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: box-shadow 0.2s ease;
-}
-
-.chart-icon {
-  position: absolute;
-  top: 10px;
-  right: 40px;
-  cursor: pointer;
-  font-size: 18px;
-  color: #333;
-  z-index: 10;
-  padding: 5px;
-}
-
-.chart-icon:hover {
-  color: #007bff;
-  transform: scale(1.1);
 }
 
 .image-frame:hover {
