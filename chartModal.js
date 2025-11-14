@@ -1,4 +1,4 @@
-// chartModal.js v1.2 - Added boolean sensors as step charts (0=false, 10=true)
+// chartModal.js v1.3 - Only show checkboxes for sensors with data
 
 export async function openChartModal(deviceId, deviceName, supabaseUrl, supabaseKey, metadata) {
   // Create modal
@@ -149,7 +149,15 @@ export async function openChartModal(deviceId, deviceName, supabaseUrl, supabase
       }
 
       // Prepare datasets for each sensor
-      const sensorKeys = Object.keys(data[0]).filter(k => k.startsWith('sensor_'));
+      // First, detect which sensors actually have data
+      const sensorKeys = Object.keys(data[0]).filter(k => {
+        if (!k.startsWith('sensor_')) return false;
+        // Check if at least one reading has a non-null value for this sensor
+        return data.some(row => row[k] !== null && row[k] !== undefined);
+      });
+      
+      console.log(`📊 Found ${sensorKeys.length} sensors with data:`, sensorKeys);
+      
       const datasets = [];
       const colors = [
         '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
@@ -158,7 +166,9 @@ export async function openChartModal(deviceId, deviceName, supabaseUrl, supabase
       legendDiv.innerHTML = ''; // Clear legend
 
       // Add battery voltage first if it exists
-      if (data[0].battery !== undefined && data[0].battery !== null) {
+      const hasBatteryData = data.some(row => row.battery !== null && row.battery !== undefined);
+      
+      if (hasBatteryData) {
         const batteryColor = '#FF6B35'; // Orange-red for battery
         
         const batteryDataset = {
@@ -299,6 +309,15 @@ export async function openChartModal(deviceId, deviceName, supabaseUrl, supabase
       if (!window.Chart) {
         await loadChartJS();
       }
+
+      // Show sensor count info
+      const sensorCountInfo = document.createElement('p');
+      sensorCountInfo.textContent = `Showing ${datasets.length} data series: ${hasBatteryData ? 'Battery + ' : ''}${sensorKeys.length} sensor${sensorKeys.length !== 1 ? 's' : ''}`;
+      sensorCountInfo.style.fontSize = '0.9rem';
+      sensorCountInfo.style.color = '#666';
+      sensorCountInfo.style.marginBottom = '10px';
+      sensorCountInfo.style.fontStyle = 'italic';
+      chartContainer.insertBefore(sensorCountInfo, canvas);
 
       chart = new Chart(ctx, {
         type: 'line',
