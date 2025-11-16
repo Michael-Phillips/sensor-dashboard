@@ -1,4 +1,4 @@
-/* styles.css - v1.1 - 2024-11-16 */
+/* styles.css - v1.2 - 2024-11-16 */
 
 h1 {
   text-align: center;
@@ -136,6 +136,7 @@ body {
   z-index: 9999;
   overflow-y: auto; /* ADDED: Allow scrolling in modal overlay */
   -webkit-overflow-scrolling: touch; /* ADDED: Smooth scrolling on iOS */
+  padding: 20px 0; /* ADDED: Padding to ensure content isn't at edge */
 }
 
 .modal-content {
@@ -144,11 +145,10 @@ body {
   border-radius: 8px;
   width: 500px;
   max-width: 90%; /* ADDED: Responsive on small screens */
-  margin: 40px auto; /* CHANGED: From 'auto' to '40px auto' for better positioning */
+  margin: 20px auto; /* CHANGED: Margin for spacing from top/bottom */
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
   position: relative;
-  max-height: 90vh; /* ADDED: Prevent modal from being taller than viewport */
-  overflow-y: auto; /* ADDED: Allow scrolling within modal if needed */
+  min-height: min-content; /* ADDED: Allow content to determine height */
 }
 
 .image-header {
@@ -290,13 +290,22 @@ body {
     font-size: 0.6rem;
   }
 
+  .modal {
+    padding: 10px 0; /* ADDED: Less padding on mobile */
+  }
+
   .modal-content {
     width: 95%; /* ADDED: Even more responsive on small screens */
-    margin: 20px auto; /* ADDED: Less top margin on mobile */
-    max-height: 85vh; /* ADDED: Smaller max height on mobile */
+    margin: 10px auto 60px auto; /* ADDED: Extra bottom margin for mobile keyboards/UI */
+    padding: 15px; /* ADDED: Less padding on mobile */
   }
 
   .modal-body {
     flex-direction: column; /* ADDED: Stack vertically on mobile */
+  }
+
+  .image-frame {
+    width: 140px; /* ADDED: Smaller image frame on mobile */
+    height: 140px;
   }
 }
