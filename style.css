@@ -1,3 +1,5 @@
+/* styles.css - v1.1 - 2024-11-16 */
+
 h1 {
   text-align: center;
 }
@@ -7,6 +9,7 @@ body {
   background-color: #f5f5f5;
   margin: 0;
   padding: 20px;
+  padding-bottom: 100px; /* ADDED: Ensures last sensor card is visible on mobile */
 }
 
 .card {
@@ -125,10 +128,14 @@ body {
 .modal {
   display: none;
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0; 
+  left: 0;
+  width: 100%; 
+  height: 100%;
   background: rgba(0, 0, 0, 0.5);
   z-index: 9999;
+  overflow-y: auto; /* ADDED: Allow scrolling in modal overlay */
+  -webkit-overflow-scrolling: touch; /* ADDED: Smooth scrolling on iOS */
 }
 
 .modal-content {
@@ -136,9 +143,12 @@ body {
   padding: 20px;
   border-radius: 8px;
   width: 500px;
-  margin: auto;
+  max-width: 90%; /* ADDED: Responsive on small screens */
+  margin: 40px auto; /* CHANGED: From 'auto' to '40px auto' for better positioning */
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
   position: relative;
+  max-height: 90vh; /* ADDED: Prevent modal from being taller than viewport */
+  overflow-y: auto; /* ADDED: Allow scrolling within modal if needed */
 }
 
 .image-header {
@@ -255,9 +265,14 @@ body {
   flex-wrap: wrap;
   gap: 8px;
   justify-content: center;
+  padding-bottom: 40px; /* ADDED: Extra space after last card */
 }
 
 @media (max-width: 480px) {
+  body {
+    padding-bottom: 120px; /* INCREASED: More space on mobile */
+  }
+
   .card {
     max-width: 100%;
     margin: 8px;
@@ -273,5 +288,15 @@ body {
 
   .timestamp {
     font-size: 0.6rem;
+  }
+
+  .modal-content {
+    width: 95%; /* ADDED: Even more responsive on small screens */
+    margin: 20px auto; /* ADDED: Less top margin on mobile */
+    max-height: 85vh; /* ADDED: Smaller max height on mobile */
+  }
+
+  .modal-body {
+    flex-direction: column; /* ADDED: Stack vertically on mobile */
   }
 }
