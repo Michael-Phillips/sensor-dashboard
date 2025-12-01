@@ -21,7 +21,7 @@ async function fetchLatestBattery(deviceId) {
 async function fetchLatestRSSI(deviceId) {
   const { data, error } = await window.supabase
     .from('readings')
-    .select('rssi')
+    .select('RSSI')  // CHANGED: Use all caps to match column name
     .eq('device_id', deviceId)
     .order('timestamp', { ascending: false })
     .limit(1);
@@ -31,7 +31,7 @@ async function fetchLatestRSSI(deviceId) {
     return null;
   }
 
-  return data?.[0]?.rssi ?? null;
+  return data?.[0]?.RSSI ?? null;  // CHANGED: Access with caps
 }
 
 export function createDetailsTab(cardId, existingData, sensorData) {
