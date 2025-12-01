@@ -1,4 +1,4 @@
-// modalDetails.js v1.2
+// modalDetails.js v1.3 - Added RSSI display
 
 console.log('🔵 modalDetails.js is loading...');
 
@@ -16,6 +16,22 @@ async function fetchLatestBattery(deviceId) {
   }
 
   return data?.[0]?.battery ?? null;
+}
+
+async function fetchLatestRSSI(deviceId) {
+  const { data, error } = await window.supabase
+    .from('readings')
+    .select('rssi')
+    .eq('device_id', deviceId)
+    .order('timestamp', { ascending: false })
+    .limit(1);
+
+  if (error) {
+    console.error('RSSI fetch error:', error);
+    return null;
+  }
+
+  return data?.[0]?.rssi ?? null;
 }
 
 export function createDetailsTab(cardId, existingData, sensorData) {
@@ -113,7 +129,6 @@ export function createDetailsTab(cardId, existingData, sensorData) {
     const checkboxCell = document.createElement('div');
     checkboxCell.style.textAlign = 'center';
     checkboxCell.style.padding = '8px';
-    //checkboxCell.style.backgroundColor = 'yellow'; // Make it VERY visible
     
     const booleanCheckbox = document.createElement('input');
     booleanCheckbox.type = 'checkbox';
@@ -124,7 +139,6 @@ export function createDetailsTab(cardId, existingData, sensorData) {
     booleanCheckbox.style.cursor = 'pointer';
     
     checkboxCell.appendChild(booleanCheckbox);
-    //checkboxCell.appendChild(document.createTextNode(' TEST'));
     sensorTable.appendChild(checkboxCell);
     console.log('🔵 Checkbox appended for sensor', i);
 
@@ -190,9 +204,15 @@ export function createDetailsTab(cardId, existingData, sensorData) {
   console.log('🔵 All sensor rows created');
   detailsSection.appendChild(sensorTable);
 
+  // Battery voltage and RSSI section (side by side)
+  const statsContainer = document.createElement('div');
+  statsContainer.style.marginTop = '20px';
+  statsContainer.style.display = 'flex';
+  statsContainer.style.gap = '15px';
+
   // Battery voltage section
   const batterySection = document.createElement('div');
-  batterySection.style.marginTop = '20px';
+  batterySection.style.flex = '1';
   batterySection.style.padding = '15px';
   batterySection.style.backgroundColor = 'rgba(0,0,0,0.05)';
   batterySection.style.borderRadius = '8px';
@@ -228,7 +248,49 @@ export function createDetailsTab(cardId, existingData, sensorData) {
 
   batterySection.appendChild(batteryLabel);
   batterySection.appendChild(batteryValueContainer);
-  detailsSection.appendChild(batterySection);
+  statsContainer.appendChild(batterySection);
+
+  // RSSI section
+  const rssiSection = document.createElement('div');
+  rssiSection.style.flex = '1';
+  rssiSection.style.padding = '15px';
+  rssiSection.style.backgroundColor = 'rgba(0,0,0,0.05)';
+  rssiSection.style.borderRadius = '8px';
+
+  const rssiLabel = document.createElement('label');
+  rssiLabel.textContent = 'Signal Strength (RSSI)';
+  rssiLabel.style.display = 'block';
+  rssiLabel.style.marginBottom = '8px';
+  rssiLabel.style.fontWeight = 'bold';
+
+  const rssiValueContainer = document.createElement('div');
+  rssiValueContainer.style.display = 'flex';
+  rssiValueContainer.style.alignItems = 'center';
+
+  const rssiValue = document.createElement('span');
+  rssiValue.textContent = '—';
+  rssiValue.style.padding = '8px';
+  rssiValue.style.fontSize = '1rem';
+  rssiValue.style.backgroundColor = 'rgba(0,0,0,0.05)';
+  rssiValue.style.border = '1px solid rgba(0,0,0,0.2)';
+  rssiValue.style.borderRadius = '4px';
+  rssiValue.style.display = 'inline-block';
+  rssiValue.style.minWidth = '80px';
+  rssiValue.style.textAlign = 'center';
+
+  const rssiUnit = document.createElement('span');
+  rssiUnit.textContent = ' dBm';
+  rssiUnit.style.marginLeft = '5px';
+  rssiUnit.style.fontWeight = 'bold';
+
+  rssiValueContainer.appendChild(rssiValue);
+  rssiValueContainer.appendChild(rssiUnit);
+
+  rssiSection.appendChild(rssiLabel);
+  rssiSection.appendChild(rssiValueContainer);
+  statsContainer.appendChild(rssiSection);
+
+  detailsSection.appendChild(statsContainer);
 
   // Fetch and display battery voltage
   fetchLatestBattery(cardId).then(voltage => {
@@ -236,6 +298,28 @@ export function createDetailsTab(cardId, existingData, sensorData) {
       batteryValue.textContent = voltage.toFixed(2);
     } else {
       batteryValue.textContent = '—';
+    }
+  });
+
+  // Fetch and display RSSI
+  fetchLatestRSSI(cardId).then(rssi => {
+    if (rssi !== null) {
+      rssiValue.textContent = rssi.toFixed(0);
+      
+      // Color code based on signal strength
+      // Good: > -60, Fair: -60 to -80, Poor: < -80
+      if (rssi > -60) {
+        rssiValue.style.color = '#28a745'; // Green
+        rssiValue.style.fontWeight = 'bold';
+      } else if (rssi > -80) {
+        rssiValue.style.color = '#ffc107'; // Yellow/Orange
+        rssiValue.style.fontWeight = 'bold';
+      } else {
+        rssiValue.style.color = '#dc3545'; // Red
+        rssiValue.style.fontWeight = 'bold';
+      }
+    } else {
+      rssiValue.textContent = '—';
     }
   });
 
